@@ -8,7 +8,6 @@ convention as `claude-plugins`.
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| **[prototype](prototype/README.md)** | • Sanity-checking a state model or logic • Exploring what a UI should look like • Quick throwaway prototypes | • `prototype` skill (auto-activates on prototyping prompts) |
 
 ## Installation
 

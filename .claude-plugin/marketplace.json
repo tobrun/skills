@@ -6,11 +6,5 @@
   "metadata": {
     "description": "A marketplace of Claude Code skills for Tobrun's development workflows"
   },
-  "plugins": [
-    {
-      "name": "prototype",
-      "source": "./prototype",
-      "description": "Build a throwaway prototype to answer a design question: sanity-check state models or explore UI options"
-    }
-  ]
+  "plugins": []
 }
