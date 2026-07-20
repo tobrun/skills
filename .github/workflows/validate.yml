@@ -1,0 +1,27 @@
+name: Validate Marketplace Structure
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq and yq
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq jq
+          # Install yq (Python version, not the Go one)
+          pip install yq --quiet
+
+      - name: Run validation script
+        run: |
+          chmod +x scripts/validate.sh
+          bash scripts/validate.sh
