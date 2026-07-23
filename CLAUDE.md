@@ -38,5 +38,5 @@ in subdirectories, following the marketplace convention used by
 ## Key Commands
 
 - `scripts/validate.sh` - Validate the entire repository structure.
-- Local testing: `/plugin marketplace add ~/ws/skills` then `/plugin install {name}@tobrun-skills`.
+- Local testing: `/plugin marketplace add ~/ws/skills` then `/plugin install {name}@nurbot`.
 - If changes aren't picked up after reinstall, bump the version with a `-devN` suffix in `plugin.json`.

@@ -17,7 +17,7 @@ convention as `claude-plugins`.
 /plugin marketplace add ~/ws/skills
 
 # Install a specific plugin
-/plugin install {plugin-name}@tobrun-skills
+/plugin install {plugin-name}@nurbot
 ```
 
 ## Structure
@@ -47,4 +47,4 @@ convention as `claude-plugins`.
 2. Register it in `.claude-plugin/marketplace.json`.
 3. Add a row to the plugin table above.
 4. Run `scripts/validate.sh` to verify everything is correct.
-5. Install locally to test: `/plugin marketplace add ~/ws/skills && /plugin install {name}@tobrun-skills`.
+5. Install locally to test: `/plugin marketplace add ~/ws/skills && /plugin install {name}@nurbot`.

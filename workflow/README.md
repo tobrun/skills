@@ -53,5 +53,5 @@ Model-triggered invocation is disabled; the workflow commits code, so it only ru
 
 ```bash
 /plugin marketplace add ~/ws/skills
-/plugin install workflow@tobrun-skills
+/plugin install workflow@nurbot
 ```
