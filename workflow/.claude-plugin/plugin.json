@@ -1,0 +1,8 @@
+{
+  "name": "workflow",
+  "version": "0.1.0",
+  "description": "Development workflow skills: implement work from a spec or tickets using test-driven development.",
+  "author": {
+    "name": "Tobrun"
+  }
+}

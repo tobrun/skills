@@ -8,6 +8,7 @@ convention as `claude-plugins`.
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
+| [workflow](workflow/) | Implementing a spec or set of tickets test-first with TDD | `/implement` |
 
 ## Installation
 
