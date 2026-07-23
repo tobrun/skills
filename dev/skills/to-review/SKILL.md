@@ -106,4 +106,4 @@ What to fix first and why.
 ### 8. Present and follow through
 
 Summarize the verdict and the top findings in chat, and link the report file.
-If the user accepts findings that need real work, offer to run the `to-tasks` skill to turn them into `task_N.md` files in the same plan directory, ready for the `implement` skill.
+If the user accepts findings that need real work, suggest they run the `to-tasks` skill to turn them into `task_N.md` files in the same plan directory, ready for the `implement` skill; do not invoke it yourself.

@@ -31,6 +31,7 @@ in subdirectories, following the marketplace convention used by
 - All changes must pass `scripts/validate.sh` before committing.
 - Every plugin directory name must match its `plugin.json` name and marketplace entry name.
 - Every `SKILL.md` must have YAML frontmatter with `name` and `description`.
+- Every `SKILL.md` must set `disable-model-invocation: true`; all skills in this repo are human-triggered only, and skills recommend the next step instead of invoking each other.
 - Skill descriptions must state both what the skill does and when to use it.
 - No file in the repo may contain an em dash.
 - Keep `SKILL.md` body under roughly 150 lines; move detail to `references/`.

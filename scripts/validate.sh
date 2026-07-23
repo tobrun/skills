@@ -316,6 +316,36 @@ check_11() {
 }
 
 # ===========================================================================
+# R14: Every SKILL.md sets disable-model-invocation: true
+# ===========================================================================
+check_14() {
+  local sources
+  sources=$(marketplace_source_dirs)
+  [ -z "$sources" ] && return
+  while IFS= read -r dir; do
+    [ -z "$dir" ] && continue
+    [ ! -d "$dir" ] && continue
+    [ ! -d "$dir/skills" ] && continue
+    for skilldir in "$dir/skills"/*/; do
+      [ ! -d "$skilldir" ] && continue
+      local sf="${skilldir%/}/SKILL.md"
+      [ ! -f "$sf" ] && continue
+
+      local yaml
+      yaml=$(awk '/^---$/ {c++; next} c==1 {print}' "$sf")
+      [ -z "$yaml" ] && continue
+
+      local dmi
+      dmi=$(echo "$yaml" | yq eval '.disable-model-invocation // ""' - 2>/dev/null || echo "")
+      if [ "$dmi" != "true" ]; then
+        fail "R14" "$sf" \
+          "Frontmatter must set 'disable-model-invocation: true' (all skills are human-triggered)"
+      fi
+    done
+  done <<< "$sources"
+}
+
+# ===========================================================================
 # R12: Every plugin appears in the root README table
 # ===========================================================================
 check_12() {
@@ -393,6 +423,7 @@ check_10
 check_11
 check_12
 check_13
+check_14
 check_skill_length
 
 if [ -s "$ERROR_FILE" ]; then

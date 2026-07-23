@@ -1,6 +1,7 @@
 ---
 name: to-tasks
-description: Split a plan at docs/plan/{plan-name}/plan.md into numbered task files (task_1.md, task_2.md, ...) sized for individual implementation. Used by the to-plan skill when execution spans multiple tasks; also use it directly when the user asks to break an existing plan into tasks.
+description: Split a plan at docs/plan/{plan-name}/plan.md into numbered task files (task_1.md, task_2.md, ...) sized for individual implementation. Use after to-plan when execution spans multiple tasks, or to break an existing plan into tasks.
+disable-model-invocation: true
 ---
 
 # To Tasks

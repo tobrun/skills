@@ -17,8 +17,9 @@ The plan is the deliverable of this skill: do not implement anything.
 2. Pick a plan name: a short kebab-case slug for the piece of work (e.g. `checkout-vat-rounding`).
 3. Write the plan to `docs/plan/{plan-name}/plan.md` using the structure below.
 4. Decide how execution splits:
-   - If the work needs more than one task, use the `to-tasks` skill to produce `task_N.md` files next to the plan.
-   - If it fits in a single task, skip `to-tasks` and embed the execution detail directly in the plan's Execution section.
+   - If the work needs more than one task, recommend the user run the `to-tasks` skill to produce `task_N.md` files next to the plan.
+     All skills in this plugin are human-triggered; never invoke it yourself.
+   - If it fits in a single task, `to-tasks` is not needed; embed the execution detail directly in the plan's Execution section.
 5. Stop and present the plan for human review: summarize the approach in a few sentences and surface the open questions.
    Do not start implementing; the follow-up is a reviewed plan handed to the `implement` skill.
 

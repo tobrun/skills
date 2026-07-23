@@ -1,7 +1,8 @@
 # dev
 
 Development workflow skills for Claude Code.
-The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `/to-review` verifies the result against the plan.
+The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `/to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `/to-review` verifies the result against the plan.
+Every skill is human-triggered (`disable-model-invocation: true`); skills recommend the next step but never launch each other.
 
 ## Skills
 
@@ -16,14 +17,14 @@ On a new project the stubs fill up through the normal plan/implement/review loop
 
 Turns a feature request, spec, or problem statement into a plan for human review at `docs/plan/{plan-name}/plan.md`.
 The plan describes the current state, the proposed approach as a before/after picture, and an explicit table of every doc that needs updating.
-If execution spans multiple tasks it uses the `to-tasks` skill; otherwise the execution detail is embedded directly in the plan.
+If execution spans multiple tasks it recommends `/to-tasks`; otherwise the execution detail is embedded directly in the plan.
 Invoke it explicitly with `/to-plan`; it never implements anything.
 
 ### to-tasks
 
 Splits an existing plan into `docs/plan/{plan-name}/task_1.md`, `task_2.md`, and so on, plus a task index in the plan.
 Each task is a vertical slice sized to hand to `/implement` as a standalone spec, with scope, suggested seams, and acceptance criteria.
-Normally invoked from `to-plan`, but can be used directly on an existing plan.
+Normally run right after `/to-plan`, but can be used directly on an existing plan.
 
 ### implement
 

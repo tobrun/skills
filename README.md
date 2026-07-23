@@ -8,7 +8,7 @@ convention as `claude-plugins`.
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| [dev](dev/) | Initializing a project docs knowledge base, planning work into reviewable docs, splitting it into tasks, implementing it test-first, and reviewing it with a verified panel | `/install`, `/to-plan`, `to-tasks`, `/implement`, `/to-review` |
+| [dev](dev/) | Initializing a project docs knowledge base, planning work into reviewable docs, splitting it into tasks, implementing it test-first, and reviewing it with a verified panel | `/install`, `/to-plan`, `/to-tasks`, `/implement`, `/to-review` |
 
 ## Installation
 
