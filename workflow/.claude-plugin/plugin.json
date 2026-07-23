@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "version": "0.1.0",
-  "description": "Development workflow skills: implement work from a spec or tickets using test-driven development.",
+  "version": "0.2.0",
+  "description": "Development workflow skills: plan work into reviewable docs, split it into tasks, and implement it test-first.",
   "author": {
     "name": "Tobrun"
   }
