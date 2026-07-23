@@ -19,7 +19,7 @@ When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and 
 3. Implement in vertical slices using the red -> green loop.
 4. Run typechecking regularly and single test files regularly.
    Run the full test suite once at the end.
-5. Once done, use the `code-review` skill to review the work.
+5. Once done, use the `to-review` skill to review the work.
 6. Commit your work to the current branch.
 
 ## What a good test is
@@ -60,4 +60,4 @@ Ask: "What's the public interface, and which seams should we test?"
 - **One slice at a time.**
   One seam, one test, one minimal implementation per cycle.
 - **Refactoring is not part of the loop.**
-  It belongs to the review stage (see the `code-review` skill), not the red -> green implementation cycle.
+  It belongs to the review stage (see the `to-review` skill), not the red -> green implementation cycle.

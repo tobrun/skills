@@ -1,0 +1,78 @@
+# Review Lenses
+
+Each lens is one agent in the panel.
+Select only lenses with surface in the diff; every lens sees the whole diff but stays in its lane.
+Each lens prompt gets: the brief, the diff file path, the lens definition below, and the shared rules at the bottom.
+
+## plan-conformance
+
+Include whenever a plan directory was found.
+Checks the diff against `plan.md` and its task files, not against general quality:
+
+- Is each acceptance criterion of the tasks in scope actually met by the diff? Name the criterion and the evidence.
+- Are tests written at the seams the plan or tasks agreed on? A tested seam nobody agreed on, or an agreed seam without tests, is a finding.
+- Is every row of the plan's Documentation impact table honored by a corresponding doc change in the diff? A missed row is a BLOCK.
+- Does the diff do significant work the plan never mentioned? Scope creep is a CONCERN, not a crime; name it so the reviewer can decide.
+
+## correctness
+
+Bugs the compiler and tests would miss.
+Walk the hardest paths first: concurrency and ordering hazards, boundary conditions (empty, one, max, off-by-one), null/absent paths, mutation while iterating, broken invariants, state-machine holes, unsafe retries, error paths, time and timezone handling, resource lifecycle, type-system escapes.
+For each suspect path: state the invariant, name the input that breaks it, trace it through the code.
+A BLOCK must name the triggering input; "this could race" without a scenario is a CONCERN.
+
+## security
+
+Authn/authz gaps, injection, secrets in code or logs, unsafe deserialization, crypto misuse, path traversal, SSRF, supply-chain risk in new dependencies, overly broad permissions.
+Rate exploitability in this codebase, not theoretical severity.
+
+## architecture
+
+Module boundaries, layering, dependency direction, abstraction quality, coupling introduced by the diff.
+Respect existing ADRs and `CONTEXT.md`; deviation from a recorded decision is a finding, personal style preference is not.
+
+## tests
+
+Test quality per this plugin's philosophy, not raw coverage:
+
+- Tests must live at public seams; tests that mock internal collaborators, test private methods, or verify through side channels are implementation-coupled findings.
+- Tautological tests (assertion recomputes the expected value the way the code does) are findings; expected values need an independent source of truth.
+- New behavior in the diff without a test at its seam is a finding.
+- Brittle patterns: global time/random patching, order-dependent tests, interaction assertions where a state assertion would do.
+
+## performance
+
+Algorithmic complexity on real data sizes, N+1 queries, hot-path allocations, blocking I/O on async paths, missing pagination or streaming for unbounded data, cache invalidation.
+Only flag what is on a path that plausibly matters; micro-optimizations are NITs at best.
+
+## api-design
+
+Naming, type signatures, error returns, consistency with the codebase's existing API idioms, backwards compatibility of anything already public.
+
+## errors-observability
+
+Swallowed errors, catch-and-continue without logging, missing context in log lines at decision points, errors that will be undebuggable at 3 AM, retry loops without backoff or limits.
+
+## docs
+
+Comments and docs touched or needed by the diff: stale or now-misleading comments, missing WHY comments on non-obvious constraints, public API docstrings.
+Doc updates promised by the plan belong to plan-conformance, not here.
+
+## dead-code
+
+Unused exports, unreachable branches, commented-out code, leftover debug scaffolding, vestigial parameters, orphaned imports, dead flags and config keys.
+Verify with Grep across the whole repo before flagging; check tests, dynamic string-keyed lookups, and external API surface.
+If you cannot prove it dead, report at most a CONCERN and say what you could not rule out.
+
+## Shared rules (include in every lens prompt)
+
+Severity ladder:
+
+- **BLOCK**: a concrete problem you can name with the scenario that triggers it; would misbehave in production or violates the plan.
+- **CONCERN**: a path you cannot convince yourself is safe, or a gap worth a conversation; include what you checked.
+- **NIT**: minor polish; skip NITs entirely on diffs over 15 files.
+
+Stay in your lane; other lenses cover the rest.
+Read the diff from the given file, and Read surrounding source files whenever the diff alone is not enough to judge; a finding based on a guess about unseen code is not a finding.
+Every finding needs file, line, a one-line title, and a 2-4 line detail naming the evidence.
+Also report up to 5 genuinely good things your lens noticed.
