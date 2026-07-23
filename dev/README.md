@@ -1,4 +1,4 @@
-# workflow
+# dev
 
 Development workflow skills for Claude Code.
 The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `to-review` verifies the result against the plan.
@@ -53,5 +53,5 @@ Model-triggered invocation is disabled; the workflow commits code, so it only ru
 
 ```bash
 /plugin marketplace add ~/ws/skills
-/plugin install workflow@nurbot
+/plugin install dev@nurbot
 ```
