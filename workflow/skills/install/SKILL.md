@@ -1,10 +1,10 @@
 ---
-name: start
+name: install
 description: Create the standing docs/ knowledge base of a project (product, architecture, engineering, operations, governance, agents.md) and populate it from an existing codebase. Use when starting a new project, onboarding an existing codebase, or when the user asks to initialize project docs.
 disable-model-invocation: true
 ---
 
-# Start
+# Install
 
 Create the standing knowledge base of the project under `docs/` and make it truthful.
 Standing docs hold what outlives any one change: requirements, architecture, conventions, operations, governance.

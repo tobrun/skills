@@ -1,11 +1,11 @@
 # workflow
 
 Development workflow skills for Claude Code.
-The skills chain into one flow: `/start` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `to-review` verifies the result against the plan.
+The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `to-review` verifies the result against the plan.
 
 ## Skills
 
-### start
+### install
 
 Creates the standing `docs/` knowledge base: product (with non-goals and glossary), architecture (with one-file-per-decision ADRs), engineering, operations, governance, and `docs/agents.md` with a root `AGENTS.md` pointer.
 The bundled init script is idempotent; it never overwrites existing files.
