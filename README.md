@@ -8,7 +8,7 @@ convention as `claude-plugins`.
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| [workflow](workflow/) | Planning work into reviewable docs, splitting it into tasks, implementing it test-first, and reviewing it with a verified panel | `/to-plan`, `to-tasks`, `/implement`, `to-review` |
+| [workflow](workflow/) | Initializing a project docs knowledge base, planning work into reviewable docs, splitting it into tasks, implementing it test-first, and reviewing it with a verified panel | `/start`, `/to-plan`, `to-tasks`, `/implement`, `to-review` |
 
 ## Installation
 

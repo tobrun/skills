@@ -10,7 +10,7 @@ Implement the work described by the user in the spec or tickets.
 Work test-first: the TDD guidance below governs every implementation cycle.
 Consult it before and during the loop, not after.
 
-When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
+When exploring the codebase, read `docs/product/glossary.md` (if it exists) so test names and interface vocabulary match the project's domain language, follow `docs/engineering/conventions.md` and `docs/engineering/test.md`, and respect the ADRs under `docs/architecture/decisions/` in the area you're touching.
 
 ## Workflow
 

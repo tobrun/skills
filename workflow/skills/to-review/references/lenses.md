@@ -29,7 +29,7 @@ Rate exploitability in this codebase, not theoretical severity.
 ## architecture
 
 Module boundaries, layering, dependency direction, abstraction quality, coupling introduced by the diff.
-Respect existing ADRs and `CONTEXT.md`; deviation from a recorded decision is a finding, personal style preference is not.
+Respect `docs/architecture/architecture.md` and the ADRs under `docs/architecture/decisions/` when they exist; deviation from a recorded decision is a finding, personal style preference is not.
 
 ## tests
 

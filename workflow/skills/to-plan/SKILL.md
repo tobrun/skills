@@ -12,7 +12,8 @@ The plan is the deliverable of this skill: do not implement anything.
 ## Workflow
 
 1. Understand the request.
-   Read the spec or tickets, explore the relevant code, read `CONTEXT.md` (if it exists), and respect ADRs in the area you're touching.
+   Read the spec or tickets and explore the relevant code.
+   If the repo has standing docs, follow the read order in `docs/README.md`: at minimum the glossary, the non-goals, and the ADRs under `docs/architecture/decisions/` for the area you're touching.
 2. Pick a plan name: a short kebab-case slug for the piece of work (e.g. `checkout-vat-rounding`).
 3. Write the plan to `docs/plan/{plan-name}/plan.md` using the structure below.
 4. Decide how execution splits:
@@ -51,6 +52,12 @@ Call out alternatives you rejected and why, when the choice is not obvious.
 
 Every doc that needs updating, one row each.
 If nothing needs updating, state "None" and why.
+When the repo has a standing `docs/` tree, walk it area by area
+(product, architecture, engineering, operations, governance,
+agents.md): does this change alter what any of them claim?
+If this plan makes an architectural decision, add a row proposing a
+new ADR under docs/architecture/decisions/ (copy 0000-template.md
+to the next free number).
 
 ## Risks and open questions
 

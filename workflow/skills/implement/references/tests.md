@@ -78,4 +78,4 @@ Name tests after the capability, not the method under test.
 - Bad: `"test applyCoupon returns false"`
 
 A reader should be able to reconstruct what the system does from the test names alone.
-Use the project's domain vocabulary (check `CONTEXT.md`) so names match how the team talks about the feature.
+Use the project's domain vocabulary (check `docs/product/glossary.md`) so names match how the team talks about the feature.
