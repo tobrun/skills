@@ -40,6 +40,20 @@ Test quality per this plugin's philosophy, not raw coverage:
 - New behavior in the diff without a test at its seam is a finding.
 - Brittle patterns: global time/random patching, order-dependent tests, interaction assertions where a state assertion would do.
 
+## simplify
+
+Unnecessary complexity that a simpler version would avoid, with behavior held constant:
+
+- Reinvented helpers: logic the codebase or standard library already provides; Grep for the existing helper before flagging and name it in the finding.
+- Duplication introduced by the diff: the same logic now living in two places that will silently diverge.
+- Speculative generality: abstractions, parameters, or config with exactly one caller and no planned second one.
+- Needless indirection: layers that only forward calls, wrappers that wrap nothing.
+- Wrong altitude: low-level mechanics inlined into high-level flow (or vice versa) that a small extraction would clarify.
+
+Every finding must sketch the simpler alternative concretely enough that the verifier can check it preserves behavior; "this feels complex" is not a finding.
+Mostly CONCERN and NIT; reserve BLOCK for duplicating an existing tested helper.
+This lens is about making the new code smaller and clearer, not about bugs (correctness), boundaries (architecture), or deleting unused code (dead-code).
+
 ## performance
 
 Algorithmic complexity on real data sizes, N+1 queries, hot-path allocations, blocking I/O on async paths, missing pagination or streaming for unbounded data, cache invalidation.
