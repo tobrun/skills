@@ -1,7 +1,7 @@
 # dev
 
 Development workflow skills for Claude Code.
-The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `to-review` verifies the result against the plan.
+The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `/to-review` verifies the result against the plan.
 
 ## Skills
 
@@ -34,10 +34,12 @@ The skill drives a strict TDD loop at pre-agreed seams:
 2. Agree the seams under test with the user.
 3. Implement in vertical slices with the red -> green loop.
 4. Typecheck and run single test files regularly; run the full suite once at the end.
-5. Review the work with the `to-review` skill.
+5. Hand the work back to you to run `/to-review`.
 6. Commit to the current branch.
 
 The skill bundles reference docs on what makes a good test (`references/tests.md`) and when mocking is appropriate (`references/mocking.md`).
+Invoke it explicitly with `/implement` and point it at a spec or tickets.
+Model-triggered invocation is disabled; the workflow commits code, so it only runs when you ask for it.
 
 ### to-review
 
@@ -45,9 +47,7 @@ Reviews a branch or PR with a panel of concern-focused agents (correctness, secu
 Every non-trivial finding is adversarially verified against the repo before it is reported, so the report contains confirmed problems instead of plausible guesses.
 When a plan exists it also checks conformance: acceptance criteria met, tests at the agreed seams, and every Documentation impact row honored.
 The report lands at `docs/plan/{plan-name}/review_N.md`, and accepted findings can be turned into new task files via `to-tasks`.
-
-Invoke it explicitly with `/implement` and point it at a spec or tickets.
-Model-triggered invocation is disabled; the workflow commits code, so it only runs when you ask for it.
+Invoke it explicitly with `/to-review`; model-triggered invocation is disabled, so a review panel never launches unless you ask for it.
 
 ## Installation
 

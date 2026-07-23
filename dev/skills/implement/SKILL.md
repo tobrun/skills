@@ -19,7 +19,8 @@ When exploring the codebase, read `docs/product/glossary.md` (if it exists) so t
 3. Implement in vertical slices using the red -> green loop.
 4. Run typechecking regularly and single test files regularly.
    Run the full test suite once at the end.
-5. Once done, use the `to-review` skill to review the work.
+5. Once done, ask the user to run the `to-review` skill on the work.
+   Reviews are human-triggered only; never launch the review panel yourself.
 6. Commit your work to the current branch.
 
 ## What a good test is

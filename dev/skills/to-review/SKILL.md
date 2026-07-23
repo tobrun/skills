@@ -1,6 +1,7 @@
 ---
 name: to-review
-description: Concern-based fan-out review of a branch or PR where every finding is adversarially verified before it is reported, producing docs/plan/{plan-name}/review_N.md. Use when the user asks for a code review of their changes, before opening a PR, or as the review step of the implement skill.
+description: Concern-based fan-out review of a branch or PR where every finding is adversarially verified before it is reported, producing docs/plan/{plan-name}/review_N.md. Use when the user asks for a code review of their changes or before opening a PR.
+disable-model-invocation: true
 ---
 
 # To Review
