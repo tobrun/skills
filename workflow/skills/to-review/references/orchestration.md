@@ -1,17 +1,69 @@
-# Orchestration Template
+# Orchestration
 
-Run the panel with the Workflow tool using this script shape.
-Invoking it from this skill is a user-sanctioned use of the Workflow tool.
+The default mode is two batches of plain parallel subagents via the Agent tool.
+No dynamic workflows are involved; this keeps the review free of the dynamic-workflow confirmation and its token profile.
+A Workflow-tool variant exists at the bottom for explicitly requested heavyweight runs only.
 
-Pass everything the script needs via `args`:
+## Batch 1: lens agents
 
-- `diffFile`: absolute path of the scratch file holding the diff
-- `brief`: the intent brief from step 2 of the skill
-- `planContext`: relevant plan/task excerpts (acceptance criteria, seams, doc-impact rows), or `""`
-- `lenses`: array of `{ key, prompt }`, where `prompt` is the lens definition plus the shared rules from `lenses.md`
-- `priorFindings`: unresolved findings from the previous review, or `[]`
+Launch one agent per selected lens, all in a single message so they run concurrently.
+Each lens prompt is assembled from:
 
-## Script
+1. A role line: `You are the "{key}" voice on a code-review panel; other lenses cover other concerns.`
+2. The lens definition plus the shared rules from `lenses.md`.
+3. The brief, and the plan context when a plan was found.
+4. The diff location: `Read the full diff from {diffFile}; the repo working tree holds the post-diff state. Read repo files whenever the diff alone is not enough to judge.`
+5. The output contract below.
+
+Output contract (the agent's final message must be exactly one fenced JSON block):
+
+```json
+{
+  "verdict": "PASS | CONCERNS | BLOCK",
+  "findings": [
+    {
+      "severity": "BLOCK | CONCERN | NIT",
+      "file": "path/relative/to/repo",
+      "line": 1,
+      "title": "one line",
+      "detail": "2-4 lines naming the evidence",
+      "scenario": "what triggers it (required for BLOCK)"
+    }
+  ],
+  "good": ["up to 5 bullets"]
+}
+```
+
+If an agent errors or returns something unparseable, record it as a failed lens and continue; the report notes it so the verdict is honestly partial.
+Never retry a failed lens more than once.
+
+## Batch 2: verifiers
+
+Collect every BLOCK and CONCERN from all lenses (NITs skip verification) and launch one verifier per finding, again all in a single message.
+Verifier prompt:
+
+```
+Adversarially verify this code-review finding from the "{lens}" lens.
+Your job is to REFUTE it.
+{finding as JSON}
+Read the diff at {diffFile} and the actual files in the repo.
+Check whether the claimed problem is real: does the scenario actually
+trigger, is the claim accurate against the files, does something else
+already handle it?
+Reply with exactly one fenced JSON block:
+{"status": "CONFIRMED | PLAUSIBLE | REFUTED", "reason": "..."}
+CONFIRMED = you reproduced the reasoning against real files and it holds.
+PLAUSIBLE = you could not refute it, but could not fully confirm it either.
+REFUTED = wrong, unreachable, or already handled; say exactly why.
+```
+
+Aggregation of the verified results is plain reasoning per step 6 of the skill; do it yourself, not with another agent.
+
+## Heavy mode: Workflow tool (explicit opt-in only)
+
+Use this only when the user has explicitly asked for a workflow or an exhaustive run; it triggers the dynamic-workflow confirmation dialog.
+It buys schema-validated outputs, pipelining (findings verify while other lenses still review), and `/workflows` progress.
+Pass `diffFile`, `brief`, `planContext`, `lenses` (as `{key, prompt}` with the full assembled lens prompt), and `priorFindings` via `args`.
 
 ```js
 export const meta = {
@@ -115,10 +167,3 @@ const results = await pipeline(
 
 return { lenses: results.filter(Boolean), rechecks: (await rechecks).filter(Boolean) }
 ```
-
-## Notes for the orchestrator
-
-- Launch with `Workflow({ script, args })`; do not pin `model` on the agent calls, so the panel inherits the session model.
-- A `null` entry in `lenses` means that lens died; report it as a failed lens, never silently.
-- Aggregation (drop REFUTED, demote unconfirmed BLOCKs, dedupe by file and line, verdict roll-up) is plain reasoning on the returned object; do it yourself per step 6 of the skill, not with another agent.
-- If the Workflow tool is unavailable in the session, fall back to the Agent tool: launch the lens agents in one parallel batch with the same prompts and schemaless text output, then verify findings in a second batch.

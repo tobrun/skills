@@ -43,11 +43,12 @@ Include `plan-conformance` whenever a plan was found.
 You may add at most one diff-specific custom lens (for example migrations, concurrency, i18n) when the change obviously calls for it; define it in the same shape as the built-in lenses.
 Tell the user which lenses you selected and why before launching.
 
-### 5. Run the review workflow
+### 5. Run the review panel
 
-Use the Workflow tool with the script template in [references/orchestration.md](references/orchestration.md).
-It pipelines: each lens reviews the diff, and every BLOCK or CONCERN finding goes straight to an adversarial verifier that tries to refute it against the actual repo.
+Launch the panel as plain parallel subagents with the Agent tool, following [references/orchestration.md](references/orchestration.md): all lens agents in one message so they run concurrently, then all verifiers in a second message.
+Every BLOCK or CONCERN finding is adversarially verified: the verifier's only job is to refute it against the actual repo.
 Inherit the session model; do not pin model names.
+Only when the user explicitly asks for a heavyweight run should you use the Workflow-tool variant at the end of the reference; it triggers the dynamic-workflow confirmation and burns tokens fast.
 
 ### 6. Aggregate
 
