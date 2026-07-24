@@ -10,6 +10,10 @@ Create the standing knowledge base under `docs/` and make it truthful.
 Standing docs hold what outlives any change: requirements, architecture, conventions, operations, governance.
 Working memory (plans, tasks, reviews) lives in `docs/plan/`, owned by the `to-plan` family; this skill does not touch it.
 
+Invoking this skill is the task - it needs nothing else from the user to begin.
+Start at step 1 immediately; do not ask what to work on or wait for a task description.
+The only place this skill asks the user anything is the gap-closing interview in step 3, once population is under way.
+
 ## 1. Create the skeleton
 
 Run the bundled script from the repo root:

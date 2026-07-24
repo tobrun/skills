@@ -10,6 +10,9 @@ Review the current changes with a panel of concern-focused agents, verify every 
 You are the orchestrator: gather context, select the panel, run it, aggregate, write the report.
 Do not review the code yourself.
 
+Invoking this skill is the task - it needs nothing else from the user to begin.
+Start at step 1 immediately and detect the diff yourself; do not ask what to review or wait for a task description.
+
 ## Workflow
 
 ### 1. Detect context and gather the diff

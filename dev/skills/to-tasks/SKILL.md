@@ -11,6 +11,9 @@ Split a plan's execution into ordered tasks, each its own file next to the plan.
 Input: an existing `docs/plan/{plan-name}/plan.md`.
 Output: `task_1.md`, `task_2.md`, ... plus a task index in the plan's Execution section.
 
+If the user didn't name a plan, find it yourself before asking: match the current branch name to a `docs/plan/{plan-name}/` slug, or use the only plan directory that has no `task_N.md` files yet.
+Ask which plan only if more than one is a plausible match; otherwise proceed without waiting for clarification.
+
 ## Sizing tasks
 
 - Vertical slice: a verifiable piece of behavior, not a horizontal layer (all models, then all endpoints).
