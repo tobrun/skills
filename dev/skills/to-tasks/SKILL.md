@@ -6,36 +6,32 @@ disable-model-invocation: true
 
 # To Tasks
 
-Split the execution of a plan into ordered tasks, each one written as its own file next to the plan.
+Split a plan's execution into ordered tasks, each its own file next to the plan.
 
 Input: an existing `docs/plan/{plan-name}/plan.md`.
-Output: `docs/plan/{plan-name}/task_1.md`, `task_2.md`, and so on, plus a task index in the plan's Execution section.
+Output: `task_1.md`, `task_2.md`, ... plus a task index in the plan's Execution section.
 
 ## Sizing tasks
 
-- Each task is a vertical slice: it delivers a verifiable piece of behavior, not a horizontal layer (all models, then all endpoints).
-- Size each task so it can be handed to the `implement` skill as a standalone spec and completed in one sitting.
-- Apply the INVEST test: independent where possible, negotiable in detail, valuable on its own, estimable, small, and testable at its seam.
-  The demo question is the quick check: if you cannot show the task's behavior working by itself, it is not sliced right.
-- Order tasks so every task builds only on tasks before it.
-- If the plan honestly fits in one task, say so instead of splitting artificially; to-plan then embeds it in the plan directly.
-- Never create a catch-all task ("cleanups", "remaining items"); leftover work either belongs to a real task or goes back to the plan as a scope decision.
-- If unknowns make a task impossible to estimate, it is too big or too vague: split it, or make the first task a spike whose deliverable is the knowledge needed to plan the rest, written back into the plan.
+- Vertical slice: a verifiable piece of behavior, not a horizontal layer (all models, then all endpoints).
+- Sized to hand to `implement` as a standalone spec, completed in one sitting.
+- INVEST: independent where possible, negotiable in detail, valuable on its own, estimable, small, testable at its seam. Quick check: can you demo it working by itself?
+- Order so each task builds only on tasks before it.
+- If the plan honestly fits in one task, say so - don't split artificially; `to-plan` embeds it directly.
+- No catch-all tasks ("cleanups", "remaining items"); leftover work belongs to a real task or goes back to the plan as a scope decision.
+- Unknowns that block estimation mean the task is too big or vague: split it, or make the first task a spike whose deliverable is the knowledge needed to plan the rest.
 
 ## Writing the task
 
-- The title is a verb-led imperative that completes the sentence "to finish this task, I need to {title}", so the plan's task index reads as a scannable checklist.
-  "Add one-click rollback to the deploy UI" beats "Rollback work".
-- Each task file is self-contained: the implementer must not need this conversation.
-  The what and the why live in Goal, and decisions reached in discussion are written into the file, not left in chat.
-- Use user-story framing ("As a [user], I want [goal], so that [benefit]") only when the slice is user-facing value; technical work reads better as a plain imperative.
-  Never force the form; an empty "so that" is the tell.
-- When a task fixes a defect, the Goal includes numbered reproduction steps, expected vs actual behavior, and the environment, so the implementer can reproduce end to end before fixing.
+- Title: a verb-led imperative completing "to finish this task, I need to {title}" ("Add one-click rollback to the deploy UI", not "Rollback work") - keeps the task index scannable.
+- Self-contained: the implementer must not need this conversation. Decisions reached in discussion get written into the file, not left in chat.
+- User-story framing ("As a [user], I want [goal], so that [benefit]") only for user-facing value; technical work reads better as a plain imperative. An empty "so that" means you forced it.
+- A defect task's Goal includes numbered reproduction steps, expected vs actual, and environment, so the implementer can reproduce before fixing.
 
 ## Numbering
 
-Task files are numbered from 1.
-If task files already exist for this plan, do not renumber or overwrite them; continue from the highest existing index.
+Number from 1.
+If task files already exist for this plan, continue from the highest index - never renumber or overwrite.
 
 ## Task structure
 
@@ -57,32 +53,27 @@ Out: what is deliberately left to other tasks.
 
 ## Files and docs touched
 
-Concrete files to change, including the docs rows from the plan's
-Documentation impact section that this task is responsible for.
+Concrete files to change, including the Documentation impact rows this task owns.
 
 ## Suggested seams
 
-The public interfaces where tests for this task should live.
-These are proposals; the implement skill confirms them with the user.
+The public interfaces where tests should live - proposals; `implement` confirms them with the user.
 
 ## Acceptance criteria
 
-2-5 checkable statements that define done, from an independent
-source of truth (the spec or plan), not from the intended
-implementation. Use Given-When-Then for behavioral ones, and
-cover the error and edge cases that matter, not just the happy
-path. More than 5 means the task should be split. Task done is
-not plan done: the plan's Success criteria are judged at review,
-not here.
+2-5 checkable statements from an independent source of truth (spec or plan), not the intended implementation.
+Given-When-Then for behavioral ones; cover error and edge cases, not just the happy path.
+More than 5 means split the task.
+Task done is not plan done - Success criteria are judged at review.
 
 ## Depends on
 
-Task numbers this task builds on, or "None".
+Task numbers this builds on, or "None".
 ```
 
 ## Updating the plan
 
-After writing the task files, update the plan's Execution section with an index:
+After writing the tasks, add an index to the plan's Execution section:
 
 ```markdown
 | Task | Title | Depends on |
@@ -90,4 +81,4 @@ After writing the task files, update the plan's Execution section with an index:
 | [task_1.md](task_1.md) | ... | None |
 ```
 
-Every doc listed in the plan's Documentation impact section must be owned by exactly one task; a doc update nobody owns will not happen.
+Every doc in the plan's Documentation impact section must be owned by exactly one task, or the update won't happen.

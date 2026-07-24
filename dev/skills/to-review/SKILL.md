@@ -6,58 +6,53 @@ disable-model-invocation: true
 
 # To Review
 
-Review the current changes with a panel of concern-focused agents, verify every finding against the repo before reporting it, and write the report as a plan artifact.
-You are the orchestrator: gather context, select the panel, run the workflow, aggregate, and write the report.
+Review the current changes with a panel of concern-focused agents, verify every finding against the repo, and write the report as a plan artifact.
+You are the orchestrator: gather context, select the panel, run it, aggregate, write the report.
 Do not review the code yourself.
 
 ## Workflow
 
 ### 1. Detect context and gather the diff
 
-- If the user passed a PR number, review that PR; otherwise check `gh pr view` for an open PR; otherwise review the local branch against the default branch (`git merge-base HEAD origin/{default}`).
-- Diff with local git only (never `gh pr diff`), excluding lockfiles, build output, minified files, binaries, fonts, and snapshots:
+- PR number given -> review that PR; else check `gh pr view` for an open PR; else review the local branch against the default branch (`git merge-base HEAD origin/{default}`).
+- Diff with local git only (never `gh pr diff`), excluding lockfiles, build output, minified files, binaries, fonts, snapshots:
   `':!*lock*' ':!go.sum' ':!dist/' ':!build/' ':!*.min.*' ':!*.map' ':!*.png' ':!*.jpg' ':!*.gif' ':!*.webp' ':!*.woff*' ':!*.ttf' ':!**/__snapshots__/'`
-- Write the diff to a scratch file; agents read it from there instead of receiving it inline.
-- Sanity checks: if no reviewable files remain, say so and stop.
-  If the diff is tiny (1-2 files) or huge (>25k changed lines), tell the user and ask whether to proceed before spending on the panel.
+- Write the diff to a scratch file; agents read it from there, not inline.
+- No reviewable files: say so and stop. Diff is tiny (1-2 files) or huge (>25k lines): confirm with the user before spending on the panel.
 
 ### 2. Load intent
 
-The review checks the diff against what was planned, not just against general code quality.
+The review checks the diff against what was planned, not just general quality.
 
-- Find the plan: a `docs/plan/{plan-name}/` directory whose plan the diff implements (from branch name, commit messages, or ask the user if ambiguous).
-- If found, read `plan.md` and its `task_N.md` files.
-  These supply the acceptance criteria, the agreed seams, and the Documentation impact table for the plan-conformance lens.
-- If no plan exists, derive `{plan-name}` as a kebab-case slug of the branch name and fall back to the PR body and commit messages for intent.
-- Build a short brief: what the change does, what is on the critical path, what was planned.
+- Find the plan directory the diff implements (branch name, commit messages, or ask if ambiguous). If found, read `plan.md` and its `task_N.md` files for acceptance criteria, agreed seams, and the Documentation impact table.
+- No plan: derive `{plan-name}` from the branch name and fall back to the PR body and commits for intent.
+- Build a short brief: what the change does, what's on the critical path, what was planned.
 
 ### 3. Check for previous reviews
 
-If `docs/plan/{plan-name}/review_N.md` files exist, this is a re-review.
-Extract the unresolved findings from the highest-numbered review; they become verification items in the run (was each one fixed?), and the new report gets the next index.
+`review_N.md` files present -> this is a re-review: extract unresolved findings from the highest-numbered one as verification items (fixed or not?), and the new report gets the next index.
 
 ### 4. Select the panel
 
-Read [references/lenses.md](references/lenses.md) and select only the lenses that have surface in this diff.
-A docs-only change does not pay for a performance lens.
+Read [references/lenses.md](references/lenses.md); select only lenses with surface in this diff (a docs-only change skips performance).
 Include `plan-conformance` whenever a plan was found.
-You may add at most one diff-specific custom lens (for example migrations, concurrency, i18n) when the change obviously calls for it; define it in the same shape as the built-in lenses.
+At most one diff-specific custom lens (migrations, concurrency, i18n) when clearly warranted, defined in the same shape as the built-ins.
 Tell the user which lenses you selected and why before launching.
 
 ### 5. Run the review panel
 
-Launch the panel as plain parallel subagents with the Agent tool, following [references/orchestration.md](references/orchestration.md): all lens agents in one message so they run concurrently, then all verifiers in a second message.
-Every BLOCK or CONCERN finding is adversarially verified: the verifier's only job is to refute it against the actual repo.
-Inherit the session model; do not pin model names.
-Only when the user explicitly asks for a heavyweight run should you use the Workflow-tool variant at the end of the reference; it triggers the dynamic-workflow confirmation and burns tokens fast.
+Launch as plain parallel subagents with the Agent tool per [references/orchestration.md](references/orchestration.md): all lens agents in one message, then all verifiers in a second.
+Every BLOCK or CONCERN is adversarially verified - the verifier's only job is to refute it against the actual repo.
+Inherit the session model; don't pin model names.
+Use the Workflow-tool variant only when the user explicitly asks for a heavyweight run - it triggers the dynamic-workflow confirmation and burns tokens fast.
 
 ### 6. Aggregate
 
 - Drop REFUTED findings entirely.
-- A BLOCK stays BLOCK only when CONFIRMED; PLAUSIBLE demotes it to CONCERN.
-- Dedupe by file and line across lenses; keep the most detailed wording and tag with all lenses that found it.
-- Verdict: any BLOCK means BLOCK; else any CONCERN means CONCERNS; else PASS.
-- A failed lens does not abort the review; note it in the report so the verdict is honestly partial.
+- BLOCK stays BLOCK only when CONFIRMED; PLAUSIBLE demotes to CONCERN.
+- Dedupe by file:line across lenses; keep the most detailed wording, tag all lenses that found it.
+- Verdict: any BLOCK -> BLOCK; else any CONCERN -> CONCERNS; else PASS.
+- A failed lens doesn't abort the review; note it so the verdict is honestly partial.
 
 ### 7. Write the report
 
@@ -74,8 +69,7 @@ Base: {branch or PR}, {date}
 
 ## Plan conformance
 
-Acceptance criteria met / not met, seams tested / untested,
-Documentation impact rows honored / missed. Omit if no plan.
+Acceptance criteria met/not met, seams tested/untested, Documentation impact rows honored/missed. Omit if no plan.
 
 ## Previous findings
 
@@ -105,5 +99,5 @@ What to fix first and why.
 
 ### 8. Present and follow through
 
-Summarize the verdict and the top findings in chat, and link the report file.
-If the user accepts findings that need real work, suggest they run the `to-tasks` skill to turn them into `task_N.md` files in the same plan directory, ready for the `implement` skill; do not invoke it yourself.
+Summarize the verdict and top findings in chat, link the report.
+If the user accepts findings needing real work, suggest `to-tasks` to turn them into `task_N.md` files; do not invoke it yourself.

@@ -6,59 +6,41 @@ disable-model-invocation: true
 
 # Implement
 
-Implement the work described by the user in the spec or tickets.
-Work test-first: the TDD guidance below governs every implementation cycle.
-Consult it before and during the loop, not after.
+Implement the work in the spec or tickets, test-first.
+The TDD guidance below governs every cycle - consult it before and during the loop, not after.
 
-When exploring the codebase, read `docs/product/glossary.md` (if it exists) so test names and interface vocabulary match the project's domain language, follow `docs/engineering/conventions.md` and `docs/engineering/test.md`, and respect the ADRs under `docs/architecture/decisions/` in the area you're touching.
+When exploring the codebase (if present): read `docs/product/glossary.md` for domain vocabulary, follow `docs/engineering/conventions.md` and `test.md`, and respect the ADRs under `docs/architecture/decisions/` for the area you're touching.
 
 ## Workflow
 
-1. Read the spec or tickets and explore the relevant parts of the codebase.
-2. Agree the seams under test with the user before writing any test (see "Seams" below).
-3. Implement in vertical slices using the red -> green loop.
-4. Run typechecking regularly and single test files regularly.
-   Run the full test suite once at the end.
-5. Once done, ask the user to run the `to-review` skill on the work.
-   Reviews are human-triggered only; never launch the review panel yourself.
-6. Commit your work to the current branch.
+1. Read the spec or tickets and explore the relevant code.
+2. Agree the seams under test with the user before writing any test.
+3. Implement in vertical slices: red -> green.
+4. Typecheck and run single test files regularly; run the full suite once at the end.
+5. Ask the user to run `to-review` on the work - reviews are human-triggered only, never launch the panel yourself.
+6. Commit to the current branch.
 
 ## What a good test is
 
-Tests verify behavior through public interfaces, not implementation details.
-Code can change entirely; tests shouldn't.
-A good test reads like a specification - "user can checkout with valid cart" tells you exactly what capability exists - and survives refactors because it doesn't care about internal structure.
-
-See [references/tests.md](references/tests.md) for examples and [references/mocking.md](references/mocking.md) for mocking guidelines.
+Tests verify behavior through public interfaces, not implementation details, so they survive refactors.
+A good test reads like a specification: "user can checkout with valid cart" tells you exactly what capability exists.
+See [references/tests.md](references/tests.md) and [references/mocking.md](references/mocking.md).
 
 ## Seams - where tests go
 
-A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside.
-Tests live at seams, never against internals.
-
-**Test only at pre-agreed seams.**
-Before writing any test, write down the seams under test and confirm them with the user.
-No test is written at an unconfirmed seam.
-You can't test everything - agreeing the seams up front is how testing effort lands on the critical paths and complex logic instead of every edge case.
-
+A **seam** is the public boundary you test at, never internals.
+Before writing any test, write down the seams under test and confirm them with the user; no test is written at an unconfirmed seam.
+This is how testing effort lands on critical paths instead of every edge case.
 Ask: "What's the public interface, and which seams should we test?"
 
 ## Anti-patterns
 
-- **Implementation-coupled** - mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface).
-  The tell: the test breaks when you refactor but behavior hasn't changed.
-- **Tautological** - the assertion recomputes the expected value the way the code does (`expect(add(a, b)).toBe(a + b)`, a snapshot derived by hand the same way, a constant asserted equal to itself), so it passes by construction and can never disagree with the code.
-  Expected values must come from an independent source of truth - a known-good literal, a worked example, the spec.
-- **Horizontal slicing** - writing all tests first, then all implementation.
-  Bulk tests verify _imagined_ behavior: you test the _shape_ of things rather than user-facing behavior, the tests go insensitive to real changes, and you commit to test structure before understanding the implementation.
-  Work in **vertical slices** instead - one test -> one implementation -> repeat, each test a **tracer bullet** that responds to what the last cycle taught you.
+- **Implementation-coupled** - mocks internal collaborators, tests private methods, or verifies through a side channel. Tell: breaks on refactor even when behavior hasn't changed.
+- **Tautological** - the assertion recomputes the expected value the way the code does, so it can never disagree with the code. Expected values need an independent source of truth: a literal, a worked example, the spec.
+- **Horizontal slicing** - all tests first, then all implementation. Tests verify imagined shape, not real behavior, and go insensitive to change. Work in **vertical slices** instead: one test -> one implementation -> repeat, each test a tracer bullet.
 
 ## Rules of the loop
 
-- **Red before green.**
-  Write the failing test first, then only enough code to pass it.
-  Don't anticipate future tests or add speculative features.
-- **One slice at a time.**
-  One seam, one test, one minimal implementation per cycle.
-- **Refactoring is not part of the loop.**
-  It belongs to the review stage (see the `to-review` skill), not the red -> green implementation cycle.
+- **Red before green.** Write the failing test first, then only enough code to pass it.
+- **One slice at a time.** One seam, one test, one minimal implementation per cycle.
+- **Refactoring is not part of the loop.** It belongs to `to-review`, not the red -> green cycle.
