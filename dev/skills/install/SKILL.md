@@ -21,6 +21,9 @@ Run the bundled script from the repo root:
 It copies `templates/` into the repo and never overwrites an existing file, so re-running only fills gaps.
 Pass `--evals` when the repo has eval frameworks, datasets, or prompt/model code (or the user says the new project will be one) to include `engineering/evals.md`; otherwise it's omitted.
 
+If a `docs/` directory already exists and isn't one this skill produced, the script moves it to `docs-old/` before laying down the fresh skeleton, so nothing is lost or silently mixed with the new structure.
+See "Migrating a prior docs directory" below - that knowledge must end up in the new `docs/`, not sit forgotten in `docs-old/`.
+
 ```
 docs/
 ├── README.md                 # index: what lives where, read order
@@ -67,6 +70,20 @@ Missing pieces identified during install. Burn down through the normal plan loop
 ## 4. New project: populate as you work
 
 Leave the stubs; the normal loop fills them - `to-plan`'s Documentation impact table checks these docs on every plan, `implement` executes the doc updates a task owns, `to-review` blocks on missed rows.
+Still run the migration below first if `docs-old/` exists - a project can have prior documentation before it has much code.
+
+## Migrating a prior docs directory
+
+If `docs-old/` exists (moved aside by the script, or left over from an unfinished earlier migration), its knowledge must fully move into the new `docs/` - the goal is one source of truth, not two living in parallel.
+
+Read every file under `docs-old/`, regardless of its original structure, and use it as a knowledge source alongside the code and the user:
+
+- During **Derive from code**, fold matching legacy content into the area it belongs to instead of deriving from code alone - a legacy architecture doc supplements what the module structure shows, it doesn't get overwritten by it.
+- During **Close the gaps with the user**, check `docs-old/` for answers before asking; present what the legacy docs already say as the starting draft to confirm or correct, rather than asking from a blank page.
+- Anything in `docs-old/` that doesn't map cleanly onto the new structure, or that contradicts what you found in code, becomes a `docs/backlog.md` row under Potential improvements - it does not get silently dropped.
+
+Track coverage as you go: every file in `docs-old/` is either merged into a new doc or explicitly logged in the backlog as not reconciled.
+Once every file is accounted for, ask the user (via AskUserQuestion) whether to delete `docs-old/` now that its content lives in `docs/`; never delete it without asking, and don't ask before coverage is complete.
 
 ## Status lifecycle
 

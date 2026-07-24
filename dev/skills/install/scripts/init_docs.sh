@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Copies the docs skeleton templates into the target repo.
 # Never overwrites an existing file: re-running only fills gaps.
+# A pre-existing docs/ not managed by this skill is moved aside to
+# docs-old/ first, so its content survives to be migrated rather than
+# silently mixed with or shadowed by the fresh skeleton.
 set -euo pipefail
 
 WITH_EVALS=0
@@ -13,6 +16,16 @@ for arg in "$@"; do
 done
 [ -z "$TARGET" ] && TARGET="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 SRC="$(cd "$(dirname "$0")/../templates" && pwd)"
+
+if [ -d "$TARGET/docs" ] && ! grep -qF "The standing knowledge base of this project." "$TARGET/docs/README.md" 2>/dev/null; then
+  if [ -e "$TARGET/docs-old" ]; then
+    echo "error: $TARGET/docs is not managed by this skill and needs to move aside, but $TARGET/docs-old already exists." >&2
+    echo "Resolve the docs-old conflict manually (finish or remove the prior migration), then re-run." >&2
+    exit 1
+  fi
+  mv "$TARGET/docs" "$TARGET/docs-old"
+  echo "moved   docs/ -> docs-old/ (pre-existing docs directory not managed by this skill)"
+fi
 
 created=0
 skipped=0
