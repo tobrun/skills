@@ -61,18 +61,20 @@ Consolidate and dedupe the gaps from all agents, add the questions code can neve
 Write every answer into the affected doc as you go.
 
 **Track what remains.**
-When the user defers a question or the answer does not exist yet (for example no SLOs have been defined), the doc still gets finished: state the current truth plainly ("No SLOs are defined yet.") and record the missing piece as a row in the tracking doc `docs/gaps.md`:
+When the user defers a question or the answer does not exist yet (for example no SLOs have been defined), the doc still gets finished: state the current truth plainly ("No SLOs are defined yet.") and record the missing piece in `docs/backlog.md` under a `Potential improvements` header (create the file if it does not exist; append to the section if it does):
 
 ```markdown
-# Gaps
+# Backlog
+
+## Potential improvements
 
 Missing pieces identified during install.
-Burn this list down through the normal plan loop and delete the file when it is empty.
+Burn this list down through the normal plan loop; remove rows as they are resolved.
 
 | Doc | Missing | Question to answer | Next step |
 ```
 
-When install finishes, every standing doc is complete and its `Status: stub` line is removed; the only open items in the repo live in `docs/gaps.md`.
+When install finishes, every standing doc is complete and its `Status: stub` line is removed; the only open items in the repo live under Potential improvements in `docs/backlog.md`.
 
 ## 4. New project: populate as you work
 
@@ -85,7 +87,7 @@ Unfinished docs carry `Status: stub` under their title: template skeleton, not y
 A completed doc has no status line at all; done is the default state, not a label.
 
 There is no draft state: a doc is either a stub or done.
-A completed doc documents current reality, including honest absences ("No SLOs are defined yet."); unknowns live in `docs/gaps.md`, never as open questions inside a doc.
+A completed doc documents current reality, including honest absences ("No SLOs are defined yet."); unknowns live in `docs/backlog.md` under Potential improvements, never as open questions inside a doc.
 Remove the stub line only when the user has confirmed the doc's content, and from then on changes go through the plan/review loop like code; never quietly re-add it.
 
 ## Architectural decisions
