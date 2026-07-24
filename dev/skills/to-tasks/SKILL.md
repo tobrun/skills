@@ -15,8 +15,11 @@ Output: `docs/plan/{plan-name}/task_1.md`, `task_2.md`, and so on, plus a task i
 
 - Each task is a vertical slice: it delivers a verifiable piece of behavior, not a horizontal layer (all models, then all endpoints).
 - Size each task so it can be handed to the `implement` skill as a standalone spec and completed in one sitting.
+- Apply the INVEST test: independent where possible, negotiable in detail, valuable on its own, estimable, small, and testable at its seam.
+  The demo question is the quick check: if you cannot show the task's behavior working by itself, it is not sliced right.
 - Order tasks so every task builds only on tasks before it.
 - If the plan honestly fits in one task, say so instead of splitting artificially; to-plan then embeds it in the plan directly.
+- Never create a catch-all task ("cleanups", "remaining items"); leftover work either belongs to a real task or goes back to the plan as a scope decision.
 
 ## Numbering
 
@@ -53,8 +56,11 @@ These are proposals; the implement skill confirms them with the user.
 
 ## Acceptance criteria
 
-Checkable statements that define done, from an independent source
-of truth (the spec or plan), not from the intended implementation.
+2-5 checkable statements that define done, from an independent
+source of truth (the spec or plan), not from the intended
+implementation. Use Given-When-Then for behavioral ones. More
+than 5 means the task should be split. Task done is not plan
+done: the plan's Success criteria are judged at review, not here.
 
 ## Depends on
 

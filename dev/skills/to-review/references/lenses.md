@@ -10,6 +10,7 @@ Include whenever a plan directory was found.
 Checks the diff against `plan.md` and its task files, not against general quality:
 
 - Is each acceptance criterion of the tasks in scope actually met by the diff? Name the criterion and the evidence.
+- Do the plan's Success criteria hold (or have a credible measurement path) now that the work exists? A plan is done when its outcome is real, not when its tasks are closed.
 - Are tests written at the seams the plan or tasks agreed on? A tested seam nobody agreed on, or an agreed seam without tests, is a finding.
 - Is every row of the plan's Documentation impact table honored by a corresponding doc change in the diff? A missed row is a BLOCK.
 - Does the diff do significant work the plan never mentioned? Scope creep is a CONCERN, not a crime; name it so the reviewer can decide.
