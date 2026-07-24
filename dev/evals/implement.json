@@ -1,0 +1,19 @@
+{
+  "skill": "implement",
+  "mode": "functional",
+  "evals": [
+    {
+      "id": "discount-pricing",
+      "prompt": "Add a function that computes the discounted price given a price and a percentage discount, in this toy JS repo. Make sure it's well tested.",
+      "fixture": "a minimal git repo with package.json (node --test), empty src/ and test/",
+      "assertions": [
+        "A test file exists with behavior-named tests (e.g. \"applies a discount\"), not test1/test2",
+        "Tests cover edge cases beyond the happy path (0% discount, 100% discount, or invalid input)",
+        "No test recomputes the expected value the way the implementation does (tautological assertion)",
+        "Tests exercise the function's public interface, not internals",
+        "A git commit was made on the current branch",
+        "The user was asked to run to-review rather than a review panel being launched automatically"
+      ]
+    }
+  ]
+}

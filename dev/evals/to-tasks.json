@@ -1,0 +1,19 @@
+{
+  "skill": "to-tasks",
+  "mode": "functional",
+  "evals": [
+    {
+      "id": "rate-limit-api-tasks",
+      "prompt": "Split this plan into tasks.",
+      "fixture": "docs/plan/rate-limit-api/plan.md with Goal, Success criteria, Scope, Documentation impact already filled in",
+      "assertions": [
+        "At least one task_N.md is written, numbered starting at 1",
+        "Each task has Goal, Scope (In/Out), Acceptance criteria, Depends on sections",
+        "Acceptance criteria per task number 2-5 and describe behavior, not \"implementation done\"",
+        "No catch-all task (titled cleanup, remaining items, misc, or similar)",
+        "The plan's Execution section is updated with a task index table",
+        "The Documentation impact row (docs/architecture/api.md) is owned by exactly one task"
+      ]
+    }
+  ]
+}

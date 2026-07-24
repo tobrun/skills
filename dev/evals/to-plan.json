@@ -1,0 +1,19 @@
+{
+  "skill": "to-plan",
+  "mode": "functional",
+  "evals": [
+    {
+      "id": "rate-limit-api",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Write a plan for this.",
+      "fixture": "a repo with docs/product/glossary.md and docs/product/non-goals.md (both stubs) and src/api/server.js with no rate limiting",
+      "assertions": [
+        "Goal section frames a measurable outcome or behavior change, not a list of activities",
+        "Success criteria section exists with 1-5 checkable statements",
+        "Scope section exists with explicit In and Out",
+        "Documentation impact section exists as a table (or explicit None with reason)",
+        "The plan does not implement code; no source files are modified",
+        "Plan file is written to docs/plan/{slug}/plan.md"
+      ]
+    }
+  ]
+}

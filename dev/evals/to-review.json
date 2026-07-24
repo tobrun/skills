@@ -1,0 +1,17 @@
+{
+  "skill": "to-review",
+  "mode": "comprehension",
+  "note": "A full run fans out its own subagent panel, which is too expensive to run per iteration. This eval checks policy comprehension of the skill text directly instead.",
+  "evals": [
+    {
+      "id": "to-review-policy-questions",
+      "prompt": "Answer briefly, from the skill text only: (1) After implement finishes a task, should to-review launch automatically? (2) A finding is BLOCK severity but verification returns PLAUSIBLE (could not refute, could not fully confirm). What severity does it end up as in the report: BLOCK, CONCERN, or dropped entirely? (3) Should the orchestrator read the diff's file contents and form its own opinion on code quality? (4) If one lens agent fails or returns nothing parseable, does the whole review abort?",
+      "assertions": [
+        "Answer 1: no, reviews are human-triggered only; to-review must never be launched automatically",
+        "Answer 2: CONCERN (PLAUSIBLE demotes a BLOCK to CONCERN; only REFUTED gets dropped)",
+        "Answer 3: no, the orchestrator does not review the code itself; the panel of subagents does",
+        "Answer 4: no, a failed lens does not abort the review; it is noted so the verdict is honestly partial"
+      ]
+    }
+  ]
+}
