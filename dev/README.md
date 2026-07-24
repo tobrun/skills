@@ -30,14 +30,12 @@ Normally run right after `/to-plan`, but can be used directly on an existing pla
 ### implement
 
 Implements a piece of work based on a spec or set of tickets, test-first.
+When the input is a plan with multiple task files, it runs every task in dependency order, back to back, without stopping in between - review only happens once, after everything is done.
 The skill drives a strict TDD loop at pre-agreed seams:
 
-1. Read the spec or tickets and explore the codebase.
-2. Agree the seams under test with the user.
-3. Implement in vertical slices with the red -> green loop.
-4. Typecheck and run single test files regularly; run the full suite once at the end.
-5. Hand the work back to you to run `/to-review`.
-6. Commit to the current branch.
+1. Read the spec, tickets, or plan (with all its tasks) and explore the codebase.
+2. Per task: agree the seams under test with the user, implement in vertical slices with the red -> green loop, typecheck and run single test files regularly, run the full suite once at the end, and commit.
+3. Once every task is done, hand the work back to you to run `/to-review`.
 
 The skill bundles reference docs on what makes a good test (`references/tests.md`) and when mocking is appropriate (`references/mocking.md`).
 Invoke it explicitly with `/implement` and point it at a spec or tickets.

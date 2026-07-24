@@ -14,6 +14,18 @@
         "A git commit was made on the current branch",
         "The user was asked to run to-review rather than a review panel being launched automatically"
       ]
+    },
+    {
+      "id": "multi-task-plan",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with docs/plan/{plan-name}/plan.md and task_1.md, task_2.md (task_2 depends on task_1), each with a small independently-verifiable behavior",
+      "assertions": [
+        "Both task_1 and task_2 are implemented, not just the first one",
+        "Task_2's work is attempted only after task_1's is committed (dependency order respected)",
+        "The user is not asked about running to-review after task_1 finishes - no review prompt appears until both tasks are done",
+        "Each task gets its own commit (at least 2 commits for the two tasks)",
+        "After both tasks are done, the user is asked to run to-review rather than a review panel being launched automatically"
+      ]
     }
   ]
 }

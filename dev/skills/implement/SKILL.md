@@ -14,11 +14,14 @@ When exploring the codebase (if present): read `docs/product/glossary.md` for do
 ## Workflow
 
 1. Read the spec or tickets and explore the relevant code.
-2. Agree the seams under test with the user before writing any test.
-3. Implement in vertical slices: red -> green.
-4. Typecheck and run single test files regularly; run the full suite once at the end.
-5. Ask the user to run `to-review` on the work - reviews are human-triggered only, never launch the panel yourself.
-6. Commit to the current branch.
+   If the work is a plan with task files (`docs/plan/{plan-name}/task_N.md`), every task in the plan's Execution index is in scope - not just the first one.
+2. For each task in turn (respecting Depends on order), or for the single spec if there are no task files:
+   a. Agree the seams under test with the user before writing any test.
+   b. Implement in vertical slices: red -> green.
+   c. Typecheck and run single test files regularly; run the full suite once at the end of the task.
+   d. Commit to the current branch.
+3. Move straight to the next task - do not stop after one task to ask about review.
+4. Once every task (or the single spec) is implemented and committed, ask the user to run `to-review` on the full body of work - reviews are human-triggered only, never launch the panel yourself.
 
 ## What a good test is
 
