@@ -65,15 +65,13 @@ When the user defers a question or the answer does not exist yet (for example no
 ```markdown
 # Gaps
 
-Status: maintained
-
 Missing pieces identified during install.
 Burn this list down through the normal plan loop and delete the file when it is empty.
 
 | Doc | Missing | Question to answer | Next step |
 ```
 
-When install finishes, every standing doc is complete and set to `Status: maintained`; the only open items in the repo live in `docs/gaps.md`.
+When install finishes, every standing doc is complete and its `Status: stub` line is removed; the only open items in the repo live in `docs/gaps.md`.
 
 ## 4. New project: populate as you work
 
@@ -82,14 +80,12 @@ Early plans will naturally fill `product/`, `glossary`, and the first ADRs.
 
 ## Status lifecycle
 
-Every standing doc carries a status line under its title, and there are only two states:
-
-- `Status: stub` - template skeleton, not yet completed for this project; safe to rewrite wholesale.
-- `Status: maintained` - complete and human-confirmed; changes now go through the plan/review loop like code.
+Unfinished docs carry `Status: stub` under their title: template skeleton, not yet completed for this project, safe to rewrite wholesale.
+A completed doc has no status line at all; done is the default state, not a label.
 
 There is no draft state: a doc is either a stub or done.
-A maintained doc documents current reality, including honest absences ("No SLOs are defined yet."); unknowns live in `docs/gaps.md`, never as open questions inside a doc.
-Promote a doc only when the user has confirmed its content; never demote silently.
+A completed doc documents current reality, including honest absences ("No SLOs are defined yet."); unknowns live in `docs/gaps.md`, never as open questions inside a doc.
+Remove the stub line only when the user has confirmed the doc's content, and from then on changes go through the plan/review loop like code; never quietly re-add it.
 
 ## Architectural decisions
 

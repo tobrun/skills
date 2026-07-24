@@ -19,7 +19,7 @@ Operating instructions for coding agents working in this repository.
 ## Keeping these docs alive
 
 - If a change makes any standing doc wrong, updating that doc is part of the change, not follow-up work.
-- Do not edit `Status: maintained` docs casually; those changes go through the plan/review loop like code.
+- Do not edit completed docs (no `Status: stub` line) casually; those changes go through the plan/review loop like code.
 - Auto-generated files (changelogs, lockfiles) are never edited by hand.
 
 ## Project-specific rules

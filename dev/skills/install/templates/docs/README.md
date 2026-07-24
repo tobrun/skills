@@ -1,7 +1,5 @@
 # Docs
 
-Status: maintained
-
 The standing knowledge base of this project.
 These docs are requirements and context that outlive any single change; they are updated continuously through the plan/review loop, not written once.
 
@@ -27,5 +25,5 @@ These docs are requirements and context that outlive any single change; they are
 
 ## Doc status
 
-Every doc carries a status line: `stub` (template skeleton, not yet completed for this project) or `maintained` (complete and human-confirmed; changes go through the plan/review loop).
+Unfinished docs carry a `Status: stub` line under their title; a completed, human-confirmed doc has no status line, and changes to it go through the plan/review loop.
 Docs state current reality honestly, including absences; missing information is tracked as rows in `gaps.md` (if present) until resolved, never as open questions inside a doc.
