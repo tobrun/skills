@@ -20,6 +20,17 @@ Output: `docs/plan/{plan-name}/task_1.md`, `task_2.md`, and so on, plus a task i
 - Order tasks so every task builds only on tasks before it.
 - If the plan honestly fits in one task, say so instead of splitting artificially; to-plan then embeds it in the plan directly.
 - Never create a catch-all task ("cleanups", "remaining items"); leftover work either belongs to a real task or goes back to the plan as a scope decision.
+- If unknowns make a task impossible to estimate, it is too big or too vague: split it, or make the first task a spike whose deliverable is the knowledge needed to plan the rest, written back into the plan.
+
+## Writing the task
+
+- The title is a verb-led imperative that completes the sentence "to finish this task, I need to {title}", so the plan's task index reads as a scannable checklist.
+  "Add one-click rollback to the deploy UI" beats "Rollback work".
+- Each task file is self-contained: the implementer must not need this conversation.
+  The what and the why live in Goal, and decisions reached in discussion are written into the file, not left in chat.
+- Use user-story framing ("As a [user], I want [goal], so that [benefit]") only when the slice is user-facing value; technical work reads better as a plain imperative.
+  Never force the form; an empty "so that" is the tell.
+- When a task fixes a defect, the Goal includes numbered reproduction steps, expected vs actual behavior, and the environment, so the implementer can reproduce end to end before fixing.
 
 ## Numbering
 
@@ -58,9 +69,11 @@ These are proposals; the implement skill confirms them with the user.
 
 2-5 checkable statements that define done, from an independent
 source of truth (the spec or plan), not from the intended
-implementation. Use Given-When-Then for behavioral ones. More
-than 5 means the task should be split. Task done is not plan
-done: the plan's Success criteria are judged at review, not here.
+implementation. Use Given-When-Then for behavioral ones, and
+cover the error and edge cases that matter, not just the happy
+path. More than 5 means the task should be split. Task done is
+not plan done: the plan's Success criteria are judged at review,
+not here.
 
 ## Depends on
 
