@@ -15,10 +15,11 @@ Working memory (plans, tasks, reviews) lives in `docs/plan/`, owned by the `to-p
 Run the bundled script from the repo root:
 
 ```bash
-{skill-dir}/scripts/init_docs.sh
+{skill-dir}/scripts/init_docs.sh [--evals]
 ```
 
 It copies the templates in `templates/` into the repo and never overwrites an existing file, so re-running is always safe and only fills gaps.
+`engineering/evals.md` only makes sense for ML or agent-based projects: pass `--evals` when the repo has eval frameworks, datasets, or prompt/model code (or the user says the new project will be one); otherwise it is omitted entirely.
 The skeleton it creates:
 
 ```
@@ -26,7 +27,7 @@ docs/
 ├── README.md                 # index: what lives where, read order
 ├── product/                  # product.md, non-goals.md, glossary.md
 ├── architecture/             # architecture.md, data-model.md, api.md, decisions/
-├── engineering/              # tech-stack.md, conventions.md, test.md, evals.md
+├── engineering/              # tech-stack.md, conventions.md, test.md, evals.md (--evals only)
 ├── operations/               # deploy.md, observability.md, security.md, incidents.md
 ├── governance/               # policy.md, cost.md
 └── agents.md                 # operating instructions for coding agents
@@ -56,7 +57,7 @@ Each agent writes only what it can prove (every claim needs a file or config it 
 Gaps are reported back, never written into the docs as open questions.
 
 **Close the gaps with the user.**
-Consolidate and dedupe the gaps from all agents, add the questions code can never answer (`product/product.md`, `non-goals.md`, `glossary.md` seeds, `governance/policy.md`, `governance/cost.md`, the judgment calls in `engineering/evals.md`), and resolve them with the AskUserQuestion tool: batches of up to four focused questions per round, offering concrete options when the code suggests plausible answers, over as many rounds as it takes.
+Consolidate and dedupe the gaps from all agents, add the questions code can never answer (`product/product.md`, `non-goals.md`, `glossary.md` seeds, `governance/policy.md`, `governance/cost.md`, and the judgment calls in `engineering/evals.md` when it exists), and resolve them with the AskUserQuestion tool: batches of up to four focused questions per round, offering concrete options when the code suggests plausible answers, over as many rounds as it takes.
 Write every answer into the affected doc as you go.
 
 **Track what remains.**

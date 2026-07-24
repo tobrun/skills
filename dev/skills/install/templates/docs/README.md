@@ -9,7 +9,7 @@ These docs are requirements and context that outlive any single change; they are
 | ---- | -------- |
 | [product/](product/) | What it does, who it's for, why; explicit non-goals; the glossary of domain terms |
 | [architecture/](architecture/) | System shape, data model, interfaces, and one ADR per decision under `decisions/` |
-| [engineering/](engineering/) | Tech stack, conventions, testing approach, and what "good" means for agent-generated code |
+| [engineering/](engineering/) | Tech stack, conventions, testing approach; ML/agent projects also keep `evals.md` here |
 | [operations/](operations/) | Deploy, observability, security, incident history |
 | [governance/](governance/) | Policy and cost/budget expectations |
 | [agents.md](agents.md) | Operating instructions for coding agents |
