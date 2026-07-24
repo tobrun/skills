@@ -1,6 +1,6 @@
 # Agent Operating Instructions
 
-Status: draft
+Status: stub
 
 Operating instructions for coding agents working in this repository.
 

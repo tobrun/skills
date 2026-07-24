@@ -40,22 +40,40 @@ If the repo has no `CLAUDE.md`, offer to create one containing `@docs/agents.md`
 Look for substantive source code.
 An existing codebase gets populated now (step 3); a fresh project keeps the stubs and gets populated by the normal workflow as the project grows (step 4).
 
-## 3. Existing codebase: populate
+## 3. Existing codebase: populate to completion
 
-Populate in two passes, because code and humans know different things.
+Install is not finished while any doc is half-populated.
+Populate in three passes, because code and humans know different things.
 
-**Derive from code** (fan out one agent per area, via the Workflow tool or a parallel Agent batch; each agent explores the repo and rewrites its own doc files, so there are no write conflicts):
+**Derive from code** (fan out one agent per area as a parallel Agent batch; each agent rewrites its own doc files, so there are no write conflicts):
 
 - `architecture/` from the module structure, dependency direction, storage, and interfaces actually present.
 - `engineering/tech-stack.md` and `conventions.md` from what the code observably does, not what anyone wishes it did.
 - `engineering/test.md` from the real test layout, runners, and patterns.
 - `operations/` from CI/CD configs, Dockerfiles, infra code, logging and metrics calls.
 
-Each agent replaces stub sections with content, sets the doc header to `Status: draft`, and records anything inferred rather than observed under an `Open questions` heading at the top of the doc.
-Nothing in a draft may be invented: every claim needs a file or config the agent actually saw.
+Each agent writes only what it can prove (every claim needs a file or config it actually saw) and returns its gaps to you: everything it could not determine, inferred, or would have to guess.
+Gaps are reported back, never written into the docs as open questions.
 
-**Interview the human** for what code cannot say: `product/product.md`, `non-goals.md`, `glossary.md` seeds, `governance/policy.md`, `governance/cost.md`, and the judgment calls in `engineering/evals.md`.
-Ask a handful of concrete questions at a time; write their answers into the docs and leave the rest as stubs rather than guessing.
+**Close the gaps with the user.**
+Consolidate and dedupe the gaps from all agents, add the questions code can never answer (`product/product.md`, `non-goals.md`, `glossary.md` seeds, `governance/policy.md`, `governance/cost.md`, the judgment calls in `engineering/evals.md`), and resolve them with the AskUserQuestion tool: batches of up to four focused questions per round, offering concrete options when the code suggests plausible answers, over as many rounds as it takes.
+Write every answer into the affected doc as you go.
+
+**Track what remains.**
+When the user defers a question or the answer does not exist yet (for example no SLOs have been defined), the doc still gets finished: state the current truth plainly ("No SLOs are defined yet.") and record the missing piece as a row in the tracking doc `docs/gaps.md`:
+
+```markdown
+# Gaps
+
+Status: maintained
+
+Missing pieces identified during install.
+Burn this list down through the normal plan loop and delete the file when it is empty.
+
+| Doc | Missing | Question to answer | Next step |
+```
+
+When install finishes, every standing doc is complete and set to `Status: maintained`; the only open items in the repo live in `docs/gaps.md`.
 
 ## 4. New project: populate as you work
 
@@ -64,13 +82,14 @@ Early plans will naturally fill `product/`, `glossary`, and the first ADRs.
 
 ## Status lifecycle
 
-Every standing doc carries a status line under its title:
+Every standing doc carries a status line under its title, and there are only two states:
 
-- `Status: stub` - skeleton only, safe to rewrite wholesale.
-- `Status: draft` - populated but not human-confirmed; open questions listed at the top.
-- `Status: maintained` - a human signed off; changes now go through the plan/review loop like code.
+- `Status: stub` - template skeleton, not yet completed for this project; safe to rewrite wholesale.
+- `Status: maintained` - complete and human-confirmed; changes now go through the plan/review loop like code.
 
-Promote a doc only when the user confirms its content; never demote silently.
+There is no draft state: a doc is either a stub or done.
+A maintained doc documents current reality, including honest absences ("No SLOs are defined yet."); unknowns live in `docs/gaps.md`, never as open questions inside a doc.
+Promote a doc only when the user has confirmed its content; never demote silently.
 
 ## Architectural decisions
 

@@ -10,7 +10,7 @@ Every skill is human-triggered (`disable-model-invocation: true`); skills recomm
 
 Creates the standing `docs/` knowledge base: product (with non-goals and glossary), architecture (with one-file-per-decision ADRs), engineering, operations, governance, and `docs/agents.md` with a root `AGENTS.md` pointer.
 The bundled init script is idempotent; it never overwrites existing files.
-On an existing codebase it populates what the code can prove (stack, conventions, architecture, tests, operations) and interviews you for what it cannot (product, non-goals, governance).
+On an existing codebase it populates what the code can prove (stack, conventions, architecture, tests, operations), then closes every remaining gap with you through focused question rounds, so no doc is ever left half-finished; anything you defer is tracked in `docs/gaps.md` instead of living as open questions inside the docs.
 On a new project the stubs fill up through the normal plan/implement/review loop: every plan's Documentation impact table checks these docs, and reviews block on missed rows.
 
 ### to-plan
