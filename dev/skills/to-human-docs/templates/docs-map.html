@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docs map</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #ffffff;
+    --text: #0b0b0b;
+    --text-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --cat-product: #2a78d6;
+    --cat-architecture: #eb6834;
+    --cat-engineering: #1baf7a;
+    --cat-operations: #eda100;
+    --cat-governance: #e87ba4;
+    --cat-plans: #4a3aa7;
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 4px 16px rgba(11,11,11,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --surface-2: #202020;
+      --text: #ffffff; --text-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5;
+      --cat-product: #3987e5; --cat-architecture: #d95926; --cat-engineering: #199e70;
+      --cat-operations: #c98500; --cat-governance: #d55181; --cat-plans: #9085e9;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #202020;
+    --text: #ffffff; --text-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255,255,255,0.10); --accent: #3987e5;
+    --cat-product: #3987e5; --cat-architecture: #d95926; --cat-engineering: #199e70;
+    --cat-operations: #c98500; --cat-governance: #d55181; --cat-plans: #9085e9;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--page); color: var(--text); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 100px; }
+  .topbar {
+    position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px;
+    padding: 10px 20px; background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-weight: 600; font-size: 13px; color: var(--text-2); letter-spacing: 0.02em; }
+  .topbar input#search {
+    flex: 1; max-width: 320px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px;
+  }
+  .icon-btn { border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer; margin-left: auto; }
+  .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+
+  header.hero { padding: 30px 0 6px; }
+  header.hero h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header.hero .goal { font-size: 15px; color: var(--text-2); max-width: 70ch; margin-bottom: 14px; }
+  .health-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .health-chip {
+    display: flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 100px; padding: 5px 12px; font-size: 12.5px; color: var(--text-2);
+  }
+  .health-chip b { color: var(--text); }
+
+  section { margin: 26px 0; }
+  h2.section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); }
+
+  /* graph */
+  #graph-card { padding: 8px; position: relative; }
+  #graph-toolbar { display: flex; align-items: center; gap: 14px; padding: 8px 12px; flex-wrap: wrap; font-size: 12px; color: var(--text-2); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+  svg#graph { width: 100%; height: 460px; display: block; }
+  .node circle { cursor: pointer; stroke: var(--surface); stroke-width: 2px; transition: opacity 160ms; }
+  .node.stub circle { stroke-dasharray: 3 2; opacity: 0.75; }
+  .node text { font-size: 10px; fill: var(--text-2); pointer-events: none; }
+  .node.dim { opacity: 0.15; }
+  .node.active circle { stroke: var(--text); stroke-width: 2.5px; }
+  .cluster-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; fill: var(--muted); pointer-events: none; }
+  .edge { stroke: var(--grid); stroke-width: 1.2px; fill: none; transition: opacity 160ms; }
+  .edge.dim { opacity: 0.1; }
+
+  /* detail panel */
+  #detail {
+    position: fixed; top: 0; right: -420px; width: 400px; height: 100%; overflow-y: auto;
+    background: var(--surface); border-left: 1px solid var(--border); box-shadow: -8px 0 24px rgba(0,0,0,0.12);
+    z-index: 40; transition: right 220ms ease; padding: 20px;
+  }
+  #detail.open { right: 0; }
+  #detail .close { float: right; border: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 9px; cursor: pointer; color: var(--text-2); }
+  #detail h3 { margin: 0 0 4px; font-size: 17px; padding-right: 40px; }
+  #detail .status-line { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  #detail .body { font-size: 13.5px; color: var(--text-2); }
+  #detail .body p { margin: 0 0 10px; }
+  #scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.15); z-index: 35; display: none; }
+  #scrim.show { display: block; }
+
+  /* decisions */
+  .decisions-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .decision-chip {
+    flex: none; min-width: 190px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; box-shadow: var(--shadow); cursor: default;
+  }
+  .decision-chip .id { font-size: 11px; color: var(--muted); }
+  .decision-chip .title { font-size: 13px; font-weight: 600; margin: 3px 0 6px; }
+  .status-pill { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 100px; display: inline-flex; gap: 4px; align-items: center; }
+  .status-pill.accepted { background: color-mix(in srgb, var(--good) 18%, var(--surface)); color: color-mix(in srgb, var(--good) 75%, #002200); }
+  .status-pill.proposed { background: color-mix(in srgb, var(--warning) 20%, var(--surface)); color: color-mix(in srgb, var(--warning) 65%, #3a2a00); }
+  .status-pill.superseded, .status-pill.reconstructed { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+  /* backlog table */
+  table.backlog { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.backlog th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--grid); }
+  table.backlog td { padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; color: var(--text-2); }
+  table.backlog tr:last-child td { border-bottom: none; }
+  table.backlog td.doc { color: var(--text); font-weight: 600; white-space: nowrap; }
+
+  /* plans */
+  .plans-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .plan-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); }
+  .plan-card .head { display: flex; justify-content: space-between; align-items: start; gap: 8px; margin-bottom: 8px; }
+  .plan-card h4 { margin: 0; font-size: 14px; }
+  .badge-verdict { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 100px; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+  .badge-verdict.PASS { background: color-mix(in srgb, var(--good) 18%, var(--surface)); color: color-mix(in srgb, var(--good) 75%, #002200); }
+  .badge-verdict.CONCERNS { background: color-mix(in srgb, var(--warning) 20%, var(--surface)); color: color-mix(in srgb, var(--warning) 65%, #3a2a00); }
+  .badge-verdict.BLOCK { background: color-mix(in srgb, var(--critical) 18%, var(--surface)); color: color-mix(in srgb, var(--critical) 70%, #3a0000); }
+  .badge-verdict.none { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+  .crit-list { list-style: none; margin: 0 0 10px; padding: 0; font-size: 12.5px; color: var(--text-2); }
+  .crit-list li { display: flex; gap: 6px; margin: 3px 0; }
+  .crit-list .mark { flex: none; }
+  .crit-list .mark.met { color: var(--good); }
+  .crit-list .mark.pending { color: var(--muted); }
+  .task-bar { height: 6px; border-radius: 4px; background: var(--grid); overflow: hidden; margin-top: 4px; }
+  .task-bar .fill { height: 100%; background: var(--accent); }
+  .task-bar-label { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+  .empty-note { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="brand">DOCS MAP</span>
+    <input id="search" type="text" placeholder="Filter docs, decisions, plans...">
+    <button class="icon-btn" id="theme-toggle" type="button">Theme</button>
+  </div>
+
+  <div class="wrap">
+    <header class="hero">
+      <h1 id="d-project"></h1>
+      <div class="goal" id="d-goal"></div>
+      <div class="health-strip" id="health-strip"></div>
+    </header>
+
+    <section>
+      <h2 class="section-title">Map</h2>
+      <div class="card" id="graph-card">
+        <div id="graph-toolbar"></div>
+        <svg id="graph" viewBox="0 0 1100 460" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Decisions</h2>
+      <div class="decisions-row" id="decisions-row"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Plans</h2>
+      <div class="plans-grid" id="plans-grid"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Backlog</h2>
+      <div class="card">
+        <table class="backlog" id="backlog-table"></table>
+      </div>
+    </section>
+  </div>
+
+  <div id="scrim"></div>
+  <aside id="detail">
+    <button class="close" id="detail-close" type="button">Close</button>
+    <h3 id="detail-title"></h3>
+    <div class="status-line" id="detail-status"></div>
+    <div class="body" id="detail-body"></div>
+  </aside>
+
+<script>
+/* DOCS_DATA_START - replace everything between these two markers with the real docs data */
+const DOCS_DATA = {
+  project: "Example project",
+  goal: "Placeholder goal - replace DOCS_DATA with the real extracted docs before sharing this file.",
+  areas: [
+    { key: "product", label: "Product", docs: [
+      { id: "product/product.md", title: "Product", status: "complete", summary: "What it does, who for, why", content: "Placeholder content." },
+      { id: "product/non-goals.md", title: "Non-Goals", status: "stub", summary: "", content: "" }
+    ]},
+    { key: "architecture", label: "Architecture", docs: [
+      { id: "architecture/architecture.md", title: "Architecture", status: "complete", summary: "System shape", content: "Placeholder content." }
+    ]},
+    { key: "engineering", label: "Engineering", docs: [
+      { id: "engineering/conventions.md", title: "Conventions", status: "complete", summary: "", content: "Placeholder content." }
+    ]},
+    { key: "operations", label: "Operations", docs: [
+      { id: "operations/deploy.md", title: "Deploy", status: "stub", summary: "", content: "" }
+    ]},
+    { key: "governance", label: "Governance", docs: [
+      { id: "governance/policy.md", title: "Policy", status: "stub", summary: "", content: "" }
+    ]}
+  ],
+  edges: [
+    { from: "product/product.md", to: "architecture/architecture.md" }
+  ],
+  decisions: [
+    { id: "0001-example", title: "Example decision", status: "accepted", date: "2026-01-01" }
+  ],
+  backlog: [
+    { doc: "operations/deploy.md", missing: "No environments documented", question: "What environments exist?", next: "Ask during next plan touching deploy" }
+  ],
+  plans: [
+    {
+      name: "example-plan", title: "Example plan",
+      successCriteria: [ { text: "Example criterion", met: false } ],
+      tasks: [ { n: 1, title: "Example task", done: false } ],
+      verdict: null
+    }
+  ]
+};
+/* DOCS_DATA_END */
+
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+function mdLite(s) {
+  if (!s) return "";
+  let h = escapeHtml(s);
+  h = h.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  return h.split(/\n\n+/).map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>").join("");
+}
+const CAT_COLOR = { product: "var(--cat-product)", architecture: "var(--cat-architecture)", engineering: "var(--cat-engineering)", operations: "var(--cat-operations)", governance: "var(--cat-governance)", plans: "var(--cat-plans)" };
+const CAT_LABEL = {}; (DOCS_DATA.areas || []).forEach(a => CAT_LABEL[a.key] = a.label);
+
+// ---- theme toggle ----
+(function () {
+  const key = "to-human-docs-theme";
+  let saved = null; try { saved = localStorage.getItem(key); } catch (e) {}
+  if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+  document.getElementById("theme-toggle").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = cur === "dark" ? "light" : cur === "light" ? null : "dark";
+    if (next) document.documentElement.setAttribute("data-theme", next); else document.documentElement.removeAttribute("data-theme");
+    try { next ? localStorage.setItem(key, next) : localStorage.removeItem(key); } catch (e) {}
+  });
+})();
+
+// ---- header + health strip ----
+document.getElementById("d-project").textContent = DOCS_DATA.project || "Project";
+document.title = (DOCS_DATA.project || "Project") + " - docs map";
+document.getElementById("d-goal").innerHTML = mdLite(DOCS_DATA.goal || "");
+(function healthStrip() {
+  const allDocs = (DOCS_DATA.areas || []).flatMap(a => a.docs);
+  const stubs = allDocs.filter(d => d.status === "stub").length;
+  const backlogN = (DOCS_DATA.backlog || []).length;
+  const plans = DOCS_DATA.plans || [];
+  const inProgress = plans.filter(p => !p.verdict || p.verdict !== "PASS").length;
+  const blocks = plans.filter(p => p.verdict === "BLOCK").length;
+  const chips = [
+    [stubs, stubs === 1 ? "doc still a stub" : "docs still stubs"],
+    [backlogN, backlogN === 1 ? "backlog item" : "backlog items"],
+    [plans.length, plans.length === 1 ? "plan" : "plans"] ,
+    [inProgress, "in progress"],
+  ];
+  const wrap = document.getElementById("health-strip");
+  wrap.innerHTML = chips.map(([n, label]) => `<span class="health-chip"><b>${n}</b> ${escapeHtml(label)}</span>`).join("")
+    + (blocks ? `<span class="health-chip" style="border-color:var(--critical); color:var(--critical)"><b>${blocks}</b> blocked</span>` : "");
+})();
+
+// ---- graph: cluster force layout ----
+function layoutGraph(nodes, edges, clusters, w, h) {
+  const n = nodes.length;
+  const anchors = {};
+  clusters.forEach((c, i) => {
+    const a = (i / clusters.length) * Math.PI * 2 - Math.PI / 2;
+    anchors[c] = { x: w / 2 + Math.cos(a) * Math.min(w, h) * 0.34, y: h / 2 + Math.sin(a) * Math.min(w, h) * 0.34 };
+  });
+  nodes.forEach((d, i) => {
+    const an = anchors[d.cluster] || { x: w / 2, y: h / 2 };
+    const a = (i / Math.max(1, n)) * Math.PI * 2;
+    d.x = an.x + Math.cos(a) * 40; d.y = an.y + Math.sin(a) * 40; d.vx = 0; d.vy = 0;
+  });
+  const idx = new Map(nodes.map((d, i) => [d.id, i]));
+  const pairs = edges.map(e => [idx.get(e.from), idx.get(e.to)]).filter(p => p[0] != null && p[1] != null);
+  for (let iter = 0; iter < 320; iter++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+        let d2 = dx * dx + dy * dy || 0.01, d = Math.sqrt(d2);
+        let force = 1400 / d2;
+        let fx = (dx / d) * force, fy = (dy / d) * force;
+        nodes[i].vx += fx; nodes[i].vy += fy; nodes[j].vx -= fx; nodes[j].vy -= fy;
+      }
+    }
+    pairs.forEach(([a, b]) => {
+      let dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+      let d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      let force = (d - 90) * 0.015;
+      let fx = (dx / d) * force, fy = (dy / d) * force;
+      nodes[a].vx += fx; nodes[a].vy += fy; nodes[b].vx -= fx; nodes[b].vy -= fy;
+    });
+    nodes.forEach(d => {
+      const an = anchors[d.cluster] || { x: w / 2, y: h / 2 };
+      d.vx += (an.x - d.x) * 0.02; d.vy += (an.y - d.y) * 0.02;
+      d.vx *= 0.82; d.vy *= 0.82; d.x += d.vx; d.y += d.vy;
+      d.x = Math.max(30, Math.min(w - 30, d.x)); d.y = Math.max(30, Math.min(h - 30, d.y));
+    });
+  }
+  return { nodes, anchors };
+}
+
+const clusterKeys = (DOCS_DATA.areas || []).map(a => a.key);
+const graphNodes = [];
+(DOCS_DATA.areas || []).forEach(area => (area.docs || []).forEach(d => graphNodes.push(Object.assign({ cluster: area.key }, d))));
+const graphEdges = DOCS_DATA.edges || [];
+const { nodes: laidOut, anchors } = layoutGraph(graphNodes, graphEdges, clusterKeys, 1100, 460);
+const nodeById = new Map(laidOut.map(n => [n.id, n]));
+
+const svg = document.getElementById("graph");
+const NS = "http://www.w3.org/2000/svg";
+clusterKeys.forEach(k => {
+  const an = anchors[k]; if (!an) return;
+  const t = document.createElementNS(NS, "text");
+  t.setAttribute("class", "cluster-label"); t.setAttribute("x", an.x); t.setAttribute("y", an.y - 62); t.setAttribute("text-anchor", "middle");
+  t.textContent = CAT_LABEL[k] || k;
+  svg.appendChild(t);
+});
+graphEdges.forEach(e => {
+  const a = nodeById.get(e.from), b = nodeById.get(e.to); if (!a || !b) return;
+  const line = document.createElementNS(NS, "line");
+  line.setAttribute("class", "edge"); line.dataset.from = e.from; line.dataset.to = e.to;
+  line.setAttribute("x1", a.x); line.setAttribute("y1", a.y); line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+  svg.appendChild(line);
+});
+laidOut.forEach(node => {
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("class", "node" + (node.status === "stub" ? " stub" : ""));
+  g.dataset.id = node.id; g.dataset.title = (node.title || "").toLowerCase(); g.dataset.cluster = node.cluster;
+  const circle = document.createElementNS(NS, "circle");
+  circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y); circle.setAttribute("r", 14);
+  circle.setAttribute("fill", CAT_COLOR[node.cluster] || "var(--accent)");
+  g.appendChild(circle);
+  const label = document.createElementNS(NS, "text");
+  label.setAttribute("x", node.x); label.setAttribute("y", node.y + 26); label.setAttribute("text-anchor", "middle");
+  label.textContent = node.title || node.id;
+  g.appendChild(label);
+  g.addEventListener("click", () => openDetail(node));
+  svg.appendChild(g);
+});
+
+function openDetail(node) {
+  document.getElementById("detail-title").textContent = node.title || node.id;
+  document.getElementById("detail-status").textContent = node.id + (node.status === "stub" ? " - stub, not yet populated" : "");
+  document.getElementById("detail-body").innerHTML = node.content ? mdLite(node.content) : "<p class='empty-note'>No content yet.</p>";
+  document.getElementById("detail").classList.add("open");
+  document.getElementById("scrim").classList.add("show");
+  document.querySelectorAll("#graph .node").forEach(n => n.classList.toggle("active", n.dataset.id === node.id));
+}
+function closeDetail() {
+  document.getElementById("detail").classList.remove("open");
+  document.getElementById("scrim").classList.remove("show");
+  document.querySelectorAll("#graph .node").forEach(n => n.classList.remove("active"));
+}
+document.getElementById("detail-close").addEventListener("click", closeDetail);
+document.getElementById("scrim").addEventListener("click", closeDetail);
+
+// ---- legend ----
+document.getElementById("graph-toolbar").innerHTML = clusterKeys.map(k =>
+  `<span><span class="legend-dot" style="background:${CAT_COLOR[k]}"></span>${escapeHtml(CAT_LABEL[k] || k)}</span>`
+).join("") + `<span style="margin-left:auto">Dashed ring = stub, not yet populated</span>`;
+
+// ---- decisions ----
+const decisionsRow = document.getElementById("decisions-row");
+const decisions = DOCS_DATA.decisions || [];
+decisionsRow.innerHTML = decisions.length ? decisions.map(d => {
+  const statusClass = /reconstructed/i.test(d.status || "") ? "reconstructed" : /superseded/i.test(d.status || "") ? "superseded" : /proposed/i.test(d.status || "") ? "proposed" : "accepted";
+  return `<div class="decision-chip" data-search="${escapeHtml((d.title||"").toLowerCase())}">
+    <div class="id">${escapeHtml(d.id || "")}${d.date ? " · " + escapeHtml(d.date) : ""}</div>
+    <div class="title">${escapeHtml(d.title || "")}</div>
+    <span class="status-pill ${statusClass}">${escapeHtml(d.status || "")}</span>
+  </div>`;
+}).join("") : "<span class='empty-note'>No decisions recorded yet.</span>";
+
+// ---- plans ----
+const plansGrid = document.getElementById("plans-grid");
+const plans = DOCS_DATA.plans || [];
+plansGrid.innerHTML = plans.length ? plans.map(p => {
+  const tasks = p.tasks || [];
+  const doneN = tasks.filter(t => t.done).length;
+  const pct = tasks.length ? Math.round((doneN / tasks.length) * 100) : 0;
+  const verdictClass = p.verdict || "none";
+  return `<div class="plan-card" data-search="${escapeHtml((p.title||"").toLowerCase())}">
+    <div class="head"><h4>${escapeHtml(p.title || p.name || "")}</h4><span class="badge-verdict ${verdictClass}">${escapeHtml(p.verdict || "no review yet")}</span></div>
+    <ul class="crit-list">${(p.successCriteria || []).map(c => `<li><span class="mark ${c.met ? "met" : "pending"}">${c.met ? "&#10003;" : "&#9675;"}</span>${escapeHtml(c.text || "")}</li>`).join("") || "<li class='empty-note' style='list-style:none'>No success criteria listed.</li>"}</ul>
+    ${tasks.length ? `<div class="task-bar"><div class="fill" style="width:${pct}%"></div></div><div class="task-bar-label">${doneN}/${tasks.length} tasks done</div>` : ""}
+  </div>`;
+}).join("") : "<span class='empty-note'>No plans yet.</span>";
+
+// ---- backlog ----
+const backlog = DOCS_DATA.backlog || [];
+const backlogTable = document.getElementById("backlog-table");
+backlogTable.innerHTML = backlog.length
+  ? "<tr><th>Doc</th><th>Missing</th><th>Question</th><th>Next step</th></tr>" +
+    backlog.map(r => `<tr data-search="${escapeHtml((r.doc + " " + r.missing).toLowerCase())}"><td class="doc">${escapeHtml(r.doc || "")}</td><td>${escapeHtml(r.missing || "")}</td><td>${escapeHtml(r.question || "")}</td><td>${escapeHtml(r.next || "")}</td></tr>`).join("")
+  : "<tr><td class='empty-note' style='border:none'>Backlog is empty.</td></tr>";
+
+// ---- search / filter ----
+document.getElementById("search").addEventListener("input", (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll("#graph .node").forEach(n => {
+    const match = !q || n.dataset.title.includes(q) || (CAT_LABEL[n.dataset.cluster] || "").toLowerCase().includes(q);
+    n.classList.toggle("dim", !match);
+  });
+  document.querySelectorAll("#graph .edge").forEach(edge => {
+    const a = nodeById.get(edge.dataset.from), b = nodeById.get(edge.dataset.to);
+    const match = !q || (a && a.title.toLowerCase().includes(q)) || (b && b.title.toLowerCase().includes(q));
+    edge.classList.toggle("dim", !match);
+  });
+  document.querySelectorAll("[data-search]").forEach(el => {
+    el.style.opacity = (!q || el.dataset.search.includes(q)) ? "1" : "0.25";
+  });
+});
+</script>
+</body>
+</html>

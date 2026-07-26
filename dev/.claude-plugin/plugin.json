@@ -1,7 +1,7 @@
 {
   "name": "dev",
-  "version": "0.8.2",
-  "description": "Development workflow skills: initialize a standing docs knowledge base, plan work into reviewable docs, split it into tasks, implement it test-first, and review it with a verified fan-out panel.",
+  "version": "0.9.0",
+  "description": "Development workflow skills: initialize a standing docs knowledge base, plan work into reviewable docs, split it into tasks, implement it test-first, review it with a verified fan-out panel, and render plans or the docs tree as interactive HTML for human review.",
   "author": {
     "name": "Tobrun"
   }

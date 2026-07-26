@@ -2,6 +2,7 @@
 
 Development workflow skills for Claude Code.
 The skills chain into one flow: `/install` initializes the standing `docs/` knowledge base, `/to-plan` produces a reviewable plan, `/to-tasks` splits it into task files when needed, `/implement` executes a task test-first, and `/to-review` verifies the result against the plan.
+`/to-human-plan` and `/to-human-docs` sit alongside that chain, turning a plan or the whole `docs/` tree into an interactive HTML artifact for human review - never markdown scrolling, never committed to the repo.
 Every skill is human-triggered (`disable-model-invocation: true`); skills recommend the next step but never launch each other.
 
 ## Skills
@@ -48,6 +49,18 @@ Every non-trivial finding is adversarially verified against the repo before it i
 When a plan exists it also checks conformance: acceptance criteria met, tests at the agreed seams, and every Documentation impact row honored.
 The report lands at `docs/plan/{plan-name}/review_N.md`, and accepted findings can be turned into new task files via `to-tasks`.
 Invoke it explicitly with `/to-review`; model-triggered invocation is disabled, so a review panel never launches unless you ask for it.
+
+### to-human-plan
+
+Renders an existing plan (`docs/plan/{plan-name}/plan.md` and its tasks) as a single self-contained interactive HTML file: Goal and Context at the top, a file dependency graph sized and colored by blast radius (including consumers outside the repo), a walkable timeline that highlights each step's files as it lands, and steps you can flag with an inline question, compiled into a copyable review-notes block.
+Saved to `~/tmp/{project-slug}/reports/{plan-name}.html`, never inside the repo.
+Requires a plan already produced by `/to-plan`; it visualizes a plan, it doesn't write one.
+
+### to-human-docs
+
+Renders the whole `docs/` tree as a single self-contained interactive HTML map: docs clustered by area with cross-references, a decisions timeline, plan status with success criteria and review verdicts, and the open backlog - all searchable, click any doc for its full content inline.
+Saved to `~/tmp/{project-slug}/reports/docs-map.html`, never inside the repo.
+Requires a `docs/` tree already produced by `/install`; it's a snapshot, regenerate it after the docs change.
 
 ## Installation
 
