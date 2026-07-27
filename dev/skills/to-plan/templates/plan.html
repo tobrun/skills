@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #ffffff;
+    --text: #0b0b0b;
+    --text-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --blast-1: #86b6ef;
+    --blast-2: #5598e7;
+    --blast-3: #2a78d6;
+    --blast-4: #1c5cab;
+    --blast-5: #104281;
+    --external: #4a3aa7;
+    --shadow: 0 1px 2px rgba(11,11,11,0.06), 0 4px 16px rgba(11,11,11,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #202020;
+      --text: #ffffff;
+      --text-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --blast-1: #9ec5f4;
+      --blast-2: #6da7ec;
+      --blast-3: #3987e5;
+      --blast-4: #256abf;
+      --blast-5: #184f95;
+      --external: #9085e9;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #202020;
+    --text: #ffffff;
+    --text-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --blast-1: #9ec5f4;
+    --blast-2: #6da7ec;
+    --blast-3: #3987e5;
+    --blast-4: #256abf;
+    --blast-5: #184f95;
+    --external: #9085e9;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 120px; }
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 20px; background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+  }
+  .topbar .brand { font-weight: 600; font-size: 13px; color: var(--text-2); letter-spacing: 0.02em; }
+  .icon-btn {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2);
+    border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer;
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+
+  header.hero { padding: 36px 0 8px; }
+  header.hero h1 { font-size: 26px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  header.hero .goal { font-size: 16px; color: var(--text-2); max-width: 66ch; }
+
+  section { margin: 28px 0; }
+  h2.section-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); margin: 0 0 12px; font-weight: 700;
+  }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; box-shadow: var(--shadow);
+  }
+
+  .context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .context-grid .card h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .context-grid .card.full { grid-column: 1 / -1; }
+  ul.constraints { margin: 6px 0 0; padding-left: 18px; }
+  ul.constraints li { margin: 3px 0; }
+
+  /* success criteria, scope, constraints, risks/assumptions/questions */
+  .kv-row { display: flex; gap: 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--grid); }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .kv-text { flex: 1; }
+  .kv-row .kv-check {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; color: var(--text-2);
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; max-width: 46%; overflow-x: auto; white-space: nowrap;
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .two-col .card h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  @media (max-width: 640px) { .two-col, .context-grid { grid-template-columns: 1fr; } }
+  ul.plain { margin: 6px 0 0; padding-left: 18px; }
+  ul.plain li { margin: 4px 0; }
+  ul.plain.scope-out li::marker { color: var(--muted); }
+  .risk-item { padding: 8px 0; border-bottom: 1px solid var(--grid); font-size: 13.5px; }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-item .mit { color: var(--text-2); }
+  .risk-item .mit::before { content: "→ "; color: var(--muted); }
+  .q-item { border-left: 3px solid var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface)); padding: 8px 12px; margin: 8px 0; font-size: 13.5px; border-radius: 0 8px 8px 0; }
+  .empty-note { color: var(--muted); font-size: 13px; }
+
+  /* graph */
+  #graph-card { padding: 8px; }
+  #graph-toolbar { display: flex; align-items: center; gap: 14px; padding: 8px 12px; flex-wrap: wrap; }
+  .legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+  .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .legend .ramp { display: flex; gap: 2px; }
+  .legend .ramp span { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg#graph { width: 100%; height: 360px; display: block; }
+  .node circle { cursor: pointer; stroke: var(--surface); stroke-width: 2px; transition: opacity 160ms; }
+  .node.external circle { stroke-dasharray: 3 2; }
+  .node text { font-size: 10.5px; fill: var(--text-2); pointer-events: none; }
+  .node.dim { opacity: 0.22; }
+  .node.active circle { stroke: var(--text); stroke-width: 2.5px; }
+  .edge { stroke: var(--grid); stroke-width: 1.4px; fill: none; transition: opacity 160ms, stroke 160ms; }
+  .edge.dim { opacity: 0.12; }
+  .edge.active { stroke: var(--accent); stroke-width: 2.2px; opacity: 1; }
+
+  /* timeline */
+  #timeline-card { display: flex; flex-direction: column; gap: 10px; }
+  #scrubber { display: flex; align-items: center; gap: 10px; }
+  #scrubber .track { position: relative; flex: 1; height: 6px; background: var(--grid); border-radius: 4px; }
+  #scrubber .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 4px; transition: width 200ms; }
+  #scrubber .ticks { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; }
+  #scrubber .tick {
+    width: 16px; height: 16px; margin-top: -1px; border-radius: 50%; background: var(--surface-2);
+    border: 2px solid var(--grid); cursor: pointer; font-size: 9px; display: flex; align-items: center; justify-content: center;
+    color: var(--text-2); position: relative; z-index: 2;
+  }
+  #scrubber .tick.done { border-color: var(--accent); background: var(--accent); color: #fff; }
+  #scrubber .tick.current { border-color: var(--text); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); }
+  #scrubber .tick.risky::after {
+    content: "!"; position: absolute; top: -14px; font-size: 10px; font-weight: 700; color: var(--critical);
+  }
+  .transport { display: flex; align-items: center; gap: 8px; }
+  .transport button { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+  .transport button:hover { border-color: var(--muted); }
+  #narration { font-size: 14px; color: var(--text-2); min-height: 22px; }
+  #narration b { color: var(--text); }
+  .risk-banner {
+    display: none; align-items: center; gap: 8px; background: color-mix(in srgb, var(--critical) 12%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--critical) 40%, var(--border)); color: var(--critical);
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 600;
+  }
+  .risk-banner.show { display: flex; }
+
+  /* steps */
+  .step {
+    border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+    margin-bottom: 10px; box-shadow: var(--shadow); overflow: hidden; transition: border-color 160ms;
+  }
+  .step.flagged { border-color: var(--warning); }
+  .step.active { border-color: var(--accent); }
+  .step-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-2); flex: none;
+  }
+  .step-title { flex: 1; font-weight: 600; font-size: 14.5px; }
+  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 100px; display: inline-flex; align-items: center; gap: 4px; }
+  .badge.risky { background: color-mix(in srgb, var(--warning) 22%, var(--surface)); color: color-mix(in srgb, var(--warning) 70%, #3a2a00); }
+  .badge.flag-count { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); color: var(--accent); }
+  .chevron { color: var(--muted); transition: transform 160ms; font-size: 12px; }
+  .step.open .chevron { transform: rotate(90deg); }
+  .step-body { display: none; padding: 0 16px 16px; }
+  .step.open .step-body { display: block; }
+  .step-files { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+  .step-files span { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; margin-right: 4px; }
+  pre.diff { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 12.5px; margin: 0 0 10px; }
+  pre.diff .add { color: var(--good); }
+  pre.diff .del { color: var(--critical); }
+  .reasoning { font-size: 13.5px; color: var(--text-2); margin: 0 0 12px; }
+  .flag-row { border-top: 1px dashed var(--border); padding-top: 10px; }
+  .flag-toggle { font-size: 12.5px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0; }
+  .flag-toggle:hover { color: var(--text); }
+  textarea.flag-input {
+    display: none; width: 100%; margin-top: 8px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-2); color: var(--text); font: inherit; font-size: 13px; padding: 8px 10px; resize: vertical; min-height: 52px;
+  }
+  textarea.flag-input.show { display: block; }
+
+  /* tests */
+  .test-row { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--grid); font-size: 13.5px; }
+  .test-row:last-child { border-bottom: none; }
+  .test-row .name { flex: 1; }
+  .test-row .file { color: var(--muted); font-size: 12px; }
+
+  /* review notes floating */
+  #rn-fab {
+    position: fixed; right: 20px; bottom: 20px; z-index: 30;
+    background: var(--text); color: var(--page); border: none; border-radius: 100px;
+    padding: 12px 18px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 8px;
+  }
+  #rn-fab .count { background: var(--accent); color: #fff; border-radius: 100px; padding: 1px 7px; font-size: 11px; }
+  #rn-panel {
+    position: fixed; right: 20px; bottom: 78px; z-index: 30; width: min(420px, calc(100vw - 40px));
+    max-height: 60vh; overflow: auto; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow); padding: 16px; display: none;
+  }
+  #rn-panel.show { display: block; }
+  #rn-panel h3 { margin: 0 0 10px; font-size: 14px; }
+  #rn-panel .rn-item { font-size: 13px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+  #rn-panel .rn-item b { display: block; margin-bottom: 2px; }
+  #rn-panel .empty { color: var(--muted); font-size: 13px; }
+  #rn-copy { width: 100%; margin-top: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); border-radius: 8px; padding: 8px; cursor: pointer; font-size: 13px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(20px); z-index: 40;
+    background: var(--text); color: var(--page); padding: 8px 16px; border-radius: 100px; font-size: 13px;
+    opacity: 0; transition: opacity 200ms, transform 200ms; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="brand">IMPLEMENTATION PLAN</span>
+    <button class="icon-btn" id="theme-toggle" type="button">Theme</button>
+  </div>
+
+  <div class="wrap">
+    <header class="hero">
+      <h1 id="p-title"></h1>
+      <div class="goal" id="p-goal"></div>
+    </header>
+
+    <section id="sec-success">
+      <h2 class="section-title">Success criteria</h2>
+      <div class="card" id="success-list"></div>
+    </section>
+
+    <section id="sec-scope">
+      <h2 class="section-title">Scope</h2>
+      <div class="two-col">
+        <div class="card"><h3>In</h3><ul class="plain" id="scope-in"></ul></div>
+        <div class="card"><h3>Out</h3><ul class="plain scope-out" id="scope-out"></ul></div>
+      </div>
+    </section>
+
+    <section id="sec-constraints">
+      <h2 class="section-title">Constraints</h2>
+      <div class="card"><ul class="constraints" id="p-constraints"></ul></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Current state</h2>
+      <div class="context-grid">
+        <div class="card full"><h3>Current behavior</h3><div id="ctx-current"></div></div>
+        <div class="card full" id="ctx-baseline-card"><h3>Baseline check</h3><div id="ctx-baseline"></div></div>
+      </div>
+    </section>
+
+    <section id="sec-approach">
+      <h2 class="section-title">Proposed approach</h2>
+      <div class="card" id="p-approach"></div>
+    </section>
+
+    <section id="sec-rao">
+      <h2 class="section-title">Risks, assumptions &amp; open questions</h2>
+      <div class="two-col">
+        <div class="card"><h3>Risks</h3><div id="rao-risks"></div></div>
+        <div class="card"><h3>Assumptions</h3><ul class="plain" id="rao-assumptions"></ul></div>
+      </div>
+      <div class="card full" id="rao-questions-card" style="margin-top:14px"><h3 style="margin:0 0 6px; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em">Open questions</h3><div id="rao-questions"></div></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Files touched</h2>
+      <div class="card" id="graph-card">
+        <div id="graph-toolbar">
+          <span class="legend">Blast radius
+            <span class="ramp">
+              <span style="background:var(--blast-1)"></span><span style="background:var(--blast-2)"></span>
+              <span style="background:var(--blast-3)"></span><span style="background:var(--blast-4)"></span>
+              <span style="background:var(--blast-5)"></span>
+            </span>
+            low → high
+          </span>
+          <span class="legend"><span class="dot" style="background:var(--external); border:1px dashed var(--external)"></span>external consumer</span>
+          <span class="legend" id="graph-hint" style="margin-left:auto">Click a file to see its steps, or open a step to light its files.</span>
+        </div>
+        <svg id="graph" viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Walk the plan</h2>
+      <div class="card" id="timeline-card">
+        <div id="scrubber">
+          <div class="track"><div class="fill" id="scrub-fill"></div><div class="ticks" id="scrub-ticks"></div></div>
+        </div>
+        <div class="transport">
+          <button id="btn-prev" type="button">&larr; Prev</button>
+          <button id="btn-play" type="button">&#9658; Play</button>
+          <button id="btn-next" type="button">Next &rarr;</button>
+          <span id="step-of" style="color:var(--muted); font-size:12.5px; margin-left:6px;"></span>
+        </div>
+        <div class="risk-banner" id="risk-banner">&#9888; This step is flagged risky - read the reasoning before trusting it blindly.</div>
+        <div id="narration"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Steps</h2>
+      <div id="steps-list"></div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Tests</h2>
+      <div class="card" id="tests-list"></div>
+    </section>
+  </div>
+
+  <button id="rn-fab" type="button">Review notes <span class="count" id="rn-count">0</span></button>
+  <div id="rn-panel">
+    <h3>Review notes</h3>
+    <div id="rn-items"></div>
+    <button id="rn-copy" type="button">Copy to clipboard</button>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+/* PLAN_DATA_START - replace everything between these two markers with the real plan data */
+const PLAN_DATA = {
+  title: "Example: Rate limit the public API",
+  goal: "This is placeholder data. Replace the PLAN_DATA object with the real plan before sharing this file.",
+  successCriteria: [
+    { text: "A client exceeding 100 req/min receives HTTP 429, not 200", check: "test/rateLimiter.test.js" },
+    { text: "p95 latency added by the limiter stays under 5ms", check: "npm run bench:ratelimit" }
+  ],
+  scope: {
+    in: ["Per-key token-bucket limiting on all public API routes", "429 responses with a Retry-After header"],
+    out: ["Per-endpoint custom limits", "A billing/quota UI - deliberately left to a later plan"]
+  },
+  constraints: ["The public API response shape must not change for under-limit requests", "No new external dependency without sign-off"],
+  context: {
+    current: "Public API routes accept unlimited requests; a single client can exhaust capacity for everyone.",
+    baseline: "curl in a loop against /v1/search returns 200 indefinitely - run `scripts/hammer.sh` to see it today."
+  },
+  approach: "Add an isolated token-bucket module, then wire it in as one middleware at the router. Before: every request passes straight through. After: each key gets a bucket, over-limit requests short-circuit to 429 before touching a handler.",
+  risks: [
+    { risk: "A shared limiter could throttle legitimate bursty traffic.", mitigation: "Start generous (100/min) and make the limit config-driven so it can be tuned without a deploy." }
+  ],
+  assumptions: ["Client identity is the API key already on every request; no new auth is needed."],
+  openQuestions: [],
+  files: [
+    { id: "src/api/server.js", blastRadius: 3, external: false, note: "Wires the middleware in" },
+    { id: "src/api/middleware/rateLimiter.js", blastRadius: 2, external: false, note: "New module" },
+    { id: "billing-service", blastRadius: 2, external: true, note: "Reads rate-limit headers" }
+  ],
+  edges: [
+    { from: "src/api/middleware/rateLimiter.js", to: "src/api/server.js" },
+    { from: "src/api/server.js", to: "billing-service" }
+  ],
+  steps: [
+    {
+      n: 1, title: "Add the rate limiter module", risky: false,
+      files: ["src/api/middleware/rateLimiter.js"],
+      diff: "+function consume(key) {\n+  // token bucket logic\n+}",
+      reasoning: "Isolating the algorithm keeps it independently testable.",
+      after: "The limiter exists but nothing calls it yet - behavior is unchanged."
+    },
+    {
+      n: 2, title: "Wire the limiter into the server", risky: true,
+      files: ["src/api/server.js", "billing-service"],
+      diff: "+app.use(rateLimiter());",
+      reasoning: "This is the step that actually changes production behavior for every route.",
+      after: "All public routes now enforce the limit; billing-service starts seeing 429 headers."
+    }
+  ],
+  tests: [
+    { name: "Exceeding the limit returns 429", file: "test/rateLimiter.test.js", note: "" }
+  ]
+};
+/* PLAN_DATA_END */
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function mdLite(s) {
+  if (!s) return "";
+  let h = escapeHtml(s);
+  h = h.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  return h.split(/\n\n+/).map(p => "<p style='margin:0 0 8px'>" + p.replace(/\n/g, "<br>") + "</p>").join("");
+}
+function diffHtml(s) {
+  if (!s) return "";
+  return s.split("\n").map(line => {
+    const esc = escapeHtml(line);
+    if (line.startsWith("+")) return '<span class="add">' + esc + "</span>";
+    if (line.startsWith("-")) return '<span class="del">' + esc + "</span>";
+    return esc;
+  }).join("\n");
+}
+function blastColor(n) {
+  const c = ["var(--blast-1)", "var(--blast-2)", "var(--blast-3)", "var(--blast-4)", "var(--blast-5)"];
+  return c[Math.max(0, Math.min(4, Math.round(n) - 1))];
+}
+function blastRadiusPx(n) { return 10 + (Math.max(1, Math.min(5, n)) - 1) * 5; }
+
+// ---- theme toggle (auto -> light -> dark -> auto), best-effort persisted ----
+(function themeInit() {
+  const key = "to-human-plan-theme";
+  let saved = null;
+  try { saved = localStorage.getItem(key); } catch (e) {}
+  if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+  document.getElementById("theme-toggle").addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = cur === "dark" ? "light" : cur === "light" ? null : "dark";
+    if (next) document.documentElement.setAttribute("data-theme", next);
+    else document.documentElement.removeAttribute("data-theme");
+    try { next ? localStorage.setItem(key, next) : localStorage.removeItem(key); } catch (e) {}
+  });
+})();
+
+// ---- header + context ----
+document.getElementById("p-title").textContent = PLAN_DATA.title || "Implementation plan";
+document.title = PLAN_DATA.title || "Implementation plan";
+document.getElementById("p-goal").innerHTML = mdLite(PLAN_DATA.goal || "");
+function hideSection(id) { const el = document.getElementById(id); if (el) el.style.display = "none"; }
+function fillList(id, items, cls) {
+  const ul = document.getElementById(id);
+  const arr = items || [];
+  ul.innerHTML = arr.length
+    ? arr.map(i => "<li>" + mdLite(i) + "</li>").join("")
+    : "<li class='empty-note' style='list-style:none; margin-left:-18px'>None.</li>";
+}
+
+// success criteria
+const crit = PLAN_DATA.successCriteria || [];
+if (crit.length) {
+  document.getElementById("success-list").innerHTML = crit.map(c =>
+    "<div class='kv-row'><span class='kv-text'>" + mdLite(c.text || "") + "</span>" +
+    (c.check ? "<code class='kv-check'>" + escapeHtml(c.check) + "</code>" : "") + "</div>"
+  ).join("");
+} else { hideSection("sec-success"); }
+
+// scope
+const scope = PLAN_DATA.scope || {};
+if ((scope.in || []).length || (scope.out || []).length) {
+  fillList("scope-in", scope.in);
+  fillList("scope-out", scope.out);
+} else { hideSection("sec-scope"); }
+
+// constraints (invariants)
+if ((PLAN_DATA.constraints || []).length) {
+  document.getElementById("p-constraints").innerHTML = PLAN_DATA.constraints.map(c => "<li>" + mdLite(c) + "</li>").join("");
+} else { hideSection("sec-constraints"); }
+
+// current state
+const ctx = PLAN_DATA.context || {};
+document.getElementById("ctx-current").innerHTML = mdLite(ctx.current || "");
+if (ctx.baseline) document.getElementById("ctx-baseline").innerHTML = mdLite(ctx.baseline);
+else document.getElementById("ctx-baseline-card").style.display = "none";
+
+// proposed approach
+if (PLAN_DATA.approach) document.getElementById("p-approach").innerHTML = mdLite(PLAN_DATA.approach);
+else hideSection("sec-approach");
+
+// risks, assumptions, open questions
+const risks = PLAN_DATA.risks || [], assumptions = PLAN_DATA.assumptions || [], questions = PLAN_DATA.openQuestions || [];
+if (risks.length || assumptions.length || questions.length) {
+  document.getElementById("rao-risks").innerHTML = risks.length
+    ? risks.map(r => "<div class='risk-item'>" + mdLite(r.risk || "") + (r.mitigation ? "<div class='mit'>" + mdLite(r.mitigation) + "</div>" : "") + "</div>").join("")
+    : "<span class='empty-note'>None identified.</span>";
+  fillList("rao-assumptions", assumptions);
+  if (questions.length) {
+    document.getElementById("rao-questions").innerHTML = questions.map(q => "<div class='q-item'>" + mdLite(q) + "</div>").join("");
+  } else {
+    document.getElementById("rao-questions").innerHTML = "<span class='empty-note'>No blocking questions remain - the plan is ready to hand to implement.</span>";
+  }
+} else { hideSection("sec-rao"); }
+
+// ---- graph layout (force simulation, static) ----
+function layoutGraph(nodes, edges, w, h) {
+  const n = nodes.length;
+  nodes.forEach((d, i) => {
+    const a = (i / Math.max(1, n)) * Math.PI * 2;
+    d.x = w / 2 + Math.cos(a) * Math.min(w, h) * 0.32;
+    d.y = h / 2 + Math.sin(a) * Math.min(w, h) * 0.32;
+    d.vx = 0; d.vy = 0;
+  });
+  const idx = new Map(nodes.map((d, i) => [d.id, i]));
+  const pairs = edges.map(e => [idx.get(e.from), idx.get(e.to)]).filter(p => p[0] != null && p[1] != null);
+  for (let iter = 0; iter < 350; iter++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+        let d2 = dx * dx + dy * dy || 0.01, d = Math.sqrt(d2);
+        let force = 2400 / d2;
+        let fx = (dx / d) * force, fy = (dy / d) * force;
+        nodes[i].vx += fx; nodes[i].vy += fy; nodes[j].vx -= fx; nodes[j].vy -= fy;
+      }
+    }
+    pairs.forEach(([a, b]) => {
+      let dx = nodes[b].x - nodes[a].x, dy = nodes[b].y - nodes[a].y;
+      let d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      let force = (d - 150) * 0.02;
+      let fx = (dx / d) * force, fy = (dy / d) * force;
+      nodes[a].vx += fx; nodes[a].vy += fy; nodes[b].vx -= fx; nodes[b].vy -= fy;
+    });
+    nodes.forEach(d => {
+      d.vx += (w / 2 - d.x) * 0.002; d.vy += (h / 2 - d.y) * 0.002;
+      d.vx *= 0.85; d.vy *= 0.85;
+      d.x += d.vx; d.y += d.vy;
+      d.x = Math.max(46, Math.min(w - 46, d.x));
+      d.y = Math.max(30, Math.min(h - 30, d.y));
+    });
+  }
+  return nodes;
+}
+
+const graphNodes = (PLAN_DATA.files || []).map(f => Object.assign({}, f));
+const graphEdges = PLAN_DATA.edges || [];
+layoutGraph(graphNodes, graphEdges, 900, 360);
+const nodeById = new Map(graphNodes.map(n => [n.id, n]));
+
+const svg = document.getElementById("graph");
+const NS = "http://www.w3.org/2000/svg";
+graphEdges.forEach(e => {
+  const a = nodeById.get(e.from), b = nodeById.get(e.to);
+  if (!a || !b) return;
+  const line = document.createElementNS(NS, "line");
+  line.setAttribute("class", "edge"); line.dataset.from = e.from; line.dataset.to = e.to;
+  line.setAttribute("x1", a.x); line.setAttribute("y1", a.y);
+  line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+  svg.appendChild(line);
+});
+graphNodes.forEach(node => {
+  const g = document.createElementNS(NS, "g");
+  g.setAttribute("class", "node" + (node.external ? " external" : ""));
+  g.dataset.id = node.id;
+  const r = blastRadiusPx(node.blastRadius || 1);
+  const circle = document.createElementNS(NS, "circle");
+  circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y); circle.setAttribute("r", r);
+  circle.setAttribute("fill", node.external ? "var(--external)" : blastColor(node.blastRadius || 1));
+  g.appendChild(circle);
+  const label = document.createElementNS(NS, "text");
+  label.setAttribute("x", node.x); label.setAttribute("y", node.y + r + 13); label.setAttribute("text-anchor", "middle");
+  const short = node.id.length > 24 ? "…" + node.id.slice(-22) : node.id;
+  label.textContent = short;
+  g.appendChild(label);
+  g.addEventListener("click", () => selectFile(node.id));
+  svg.appendChild(g);
+});
+
+function clearGraphHighlight() {
+  document.querySelectorAll("#graph .node").forEach(n => n.classList.remove("dim", "active"));
+  document.querySelectorAll("#graph .edge").forEach(e => e.classList.remove("dim", "active"));
+}
+function highlightFiles(fileIds) {
+  const set = new Set(fileIds);
+  document.querySelectorAll("#graph .node").forEach(n => {
+    n.classList.toggle("active", set.has(n.dataset.id));
+    n.classList.toggle("dim", set.size > 0 && !set.has(n.dataset.id));
+  });
+  document.querySelectorAll("#graph .edge").forEach(e => {
+    const on = set.has(e.dataset.from) || set.has(e.dataset.to);
+    e.classList.toggle("active", on && set.size > 0);
+    e.classList.toggle("dim", set.size > 0 && !on);
+  });
+}
+function selectFile(fileId) {
+  const steps = (PLAN_DATA.steps || []).filter(s => (s.files || []).includes(fileId));
+  document.querySelectorAll(".step").forEach(el => {
+    const n = Number(el.dataset.n);
+    const match = steps.some(s => s.n === n);
+    el.style.outline = match ? "2px solid var(--accent)" : "";
+  });
+  highlightFiles([fileId]);
+  if (steps[0]) document.getElementById("step-" + steps[0].n)?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// ---- steps ----
+const stepsList = document.getElementById("steps-list");
+(PLAN_DATA.steps || []).forEach(step => {
+  const el = document.createElement("div");
+  el.className = "step"; el.id = "step-" + step.n; el.dataset.n = step.n;
+  el.innerHTML = `
+    <div class="step-head">
+      <div class="step-num">${step.n}</div>
+      <div class="step-title">${escapeHtml(step.title || "")}</div>
+      ${step.risky ? '<span class="badge risky">&#9888; risky</span>' : ""}
+      <span class="badge flag-count" style="display:none">flagged</span>
+      <span class="chevron">&#9654;</span>
+    </div>
+    <div class="step-body">
+      <div class="step-files">${(step.files || []).map(f => "<span>" + escapeHtml(f) + "</span>").join("")}</div>
+      <pre class="diff">${diffHtml(step.diff || "")}</pre>
+      <div class="reasoning">${mdLite(step.reasoning || "")}</div>
+      <div class="flag-row">
+        <button class="flag-toggle" type="button">&#9873; Flag this step with a question</button>
+        <textarea class="flag-input" placeholder="Type your question or concern about this step..."></textarea>
+      </div>
+    </div>`;
+  const head = el.querySelector(".step-head");
+  head.addEventListener("click", (e) => {
+    el.classList.toggle("open");
+    if (el.classList.contains("open")) highlightFiles(step.files || []);
+    else clearGraphHighlight();
+  });
+  const flagToggle = el.querySelector(".flag-toggle");
+  const flagInput = el.querySelector(".flag-input");
+  flagToggle.addEventListener("click", (e) => { e.stopPropagation(); flagInput.classList.toggle("show"); if (flagInput.classList.contains("show")) flagInput.focus(); });
+  flagInput.addEventListener("click", e => e.stopPropagation());
+  flagInput.addEventListener("input", () => { saveFlags(); refreshFlagUI(); });
+  stepsList.appendChild(el);
+});
+
+function refreshFlagUI() {
+  let count = 0;
+  document.querySelectorAll(".step").forEach(el => {
+    const val = el.querySelector(".flag-input").value.trim();
+    el.classList.toggle("flagged", !!val);
+    el.querySelector(".badge.flag-count").style.display = val ? "inline-flex" : "none";
+    if (val) count++;
+  });
+  document.getElementById("rn-count").textContent = count;
+  renderReviewNotes();
+}
+
+// ---- flag persistence (best-effort; not guaranteed on file:// origins) ----
+const flagsKey = "to-human-plan-flags:" + (PLAN_DATA.title || "plan");
+function saveFlags() {
+  const data = {};
+  document.querySelectorAll(".step").forEach(el => { data[el.dataset.n] = el.querySelector(".flag-input").value; });
+  try { localStorage.setItem(flagsKey, JSON.stringify(data)); } catch (e) {}
+}
+function loadFlags() {
+  let data = {};
+  try { data = JSON.parse(localStorage.getItem(flagsKey) || "{}"); } catch (e) {}
+  document.querySelectorAll(".step").forEach(el => {
+    if (data[el.dataset.n]) el.querySelector(".flag-input").value = data[el.dataset.n];
+  });
+  refreshFlagUI();
+}
+loadFlags();
+
+// ---- tests ----
+const testsWrap = document.getElementById("tests-list");
+const tests = PLAN_DATA.tests || [];
+testsWrap.innerHTML = tests.length ? tests.map(t =>
+  `<div class="test-row"><span class="name">${escapeHtml(t.name || "")}</span><span class="file">${escapeHtml(t.file || "")}</span></div>`
+).join("") : "<span style='color:var(--muted)'>No tests listed.</span>";
+
+// ---- timeline ----
+const steps = PLAN_DATA.steps || [];
+let current = 0, playing = false, playTimer = null;
+const ticksEl = document.getElementById("scrub-ticks");
+const fillEl = document.getElementById("scrub-fill");
+steps.forEach((s, i) => {
+  const t = document.createElement("div");
+  t.className = "tick" + (s.risky ? " risky" : "");
+  t.textContent = s.n;
+  t.addEventListener("click", () => goToStep(i));
+  ticksEl.appendChild(t);
+});
+function goToStep(i) {
+  current = Math.max(0, Math.min(steps.length - 1, i));
+  const step = steps[current];
+  document.querySelectorAll("#scrub-ticks .tick").forEach((t, idx) => {
+    t.classList.toggle("current", idx === current);
+    t.classList.toggle("done", idx < current);
+  });
+  fillEl.style.width = steps.length > 1 ? (current / (steps.length - 1)) * 100 + "%" : "100%";
+  document.getElementById("step-of").textContent = "Step " + (current + 1) + " of " + steps.length;
+  document.getElementById("narration").innerHTML = step ? ("<b>After step " + step.n + ":</b> " + mdLite(step.after || "")) : "";
+  document.getElementById("risk-banner").classList.toggle("show", !!(step && step.risky));
+  highlightFiles(step ? (step.files || []) : []);
+  document.querySelectorAll(".step").forEach(el => el.classList.toggle("active", Number(el.dataset.n) === (step && step.n)));
+}
+document.getElementById("btn-prev").addEventListener("click", () => { stopPlay(); goToStep(current - 1); });
+document.getElementById("btn-next").addEventListener("click", () => { stopPlay(); goToStep(current + 1); });
+function stopPlay() { playing = false; clearInterval(playTimer); document.getElementById("btn-play").innerHTML = "&#9658; Play"; }
+document.getElementById("btn-play").addEventListener("click", () => {
+  if (playing) { stopPlay(); return; }
+  playing = true; document.getElementById("btn-play").innerHTML = "&#10074;&#10074; Pause";
+  playTimer = setInterval(() => {
+    if (current >= steps.length - 1) { stopPlay(); return; }
+    goToStep(current + 1);
+  }, 2400);
+});
+if (steps.length) goToStep(0);
+
+document.addEventListener("keydown", (e) => {
+  if (document.activeElement && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName)) return;
+  if (e.key === "ArrowRight") { stopPlay(); goToStep(current + 1); }
+  if (e.key === "ArrowLeft") { stopPlay(); goToStep(current - 1); }
+  if (e.key === " ") { e.preventDefault(); document.getElementById("btn-play").click(); }
+});
+
+// ---- review notes ----
+const rnFab = document.getElementById("rn-fab"), rnPanel = document.getElementById("rn-panel");
+rnFab.addEventListener("click", () => rnPanel.classList.toggle("show"));
+function renderReviewNotes() {
+  const items = [];
+  document.querySelectorAll(".step").forEach(el => {
+    const val = el.querySelector(".flag-input").value.trim();
+    if (val) items.push({ n: el.dataset.n, title: el.querySelector(".step-title").textContent, text: val });
+  });
+  const wrap = document.getElementById("rn-items");
+  wrap.innerHTML = items.length
+    ? items.map(i => `<div class="rn-item"><b>Step ${i.n}: ${escapeHtml(i.title)}</b>${escapeHtml(i.text)}</div>`).join("")
+    : "<div class='empty'>No steps flagged yet. Open a step and click \"Flag this step\" to leave a question.</div>";
+}
+function compileReviewNotesText() {
+  const lines = ["## Review notes - " + (PLAN_DATA.title || "plan"), ""];
+  let any = false;
+  document.querySelectorAll(".step").forEach(el => {
+    const val = el.querySelector(".flag-input").value.trim();
+    if (!val) return;
+    any = true;
+    lines.push("**Step " + el.dataset.n + ": " + el.querySelector(".step-title").textContent + "**");
+    lines.push(val, "");
+  });
+  return any ? lines.join("\n") : "";
+}
+function showToast(msg) {
+  const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1800);
+}
+document.getElementById("rn-copy").addEventListener("click", async () => {
+  const text = compileReviewNotesText();
+  if (!text) { showToast("Nothing flagged yet"); return; }
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Copied to clipboard");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); showToast("Copied to clipboard"); }
+    catch (e2) { showToast("Copy failed - select the text manually"); }
+    document.body.removeChild(ta);
+  }
+});
+</script>
+</body>
+</html>

@@ -379,7 +379,7 @@ check_13() {
       fail "R13" "$file" \
         "Contains em dash (Unicode U+2014). Use two plain dashes instead."
     fi
-  done < <(find . -not -path './.git/*' -not -path './todo/*' -type f -print0)
+  done < <(find . -not -path './.git/*' -not -path './todo/*' -not -path './research/*' -type f -print0)
 }
 
 # ===========================================================================

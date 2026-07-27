@@ -5,14 +5,15 @@
     {
       "id": "rate-limit-api",
       "prompt": "We want to add rate limiting to our public API to stop abuse. Write a plan for this.",
-      "fixture": "a repo with docs/product/glossary.md and docs/product/non-goals.md (both stubs) and src/api/server.js with no rate limiting",
+      "fixture": "a repo with src/api/server.js with no rate limiting",
       "assertions": [
         "Goal section frames a measurable outcome or behavior change, not a list of activities",
         "Success criteria section exists with 1-5 checkable statements",
         "Scope section exists with explicit In and Out",
-        "Documentation impact section exists as a table (or explicit None with reason)",
+        "No standalone Documentation impact table is produced; any README or user-facing doc change is named inline in the approach instead",
         "The plan does not implement code; no source files are modified",
-        "Plan file is written to docs/plan/{slug}/plan.md"
+        "Plan file is written to .dev/{slug}/plan.md",
+        "A {slug}.html view is rendered from the plan and published via the Artifact tool, and both the local path and the returned URL are reported to the user"
       ]
     }
   ]

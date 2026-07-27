@@ -1,6 +1,6 @@
 # Eval Results: Conciseness Refactor (2026-07-24)
 
-Status: maintained
+Status: stale - superseded by the v1.0.0 pivot (test-as-spec, layered testing, Artifact-published HTML, discover/to-pitch/to-quiz). The scores below only cover the pre-pivot five-skill chain and no longer reflect the current `SKILL.md` text. Re-run the harness per "Re-running this harness" below, baseline commit `0.9.0` vs. the working tree, across all 8 current skills, and replace this file with that dated entry before relying on these numbers again.
 
 Methodology, scores, and findings for the eval run that verified the conciseness refactor of all five `dev` plugin skills (commit `da466e9`) did not regress behavior versus the pre-refactor baseline (commit `b7bb3bf`).
 

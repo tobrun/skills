@@ -11,8 +11,10 @@ Checks the diff against `plan.md` and its task files, not against general qualit
 
 - Is each acceptance criterion of the tasks in scope actually met by the diff? Name the criterion and the evidence.
 - Do the plan's Success criteria hold (or have a credible measurement path) now that the work exists? A plan is done when its outcome is real, not when its tasks are closed.
-- Are tests written at the seams the plan or tasks agreed on? A tested seam nobody agreed on, or an agreed seam without tests, is a finding.
-- Is every row of the plan's Documentation impact table honored by a corresponding doc change in the diff? A missed row is a BLOCK.
+- Are tests written at the seams the plan or tasks agreed on, **and at the layer each criterion was tagged with** (`[unit|integration|e2e]`)? A criterion met by a test at the wrong layer (a unit test standing in for an e2e criterion) is a finding, not a pass.
+- Is every `[e2e]`-tagged criterion backed by a passing scenario in `implementation-notes.md`'s referenced `{plan-name}-e2e-report.html`? New user-facing behavior with no matching e2e scenario, or a scenario whose `status` is `fail`, is a BLOCK.
+- Check `implementation-notes.md` for logged Deviations: does the conservative choice still satisfy the plan's Success criteria, or does it need a call-out to the reviewer? An unresolved deviation that changes user-facing behavior from what the plan promised is a CONCERN at minimum.
+- If the plan named a README or user-facing doc change in its approach, is that change present in the diff? A promised doc update that never happened is a CONCERN.
 - Does the diff do significant work the plan never mentioned? Scope creep is a CONCERN, not a crime; name it so the reviewer can decide.
 
 ## correctness
@@ -30,7 +32,7 @@ Rate exploitability in this codebase, not theoretical severity.
 ## architecture
 
 Module boundaries, layering, dependency direction, abstraction quality, coupling introduced by the diff.
-Respect `docs/architecture/architecture.md` and the ADRs under `docs/architecture/decisions/` when they exist; deviation from a recorded decision is a finding, personal style preference is not.
+Judge coherence against the patterns already established in the surrounding code; deviation from an established convention is a finding, personal style preference is not.
 
 ## tests
 
@@ -38,7 +40,7 @@ Test quality per this plugin's philosophy, not raw coverage:
 
 - Tests must live at public seams; tests that mock internal collaborators, test private methods, or verify through side channels are implementation-coupled findings.
 - Tautological tests (assertion recomputes the expected value the way the code does) are findings; expected values need an independent source of truth.
-- New behavior in the diff without a test at its seam is a finding.
+- New behavior in the diff without a test at its seam is a finding. New user-facing behavior without a passing scenario in `{plan-name}-e2e-report.html` is a finding, even if unit/integration tests exist.
 - Brittle patterns: global time/random patching, order-dependent tests, interaction assertions where a state assertion would do.
 
 ## simplify

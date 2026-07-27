@@ -8,7 +8,7 @@ convention as `claude-plugins`.
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| [dev](dev/) | Initializing a project docs knowledge base, planning work into reviewable docs, splitting it into tasks, implementing it test-first, reviewing it with a verified panel, and rendering plans or docs as interactive HTML for humans | `/install`, `/to-plan`, `/to-tasks`, `/implement`, `/to-review`, `/to-human-plan`, `/to-human-docs` |
+| [dev](dev/) | Discovering unknowns before planning, planning and splitting work into layer-tagged tasks, implementing it test-first across unit/integration/e2e, reviewing it with a verified panel, and turning finished work into a pitch or comprehension quiz - every phase publishes its own HTML view as a shareable Artifact | `/discover`, `/to-plan`, `/to-tasks`, `/implement`, `/to-review`, `/to-pitch`, `/to-quiz` |
 
 ## Installation
 

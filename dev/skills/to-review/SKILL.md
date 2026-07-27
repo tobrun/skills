@@ -1,6 +1,6 @@
 ---
 name: to-review
-description: Concern-based fan-out review of a branch or PR where every finding is adversarially verified before it is reported, producing docs/plan/{plan-name}/review_N.md. Use when the user asks for a code review of their changes or before opening a PR.
+description: Concern-based fan-out review of a branch or PR where every finding is adversarially verified before it is reported, producing .dev/{plan-name}/review_N.md. Use when the user asks for a code review of their changes or before opening a PR.
 disable-model-invocation: true
 ---
 
@@ -27,7 +27,8 @@ Start at step 1 immediately and detect the diff yourself; do not ask what to rev
 
 The review checks the diff against what was planned, not just general quality.
 
-- Find the plan directory the diff implements (branch name, commit messages, or ask if ambiguous). If found, read `plan.md` and its `task_N.md` files for acceptance criteria, agreed seams, and the Documentation impact table.
+- Find the plan directory the diff implements (branch name, commit messages, or ask if ambiguous). If found, read `plan.md` and its `task_N.md` files for acceptance criteria and agreed seams.
+- Also read `.dev/{plan-name}/implementation-notes.md` if present (deviations logged during implementation) and the latest `~/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`'s data block if present (which e2e scenarios exist, their pass/fail status) - both are additional evidence for the `plan-conformance` and `tests` lenses, not just the diff itself.
 - No plan: derive `{plan-name}` from the branch name and fall back to the PR body and commits for intent.
 - Build a short brief: what the change does, what's on the critical path, what was planned.
 
@@ -46,8 +47,6 @@ Tell the user which lenses you selected and why before launching.
 
 Launch as plain parallel subagents with the Agent tool per [references/orchestration.md](references/orchestration.md): all lens agents in one message, then all verifiers in a second.
 Every BLOCK or CONCERN is adversarially verified - the verifier's only job is to refute it against the actual repo.
-Inherit the session model; don't pin model names.
-Use the Workflow-tool variant only when the user explicitly asks for a heavyweight run - it triggers the dynamic-workflow confirmation and burns tokens fast.
 
 ### 6. Aggregate
 
@@ -59,7 +58,7 @@ Use the Workflow-tool variant only when the user explicitly asks for a heavyweig
 
 ### 7. Write the report
 
-Write `docs/plan/{plan-name}/review_N.md` (next free index, starting at 1):
+Write `.dev/{plan-name}/review_N.md` (next free index, starting at 1):
 
 ```markdown
 # Review {N}: {title}
@@ -72,7 +71,7 @@ Base: {branch or PR}, {date}
 
 ## Plan conformance
 
-Acceptance criteria met/not met, seams tested/untested, Documentation impact rows honored/missed. Omit if no plan.
+Acceptance criteria met/not met, seams tested/untested. Omit if no plan.
 
 ## Previous findings
 
@@ -100,7 +99,15 @@ One line per lens; omit empty ones.
 What to fix first and why.
 ```
 
-### 8. Present and follow through
+### 8. Publish the report
 
-Summarize the verdict and top findings in chat, link the report.
+Map the report onto `REVIEW_DATA` per [references/data-schema.md](references/data-schema.md), write `~/tmp/{project-slug}/reports/review_N.html` from [templates/review.html](templates/review.html), replacing only the data block between its markers.
+Before first authoring or restyling this template, load the `artifact-design` skill; a plain data refresh on an existing template doesn't need it again.
+Publish it with the `Artifact` tool using that `file_path` (a stable magnifying-glass favicon across every review this skill produces, a title and description naming the plan and review number) - this is the literal artifact to hand a PR reviewer, not just the markdown file in the repo.
+Re-reviewing the same plan later reuses the same `file_path` convention (a new file per `review_N`, so each gets its own URL); tell the user both the local path and the returned URL.
+
+### 9. Present and follow through
+
+Summarize the verdict and top findings in chat, link both the `review_N.md` file and its published URL.
 If the user accepts findings needing real work, suggest `to-tasks` to turn them into `task_N.md` files; do not invoke it yourself.
+Also suggest, as independent optional next steps rather than a mandatory chain: `to-pitch` when the change needs buy-in from someone who wasn't in this conversation, and `to-quiz` when a reviewer wants a comprehension check before merging.

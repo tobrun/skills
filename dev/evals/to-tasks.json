@@ -5,14 +5,19 @@
     {
       "id": "rate-limit-api-tasks",
       "prompt": "Split this plan into tasks.",
-      "fixture": "docs/plan/rate-limit-api/plan.md with Goal, Success criteria, Scope, Documentation impact already filled in",
+      "fixture": ".dev/rate-limit-api/plan.md with Goal, Success criteria, Scope already filled in, in a repo whose package.json defines a `test` script (jest) and a `typecheck` script",
       "assertions": [
         "At least one task_N.md is written, numbered starting at 1",
-        "Each task has Goal, Scope (In/Out), Acceptance criteria, Depends on sections",
-        "Acceptance criteria per task number 2-5 and describe behavior, not \"implementation done\"",
+        "Each task has Goal, Scope (In/Out), Acceptance criteria, Test plan, Self-validation loop, and Depends on sections",
+        "Acceptance criteria per task number 2-5, describe behavior (not \"implementation done\"), and each line is tagged with its test layer ([unit], [integration], or [e2e])",
+        "The Test plan maps each acceptance criterion to a concrete test naming the seam/scenario and any fixtures or setup needed - it does not restate the criterion and does not repeat the layer already carried by the criterion's tag",
+        "The Self-validation loop uses the repo's real commands taken from package.json (npm test / npm run typecheck), not a guessed default from a different ecosystem, with a clear green exit condition and a fix-and-repeat instruction",
+        "Tasks are written to be executed by a junior engineer in parallel with peers: independent where possible, with shared-file contention sequenced via Depends on, and each Depends on entry tagged with its reason (interface or files)",
+        "The layer definitions the criteria rely on are self-contained in the task (inlined), not left as a link that would 404 from the task file's location",
+        "Every In item of the plan's Scope is claimed by at least one task; no scope item is silently dropped",
         "No catch-all task (titled cleanup, remaining items, misc, or similar)",
-        "The plan's Execution section is updated with a task index table",
-        "The Documentation impact row (docs/architecture/api.md) is owned by exactly one task"
+        "The plan's Execution section is updated with a task index table carrying Depends on and Status columns",
+        "The plan's HTML view is not re-rendered or republished by this skill - that remains to-plan's responsibility"
       ]
     }
   ]

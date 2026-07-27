@@ -1,6 +1,16 @@
 # Test Examples
 
 Worked examples of the principles in SKILL.md: behavior over implementation, tests as specification, independent expected values.
+See [layers.md](layers.md) for how a criterion's tag decides which layer its test lives at.
+
+## Seams
+
+A **seam** is the public boundary a test exercises, never internals.
+Naming the seam before writing the test is what keeps testing effort on real interfaces instead of spreading over every private helper: "what is the public interface here, and which boundary would a caller actually cross?"
+
+Each `task_N.md` arrives with `Suggested seams` already written by `to-tasks`, so the seam is normally a decision you inherit, not one to reopen.
+Reopen it only when the suggestion is wrong or missing: pick the nearest real public boundary, use it, and log the change under Deviations in `implementation-notes.md`.
+The signal that a seam is wrong is usually a mocking urge - see [mocking.md](mocking.md)'s "never mock internal collaborators."
 
 ## Behavior test vs implementation-coupled test
 
@@ -78,4 +88,4 @@ Name tests after the capability, not the method under test.
 - Bad: `"test applyCoupon returns false"`
 
 A reader should be able to reconstruct what the system does from the test names alone.
-Use the project's domain vocabulary (check `docs/product/glossary.md`) so names match how the team talks about the feature.
+Use the vocabulary the code and existing tests already use, so names match how the team talks about the feature.

@@ -3,28 +3,70 @@
   "mode": "functional",
   "evals": [
     {
-      "id": "discount-pricing",
-      "prompt": "Add a function that computes the discounted price given a price and a percentage discount, in this toy JS repo. Make sure it's well tested.",
-      "fixture": "a minimal git repo with package.json (node --test), empty src/ and test/",
+      "id": "no-tasks-yet",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with .dev/discount-pricing/plan.md and no task_N.md files",
       "assertions": [
-        "A test file exists with behavior-named tests (e.g. \"applies a discount\"), not test1/test2",
-        "Tests cover edge cases beyond the happy path (0% discount, 100% discount, or invalid input)",
-        "No test recomputes the expected value the way the implementation does (tautological assertion)",
-        "Tests exercise the function's public interface, not internals",
-        "A git commit was made on the current branch",
-        "The user was asked to run to-review rather than a review panel being launched automatically"
+        "The user is asked to run to-tasks first rather than the plan being implemented straight from plan.md",
+        "to-tasks is not invoked automatically",
+        "No implementation code is written"
       ]
     },
     {
-      "id": "multi-task-plan",
+      "id": "sequential-plan",
       "prompt": "Implement this plan.",
-      "fixture": "a git repo with docs/plan/{plan-name}/plan.md and task_1.md, task_2.md (task_2 depends on task_1), each with a small independently-verifiable behavior",
+      "fixture": "a git repo with .dev/{plan-name}/plan.md and task_1.md, task_2.md (task_2 depends on task_1), each with a small independently-verifiable behavior, acceptance criteria tagged [unit]",
       "assertions": [
         "Both task_1 and task_2 are implemented, not just the first one",
         "Task_2's work is attempted only after task_1's is committed (dependency order respected)",
+        "The two tasks are not launched concurrently, since task_2 depends on task_1",
+        "Tests are behavior-named (e.g. \"applies a discount\") rather than test1/test2, cover cases beyond the happy path, and no assertion recomputes the expected value the way the implementation does",
         "The user is not asked about running to-review after task_1 finishes - no review prompt appears until both tasks are done",
-        "Each task gets its own commit (at least 2 commits for the two tasks)",
+        "Each task gets its own commit on the current branch (at least 2 commits)",
+        ".dev/{plan-name}/implementation-notes.md is created and has one entry per task",
         "After both tasks are done, the user is asked to run to-review rather than a review panel being launched automatically"
+      ]
+    },
+    {
+      "id": "parallel-wave",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with .dev/{plan-name}/plan.md and task_1.md, task_2.md, task_3.md where task_1 and task_2 both have 'Depends on: None' and disjoint Files touched, task_3 depends on both; criteria tagged [unit] and [integration]",
+      "assertions": [
+        "task_1 and task_2 are launched as subagents in a single message so they run concurrently",
+        "task_3 is not started until task_1 and task_2 are both committed",
+        "The subagents do not commit, stage, or otherwise touch git state - the orchestrator makes the commits",
+        "The subagents do not write to implementation-notes.md themselves; the orchestrator appends each entry",
+        "The subagents are told not to launch the app or run e2e criteria",
+        "Each task's self-validation commands are re-run by the orchestrator rather than the subagent's claim being taken at face value",
+        "Three commits exist, one per task, in dependency-respecting order"
+      ]
+    },
+    {
+      "id": "e2e-cli-mocked-env",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with a tiny Node CLI (bin/cli.js exposing a `total` command over a cart file) and .dev/cart-total/plan.md plus task_1.md whose acceptance criteria are tagged [unit] Given a cart with items When totaling Then the sum is correct, [integration] Given the CLI command When invoked with a cart file Then it reads and totals it, and [e2e] Given a user runs the built CLI against a real cart file When it exits Then it prints the correct total - kind: non-frontend",
+      "assertions": [
+        "A unit test exists for the totaling business logic in isolation, no process spawned",
+        "An integration test exists that exercises the CLI command against a real (not mocked) cart-reading path",
+        "The e2e criterion is proven by actually invoking the built CLI as a subprocess against a real cart file, not by re-running the unit/integration tests",
+        "The e2e run uses a mocked, seeded, deterministic environment - no real external service or production data is touched",
+        "The e2e pass happens after the task is committed, not interleaved with the unit/integration cycles",
+        ".dev/cart-total/implementation-notes.md exists and references what was done for the task",
+        "A cart-total-e2e-report.html is written locally under ~/tmp/{project-slug}/reports/, kind is non-frontend, and it contains a dataModelState entry with real before/after values rather than a screenshot",
+        "No screenshot or dataUri field is fabricated for a kind: non-frontend report",
+        "The report is opened in the browser (open/xdg-open) and published via the Artifact tool, with both the local path and the returned URL reported"
+      ]
+    },
+    {
+      "id": "e2e-failure-loop",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo like e2e-cli-mocked-env, but the CLI has a latent formatting bug that only shows when the built binary runs end to end, so the first e2e capture fails",
+      "assertions": [
+        "The failing e2e scenario is diagnosed and fixed rather than reported as an accepted failure or a limitation",
+        "The fix is driven by a new failing test at the layer that can catch it, not only by patching until the e2e passes",
+        "The scenario is re-run and re-captured after the fix, not flipped to pass with the original capture",
+        "The final report's summary counts match the scenarios array and reflect the passing re-run",
+        "The user is asked to run to-review only after the e2e run is green"
       ]
     }
   ]

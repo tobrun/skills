@@ -32,6 +32,20 @@ When you do replace a boundary dependency, prefer a small working fake over a pe
 
 Fakes keep behavior consistent across tests and survive refactors; ad-hoc stubs encode one test's assumptions.
 
+## The e2e environment
+
+E2E has no mocks *inside* the application and no real world *outside* it.
+The application under test is the real built artifact with its real internal wiring; everything it depends on beyond its own boundary is mocked, seeded, and deterministic:
+
+- Third-party HTTP replaced by a local stub server or recorded fixtures, with no credentials that could reach a real provider.
+- A dedicated database or store, seeded to a known state before the run and torn down after.
+- A fixed clock and seeded randomness, so the same scenario produces the same report twice.
+- Outbound side effects (mail, payments, webhooks, queues) captured by a recording fake rather than delivered.
+
+Never point an e2e run at production or a shared staging environment.
+A live run makes the scenario unrepeatable, its before/after state unreliable as evidence, and its side effects real.
+If the mocked environment for a dependency doesn't exist yet, building it is part of the work, not a reason to fall back to the real one.
+
 ## Determinism
 
 Inject the clock and randomness at the seam rather than patching globals.
