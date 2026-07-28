@@ -74,7 +74,7 @@ The public interfaces where tests should live - proposals; `implement` confirms 
 2-5 checkable statements from an independent source of truth (spec or plan), not the intended implementation.
 Each line is tagged with the test layer it belongs at: `- [unit|integration|e2e] Given... When... Then...`.
 The layers, inlined so this task stands alone: **unit** is business logic in isolation, no I/O; **integration** is a real seam between two or more components this codebase owns, no outside world; **e2e** drives the actual running application against a realistic scenario.
-The tag is what lets `implement` turn this criterion into a concrete test at the right layer instead of a prose-only check.
+The tag lets `implement` turn each criterion into a concrete test at the right layer instead of a prose-only check.
 Cover error and edge cases, not just the happy path.
 More than 5 means split the task.
 Task done is not plan done - Success criteria are judged at review.
@@ -95,7 +95,7 @@ How each acceptance criterion becomes a real test, concretely enough that a juni
 The exact loop the engineer runs to prove this task is done, before handing it on and without waiting for a reviewer.
 Use the repo's real commands (discovered in "Before writing tasks"), copy-pasteable, not placeholders:
 
-1. Run the task's tests and typecheck with this repo's actual invocations - the ones you established up front, not a guessed default.
+1. Run the task's tests and typecheck with this repo's actual invocations, not a guessed default.
 2. Green means every acceptance criterion has a passing test at its tagged layer, and the existing suite still passes.
 3. If anything is red, fix it and repeat from step 1 - the task is not done until the loop passes clean.
 

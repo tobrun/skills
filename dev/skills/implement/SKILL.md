@@ -43,7 +43,7 @@ Each task, whether you run it yourself or a subagent runs it, follows the same l
 
 E2E criteria are proven by running the actual application against a **fully mocked environment**: real built artifact, real internal wiring, no real external world - see [references/mocking.md](references/mocking.md#the-e2e-environment). Run this once per plan, after all tasks are committed, covering every `[e2e]` criterion across tasks.
 
-1. **Launch the app.** Invoke the separate, already-installed `run` skill directly via the Skill tool, with the mocked environment configured. This is a deliberate exception to "dev skills only recommend, never invoke each other": that convention protects the human-triggered `dev` family, and `run` sits outside it as an already-model-invocable utility, closer to a Bash call than to one dev skill launching a sibling. If `run` isn't installed, ask the user how to launch the app.
+1. **Launch the app.** Invoke the already-installed `run` skill directly via the Skill tool, with the mocked environment configured. This is a deliberate exception to "dev skills only recommend, never invoke": `run` sits outside the human-triggered `dev` family, closer to a Bash call than to a sibling dev skill. If `run` isn't installed, ask the user how to launch the app.
 2. **Drive it and capture evidence**, per scenario:
    - `kind: "frontend"` - use the `claude-in-chrome` tools to exercise the scenario, one screenshot per meaningful step, embedded as a base64 data URI.
    - `kind: "non-frontend"` - capture the entity's real before/after state from the run's own output or fixtures.
@@ -64,7 +64,6 @@ It is the shared state across waves - parallel task agents can't see each other'
 - Deviations from plan: {edge case found} -> conservative choice made: {what/why}   # only when a deviation occurred
 ```
 
-When an edge case forces a deviation, pick the conservative option, log it, and keep going.
 This file is a short running log, not a rendered report.
 
 ## Anti-patterns

@@ -1,50 +1,16 @@
-# Tobrun's Claude Code Skills Marketplace
-
-A marketplace of Claude Code plugins packaging skills for Tobrun's
-development workflows. This monorepo follows the same plugin marketplace
-convention as `claude-plugins`.
-
 ## Plugins
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| [dev](dev/) | Discovering unknowns before planning, planning and splitting work into layer-tagged tasks, implementing it test-first across unit/integration/e2e, reviewing it with a verified panel, and turning finished work into a pitch or comprehension quiz - every phase publishes its own HTML view as a shareable Artifact | `/discover`, `/to-plan`, `/to-tasks`, `/implement`, `/to-review`, `/to-pitch`, `/to-quiz` |
+| [dev](dev/) | My personal development workflow focused on testing, heavily influenced by the latest best practices from Anthropic. | `/discover`, `/to-plan`, `/to-tasks`, `/implement`, `/to-review`, `/to-pitch`, `/to-quiz` |
 
 ## Installation
 
 ```bash
 # Add this marketplace to your Claude Code session
-/plugin marketplace add ~/ws/skills
+/plugin marketplace add tobrun/skills
 
-# Install a specific plugin
-/plugin install {plugin-name}@nurbot
+# Install a specific plugin, eg. dev
+/plugin install dev@tobrun
 ```
 
-## Structure
-
-```
-.
-├── .claude-plugin/
-│   └── marketplace.json     # Marketplace manifest listing all plugins
-├── {plugin-name}/           # One directory per plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json      # Plugin metadata
-│   ├── README.md            # Plugin documentation
-│   └── skills/
-│       └── {skill-name}/
-│           ├── SKILL.md     # Skill definition with YAML frontmatter
-│           ├── references/  # Deep-dive docs loaded on demand
-│           └── examples/    # Worked examples
-├── scripts/
-│   └── validate.sh          # Self-validation script
-├── CLAUDE.md                # Guidance for Claude Code in this repo
-└── README.md                # This file
-```
-
-## Development
-
-1. Add a new plugin by creating a directory with `.claude-plugin/plugin.json`, a `README.md`, and at least one skill.
-2. Register it in `.claude-plugin/marketplace.json`.
-3. Add a row to the plugin table above.
-4. Run `scripts/validate.sh` to verify everything is correct.
-5. Install locally to test: `/plugin marketplace add ~/ws/skills && /plugin install {name}@nurbot`.

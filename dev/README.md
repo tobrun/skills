@@ -53,6 +53,6 @@ Cannot enforce a merge gate - Claude Code has no hook into a PR's merge button -
 ## Installation
 
 ```bash
-/plugin marketplace add ~/ws/skills
+/plugin marketplace add tobrun/skills
 /plugin install dev@nurbot
 ```

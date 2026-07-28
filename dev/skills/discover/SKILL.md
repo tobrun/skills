@@ -7,16 +7,14 @@ disable-model-invocation: true
 # Discover
 
 Before a plan is worth writing, find out what you don't know yet.
-Work you understand well has few unknowns; work in unfamiliar territory has unknown unknowns you can't even name until you go looking for them.
-This skill runs the moves that surface those unknowns, ad hoc, in whatever combination the situation needs - never a fixed pipeline.
+This skill runs the moves that surface unknowns, ad hoc, in whatever combination the situation needs - never a fixed pipeline.
 
 Invoking this skill is the task - start immediately, don't wait for further instructions.
 
 ## Unknowns, named
 
-Every request carries four kinds of unknown: known knowns (what's already in the prompt), known unknowns (gaps you're aware you haven't figured out), unknown knowns (criteria you'd recognize if you saw them but haven't articulated), and unknown unknowns (what you haven't considered at all).
-Known knowns need nothing from this skill.
-Each mode below targets a different one of the other three: blind spot pass surfaces unknown unknowns, brainstorm + prototype surfaces unknown knowns, interview closes known unknowns.
+Each mode targets one kind of unknown: the **blind spot pass** surfaces unknown unknowns (what you haven't considered), **brainstorm + prototype** surfaces unknown knowns (criteria you'd recognize but haven't articulated), the **interview** closes known unknowns (gaps you're aware of).
+Known knowns - what's already in the prompt - need nothing from this skill.
 
 ## Decide what this invocation needs
 
@@ -26,9 +24,9 @@ Read the request and judge which signals apply. Run only the modes a signal actu
 - Involves a UX or architecture shape that isn't decided yet, or the user asks to see options / mock something up -> **brainstorm + prototype**.
 - Leaves ambiguities standing whose answer would change the architecture -> **interview**.
 
-More than one signal can apply in one invocation - run the modes in sequence (a blind spot pass often surfaces the shape decision that brainstorm/prototype should then explore, which in turn surfaces the ambiguities the interview resolves).
-If none apply - the area is familiar, the shape is obvious, nothing is ambiguous - say so plainly and recommend `/to-plan` directly.
-Don't run a mode to look thorough; run it because a real unknown is sitting there.
+More than one signal can apply - run the modes in sequence (a blind spot pass often surfaces a shape decision for brainstorm/prototype, which surfaces ambiguities for the interview).
+If none apply, say so plainly and recommend `/to-plan` directly.
+Run a mode because a real unknown is sitting there, not to look thorough.
 
 ## Mode 1: Blind spot pass
 
@@ -45,8 +43,7 @@ See [references/modes.md](references/modes.md) for depth.
 
 ## Mode 3: Interview
 
-Ask one question at a time with `AskUserQuestion`, ordered by architectural impact - the question whose answer would change the most goes first.
-Ask one at a time rather than batching: each answer can change what the next question should even be, so batching would waste rounds on now-irrelevant questions.
+Ask one question at a time with `AskUserQuestion`, most architecturally significant first - each answer can change what the next question should be, so batching wastes rounds on now-irrelevant questions.
 Stop once remaining ambiguities are cosmetic or reversible, not architectural.
 
 ## Output
