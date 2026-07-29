@@ -50,7 +50,7 @@ E2E criteria are proven by running the actual application against a **fully mock
 3. **Never fabricate a screenshot or a data-model-state entry.** Both come from this actual run.
 4. **Loop until green.** A failed scenario is a bug: diagnose it, fix the code (a new red-green cycle at the right layer), re-run and re-capture that scenario. Never flip a status to pass without a fresh capture. If a scenario fails three times on the same root cause, write what you found into Deviations and ask the user before continuing.
 5. Map the results onto `E2E_DATA` per [references/e2e-report.md](references/e2e-report.md), copy `templates/e2e-report.html` to `~/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`, and replace only the data block.
-6. **Open the report in the browser** (`open` on macOS, `xdg-open` on Linux) as soon as it is written, then publish it with the Artifact tool (stable favicon per this artifact type, title and description from the plan name) and tell the user both the local path and the URL.
+6. **Open the report locally in the browser** (`open` on macOS, `xdg-open` on Linux) as soon as it is written - this is the review surface, kept local. Give the user the local path, and offer to upload it to claude.ai as a shareable Artifact if they want a link to hand to someone else. Only publish it with the Artifact tool (stable favicon per this artifact type, title and description from the plan name) when they say yes; then hand back the returned URL. Never publish automatically.
 
 ## Implementation notes
 
