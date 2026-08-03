@@ -33,6 +33,7 @@ It verifies the split covers every plan scope item before finishing, and does no
 Executes a plan's task files test-first, at the layer each acceptance criterion is tagged with - unit for business logic, integration for real cross-component seams, e2e for driving the actual running application.
 Runs independent tasks in parallel as waves of subagents derived from the tasks' `Depends on` graph, committing each task and appending to a running `implementation-notes.md` that logs any deviations forced by an edge case.
 Once every task is committed, drives the real app (via the `run` skill) against a mocked environment, loops until every e2e scenario passes, then opens the e2e report in the browser and publishes it as an Artifact: screenshots per scenario for frontend systems, Test Scenario and Data Model State tables for everything else.
+Every run then asks whether to push and open a PR, whether or not Jira is configured (see Jira integration below).
 
 ### to-review
 
@@ -49,6 +50,42 @@ Packages a finished plan, its prototype, implementation notes, and e2e evidence 
 
 Renders a context/intuition/what-was-done report with a graded comprehension quiz, published as an Artifact.
 Cannot enforce a merge gate - Claude Code has no hook into a PR's merge button - so it says so plainly and produces an honest pass/fail check instead.
+
+## Jira integration
+
+The spec-driven workflow can mirror its local state to Jira through the
+Atlassian CLI (`acli`). Install and authenticate `acli` before enabling it.
+Create `.dev/config.json` in the consuming repository:
+
+```json
+{
+  "jira": {
+    "enabled": true,
+    "site": "acme.atlassian.net",
+    "project": "PROJ"
+  }
+}
+```
+
+`site` is optional and `project` is required when enabled. An absent config
+file or `jira.enabled: false` keeps the workflow pure-local with no Jira
+calls or questions.
+
+The hierarchy is Initiative > Epic > Task. `to-plan` asks you to choose an
+existing open Initiative, creates one Epic under it, and stores the Epic key in
+the plan. `to-tasks` creates one Jira Task under that Epic for each local task,
+stores each key in the task file and index, and comments and closes old issues
+when a task is superseded. `implement` moves the Epic to In Progress at start,
+moves each task through In Progress and Done as the orchestrator dispatches and
+commits it, then asks `push and open the PR?` on every run. A yes creates a
+keyed branch when needed, pushes it, and opens a PR whose title starts with the
+Epic key. A no stops after the e2e report.
+
+One-time Jira administration is required. Install the GitHub for Jira
+integration, then add an automation rule: "when a linked pull request is
+merged, transition the Epic to Done". The Epic key in the branch name and PR
+title is what lets Jira link the pull request and trigger that rule. The
+skills do not poll for merges.
 
 ## Installation
 
