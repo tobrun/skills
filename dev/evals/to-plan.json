@@ -15,6 +15,25 @@
         "Plan file is written to .dev/{slug}/plan.md",
         "A {slug}.html view is rendered from the plan and published via the Artifact tool, and both the local path and the returned URL are reported to the user"
       ]
+    },
+    {
+      "id": "jira-disabled",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Write a plan for this.",
+      "fixture": "a repo with src/api/server.js and no .dev/config.json, with no acli executable on PATH",
+      "assertions": [
+        "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
+        "No acli invocation occurs and the plan is written using the normal local workflow"
+      ]
+    },
+    {
+      "id": "jira-enabled",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Write a plan for this.",
+      "fixture": "a repo with src/api/server.js, .dev/config.json enabling Jira for project PROJ, and dev/evals/fixtures/acli first on PATH",
+      "assertions": [
+        "The user is asked to choose an existing open Initiative returned by acli",
+        "The stub log contains an Epic create call with project PROJ, type Epic, and a parent Initiative key",
+        "The resulting plan.md contains a Jira: PROJ-... line directly under its title"
+      ]
     }
   ]
 }

@@ -18,6 +18,17 @@ Turn the user's request into a written plan for human review before any implemen
 6. If execution needs more than one task, recommend the user run `to-tasks`; never invoke it yourself. If it fits in one task, embed the execution detail directly in the plan's Execution section.
 7. Stop and present the plan for review: point the user at the plan view now open in their browser, note the local `plan.md` path, and name any assumption you proceeded on. Offer to publish the view as a shareable Artifact if they want to hand it to someone else, but only publish when they say yes. Do not implement; the follow-up is a reviewed plan handed to `implement`.
 
+## Jira sync
+
+Before the interview, read `.dev/config.json`. If `jira.enabled` is true, read
+`../../references/jira.md` before the first `acli` call. List open Initiatives
+in the configured project and add an interview question asking the user to
+choose one. If none exists, stop with a clear message; do not create one.
+After writing `plan.md`, create and verify one Epic linked to the chosen
+Initiative, then persist `Jira: {KEY}` under the plan title. Any Jira failure
+stops the skill and asks the user how to proceed. With an absent or disabled
+config, skip all Jira behavior and mentions.
+
 ## Interview the user
 
 A plan is only as good as the unknowns it resolves before implementation starts.
