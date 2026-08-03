@@ -21,7 +21,28 @@ Read [references/layers.md](references/layers.md), [references/tests.md](referen
 3. For each wave, run its tasks in parallel per [references/parallel.md](references/parallel.md), then commit each finished task on the current branch and append its entry to `implementation-notes.md`.
 4. Move straight to the next wave. Never stop after one task or wave to ask about review.
 5. When every task is committed, run the full e2e pass per "The e2e layer" below over the whole plan, and loop on failures until it is green.
-6. Only then ask the user to run `to-review` on the full body of work - reviews are human-triggered, never launch the panel yourself. Point it at `implementation-notes.md` and the `{plan-name}-e2e-report.html`.
+6. After the e2e report, ask exactly "push and open the PR?" and follow the
+   Jira sync and pull request rules below. Only then ask the user to run
+   `to-review` on the full body of work - reviews are human-triggered, never
+   launch the panel yourself. Point it at `implementation-notes.md` and the
+   `{plan-name}-e2e-report.html`.
+
+## Jira sync and pull request
+
+Read `.dev/config.json`; when `jira.enabled` is true, read
+`../../references/jira.md` before the first `acli` call. Discover transition
+names, then the orchestrator transitions the persisted Epic to In Progress at
+run start. The orchestrator alone transitions each task issue to In Progress
+when dispatching its wave and to Done after verification and commit. Subagents
+never invoke `acli`, and their prompts and the `parallel.md` contract do not
+change. Any Jira failure stops and asks the user how to proceed.
+
+On every run, ask exactly: "push and open the PR?" Do not push or open a PR
+without a yes. On yes, if on the default branch, create a work branch,
+including the Epic key when Jira is enabled, then push and open the PR. With
+Jira enabled, put the Epic key at the start of the branch name and PR title. On
+no, do not push or open a PR. With an absent or disabled config, perform no
+Jira behavior or mention, but still ask the PR question.
 
 ## The task loop
 

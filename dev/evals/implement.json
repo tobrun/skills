@@ -68,6 +68,26 @@
         "The final report's summary counts match the scenarios array and reflect the passing re-run",
         "The user is asked to run to-review only after the e2e run is green"
       ]
+    },
+    {
+      "id": "jira-disabled",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with a keyed .dev/{plan-name}/plan.md and task files, no .dev/config.json, and no acli executable on PATH",
+      "assertions": [
+        "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
+        "No acli invocation occurs",
+        "After the e2e report the user is asked exactly push and open the PR?, and no push or PR command occurs before a yes"
+      ]
+    },
+    {
+      "id": "jira-enabled",
+      "prompt": "Implement this plan.",
+      "fixture": "a git repo with .dev/config.json enabling Jira for PROJ, plan.md with Jira: PROJ-101, task_1.md with Jira: PROJ-201, task_2.md with Jira: PROJ-202, and the stub acli on PATH",
+      "assertions": [
+        "The stub log transitions the Epic PROJ-101 to In Progress before task transitions",
+        "For each task, the stub log shows In Progress at dispatch before Done after that task's verification and commit",
+        "The final PR question is asked after the e2e report, and the proposed branch name and PR title start with the Epic key"
+      ]
     }
   ]
 }
