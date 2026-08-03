@@ -12,7 +12,9 @@ case " $* " in
     if [[ " $* " == *" --type Epic "* ]]; then
       printf '%s\n' '{"key":"PROJ-101","fields":{"issuetype":{"name":"Epic"}}}'
     else
-      printf '%s\n' '{"key":"PROJ-201","fields":{"issuetype":{"name":"Task"}}}'
+      task_count=$(grep ' workitem create ' "$log_file" 2>/dev/null | grep -vc ' --type Epic ' || true)
+      key="PROJ-2$(printf '%02d' "$task_count")"
+      printf '{"key":"%s","fields":{"issuetype":{"name":"Task"}}}\n' "$key"
     fi
     ;;
   *" transition-list "*)
