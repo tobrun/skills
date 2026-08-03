@@ -128,3 +128,15 @@ Before finishing, check the decomposition holds together - a silently dropped sc
 - The `Depends on` graph is acyclic, and every pair of tasks that touch a shared file has an ordering declared between them.
 
 If any check fails, fix the split before writing the index - do not ship a decomposition with a hole in it.
+
+## Jira sync
+
+Read `.dev/config.json`; when `jira.enabled` is true, read
+`../../references/jira.md` before the first `acli` call. Read the Epic key from
+the plan's `Jira: {KEY}` line and stop and ask if it is missing. After the
+split is verified and the task files and index are final, create and verify
+one Jira Task per new task under that Epic, persist `Jira: {KEY}` under each
+task title, and add a Jira column to the index. When superseding a task, close
+its old issue and comment `superseded by task_N` before creating the
+replacement issue. Any Jira failure stops and asks. With an absent or disabled
+config, do not mention Jira or invoke `acli`.

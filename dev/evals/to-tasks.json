@@ -19,6 +19,25 @@
         "The plan's Execution section is updated with a task index table carrying Depends on and Status columns",
         "The plan's HTML view is not re-rendered or republished by this skill - that remains to-plan's responsibility"
       ]
+    },
+    {
+      "id": "jira-disabled",
+      "prompt": "Split this plan into tasks.",
+      "fixture": ".dev/rate-limit-api/plan.md in a repo with no .dev/config.json and no acli executable on PATH",
+      "assertions": [
+        "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
+        "No acli invocation occurs and local task files and the task index are produced normally"
+      ]
+    },
+    {
+      "id": "jira-enabled",
+      "prompt": "Split this plan into tasks.",
+      "fixture": ".dev/rate-limit-api/plan.md containing Jira: PROJ-101 under its title, keyed existing task files for a supersede case, enabled .dev/config.json for PROJ, and the stub acli on PATH",
+      "assertions": [
+        "The stub log contains one Task create call per newly written task file, each parented to PROJ-101",
+        "Each new task_N.md contains a Jira: PROJ-... line under its title and the plan index has a Jira column with matching keys",
+        "The superseded issue receives a close transition and a comment containing superseded by task_N"
+      ]
     }
   ]
 }
