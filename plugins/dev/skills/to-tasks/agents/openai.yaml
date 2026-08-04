@@ -1,0 +1,6 @@
+interface:
+  display_name: "To Tasks"
+  short_description: "Split a plan into testable vertical tasks"
+  default_prompt: "Use $dev:to-tasks to split the current plan into independently testable tasks."
+policy:
+  allow_implicit_invocation: false

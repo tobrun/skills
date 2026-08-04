@@ -1,0 +1,6 @@
+interface:
+  display_name: "Implement"
+  short_description: "Execute a plan test-first through e2e"
+  default_prompt: "Use $dev:implement to execute the current plan test-first and verify it end to end."
+policy:
+  allow_implicit_invocation: false

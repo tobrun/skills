@@ -52,9 +52,9 @@
         "The e2e run uses a mocked, seeded, deterministic environment - no real external service or production data is touched",
         "The e2e pass happens after the task is committed, not interleaved with the unit/integration cycles",
         ".dev/cart-total/implementation-notes.md exists and references what was done for the task",
-        "A cart-total-e2e-report.html is written locally under ~/tmp/{project-slug}/reports/, kind is non-frontend, and it contains a dataModelState entry with real before/after values rather than a screenshot",
+        "A cart-total-e2e-report.html is written locally under /tmp/{project-slug}/reports/, kind is non-frontend, and it contains a dataModelState entry with real before/after values rather than a screenshot",
         "No screenshot or dataUri field is fabricated for a kind: non-frontend report",
-        "The report is opened in the browser (open/xdg-open) and published via the Artifact tool, with both the local path and the returned URL reported"
+        "The report is opened with the host browser integration when available, or returned as a clickable local path; publication happens only when requested and supported"
       ]
     },
     {

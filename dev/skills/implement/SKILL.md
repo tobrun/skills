@@ -64,14 +64,14 @@ Each task, whether you run it yourself or a subagent runs it, follows the same l
 
 E2E criteria are proven by running the actual application against a **fully mocked environment**: real built artifact, real internal wiring, no real external world - see [references/mocking.md](references/mocking.md#the-e2e-environment). Run this once per plan, after all tasks are committed, covering every `[e2e]` criterion across tasks.
 
-1. **Launch the app.** Invoke the already-installed `run` skill directly via the Skill tool, with the mocked environment configured. This is a deliberate exception to "dev skills only recommend, never invoke": `run` sits outside the human-triggered `dev` family, closer to a Bash call than to a sibling dev skill. If `run` isn't installed, ask the user how to launch the app.
+1. **Launch the app.** Invoke an installed `run` skill with the mocked environment configured when the host supports direct skill invocation. Otherwise inspect the repository's documented commands and start the app directly. Ask the user only when no safe launch command can be determined.
 2. **Drive it and capture evidence**, per scenario:
-   - `kind: "frontend"` - use the `claude-in-chrome` tools to exercise the scenario, one screenshot per meaningful step, embedded as a base64 data URI.
+   - `kind: "frontend"` - use available browser automation (the host browser integration or Playwright) to exercise the scenario, one screenshot per meaningful step, embedded as a base64 data URI.
    - `kind: "non-frontend"` - capture the entity's real before/after state from the run's own output or fixtures.
 3. **Never fabricate a screenshot or a data-model-state entry.** Both come from this actual run.
 4. **Loop until green.** A failed scenario is a bug: diagnose it, fix the code (a new red-green cycle at the right layer), re-run and re-capture that scenario. Never flip a status to pass without a fresh capture. If a scenario fails three times on the same root cause, write what you found into Deviations and ask the user before continuing.
-5. Map the results onto `E2E_DATA` per [references/e2e-report.md](references/e2e-report.md), copy `templates/e2e-report.html` to `~/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`, and replace only the data block.
-6. **Open the report locally in the browser** (`open` on macOS, `xdg-open` on Linux) as soon as it is written - this is the review surface, kept local. Give the user the local path, and offer to upload it to claude.ai as a shareable Artifact if they want a link to hand to someone else. Only publish it with the Artifact tool (stable favicon per this artifact type, title and description from the plan name) when they say yes; then hand back the returned URL. Never publish automatically.
+5. Map the results onto `E2E_DATA` per [references/e2e-report.md](references/e2e-report.md), copy `templates/e2e-report.html` to `/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`, and replace only the data block.
+6. **Open the report locally** with the host's browser integration when available; otherwise give the user a clickable local path. Offer to publish it with an available artifact-publishing tool if they want a shareable link. Only publish when they say yes; if the host has no publisher, keep the local report as the deliverable.
 
 ## Implementation notes
 

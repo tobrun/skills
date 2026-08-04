@@ -1,0 +1,24 @@
+{
+  "name": "@tobrun/dev-workflow",
+  "version": "1.2.0",
+  "description": "Test-focused development workflow skills for Claude Code, Codex, and Pi.",
+  "keywords": [
+    "pi-package",
+    "agent-skills",
+    "development-workflow"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tobrun/skills.git"
+  },
+  "files": [
+    "dev/skills",
+    "dev/references",
+    "README.md"
+  ],
+  "pi": {
+    "skills": [
+      "./dev/skills"
+    ]
+  }
+}

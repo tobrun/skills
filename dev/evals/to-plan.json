@@ -13,7 +13,7 @@
         "No standalone Documentation impact table is produced; any README or user-facing doc change is named inline in the approach instead",
         "The plan does not implement code; no source files are modified",
         "Plan file is written to .dev/{slug}/plan.md",
-        "A {slug}.html view is rendered from the plan and published via the Artifact tool, and both the local path and the returned URL are reported to the user"
+        "A {slug}.html view is rendered under /tmp/{project-slug}/reports/ and its local path is reported; it is published only when the user requests a link and the host has a publisher"
       ]
     },
     {

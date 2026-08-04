@@ -408,6 +408,119 @@ check_skill_length() {
 }
 
 # ===========================================================================
+# C01: Generated Codex distribution is current and structurally valid
+# ===========================================================================
+check_codex() {
+  local marketplace=".agents/plugins/marketplace.json"
+  local plugin="plugins/dev"
+  local manifest="$plugin/.codex-plugin/plugin.json"
+
+  if ! python3 scripts/build_codex_plugin.py --check >/dev/null 2>&1; then
+    fail "C01" "$plugin" \
+      "Generated Codex plugin is stale; run python3 scripts/build_codex_plugin.py"
+  fi
+
+  if ! jq -e '
+    .name == "nurbot" and
+    (.plugins | length == 1) and
+    .plugins[0].name == "dev" and
+    .plugins[0].source.source == "local" and
+    .plugins[0].source.path == "./plugins/dev" and
+    .plugins[0].policy.installation == "AVAILABLE" and
+    .plugins[0].policy.authentication == "ON_INSTALL" and
+    (.plugins[0].category | length > 0)
+  ' "$marketplace" >/dev/null 2>&1; then
+    fail "C01" "$marketplace" "Invalid Codex marketplace entry"
+  fi
+
+  if ! jq -e '
+    .name == "dev" and
+    (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+([+-][0-9A-Za-z.-]+)?$")) and
+    (.description | length > 0) and
+    (.author.name | length > 0) and
+    .skills == "./skills/" and
+    (.interface.displayName | length > 0) and
+    (.interface.shortDescription | length > 0) and
+    (.interface.longDescription | length > 0) and
+    (.interface.developerName | length > 0) and
+    (.interface.category | length > 0) and
+    (.interface.capabilities | length > 0) and
+    (.interface.defaultPrompt | length > 0)
+  ' "$manifest" >/dev/null 2>&1; then
+    fail "C01" "$manifest" "Invalid Codex plugin manifest"
+  fi
+
+  for skilldir in "$plugin"/skills/*/; do
+    [ ! -d "$skilldir" ] && continue
+    local skill_name
+    skill_name=$(basename "${skilldir%/}")
+    local skill_md="${skilldir%/}/SKILL.md"
+    local agent_yaml="${skilldir%/}/agents/openai.yaml"
+
+    if grep -q '^disable-model-invocation: true$' "$skill_md"; then
+      fail "C01" "$skill_md" \
+        "Codex skill must not contain Claude invocation frontmatter"
+    fi
+    if [ ! -f "$agent_yaml" ]; then
+      fail "C01" "$agent_yaml" "Missing Codex skill interface metadata"
+    elif ! grep -q '^  allow_implicit_invocation: false$' "$agent_yaml"; then
+      fail "C01" "$agent_yaml" "Skill must remain explicit-invocation only"
+    fi
+    if ! grep -Fq "\$dev:$skill_name" "$agent_yaml" 2>/dev/null; then
+      fail "C01" "$agent_yaml" \
+        "Default prompt must name the namespaced Codex skill"
+    fi
+  done
+}
+
+# ===========================================================================
+# P01: Pi package manifest and subprocess review transport are valid
+# ===========================================================================
+check_pi() {
+  local package="package.json"
+  local runner="dev/skills/to-review/scripts/run-pi-agents.sh"
+  local package_version
+  local plugin_version
+
+  if ! jq -e '
+    .name == "@tobrun/dev-workflow" and
+    (.version | test("^[0-9]+\\.[0-9]+\\.[0-9]+([+-][0-9A-Za-z.-]+)?$")) and
+    (.keywords | index("pi-package")) and
+    .files == ["dev/skills", "dev/references", "README.md"] and
+    .pi.skills == ["./dev/skills"]
+  ' "$package" >/dev/null 2>&1; then
+    fail "P01" "$package" "Invalid Pi package manifest"
+  fi
+
+  package_version=$(jq -r '.version // empty' "$package" 2>/dev/null || true)
+  plugin_version=$(jq -r '.version // empty' \
+    dev/.claude-plugin/plugin.json 2>/dev/null || true)
+  if [ "$package_version" != "$plugin_version" ]; then
+    fail "P01" "$package" \
+      "Pi package version must match dev/.claude-plugin/plugin.json"
+  fi
+
+  if [ ! -x "$runner" ]; then
+    fail "P01" "$runner" "Pi agent runner must be executable"
+  elif ! bash -n "$runner" scripts/test_pi_runner.sh; then
+    fail "P01" "$runner" "Pi agent runner scripts have invalid shell syntax"
+  elif ! bash scripts/test_pi_runner.sh >/dev/null 2>&1; then
+    fail "P01" "$runner" "Pi agent runner self-test failed"
+  fi
+
+  if ! grep -q 'Native transport (preferred)' \
+    dev/skills/to-review/references/orchestration.md; then
+    fail "P01" "dev/skills/to-review/references/orchestration.md" \
+      "Missing native multi-agent transport"
+  fi
+  if ! grep -q 'PI_CODING_AGENT=true' \
+    dev/skills/to-review/references/orchestration.md; then
+    fail "P01" "dev/skills/to-review/references/orchestration.md" \
+      "Missing Pi subprocess transport"
+  fi
+}
+
+# ===========================================================================
 # Main
 # ===========================================================================
 check_01
@@ -425,6 +538,8 @@ check_12
 check_13
 check_14
 check_skill_length
+check_codex
+check_pi
 
 if [ -s "$ERROR_FILE" ]; then
   echo ""

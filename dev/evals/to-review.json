@@ -5,7 +5,7 @@
   "evals": [
     {
       "id": "to-review-policy-questions",
-      "prompt": "Answer briefly, from the skill text only: (1) After implement finishes a task, should to-review launch automatically? (2) A finding is BLOCK severity but verification returns PLAUSIBLE (could not refute, could not fully confirm). What severity does it end up as in the report: BLOCK, CONCERN, or dropped entirely? (3) Should the orchestrator read the diff's file contents and form its own opinion on code quality? (4) If one lens agent fails or returns nothing parseable, does the whole review abort? (5) The diff adds new user-facing behavior with a passing unit test but no matching scenario in the plan's e2e report. Is that a pass? (6) implementation-notes.md logs a Deviation for this plan. What must the tests lens or plan-conformance lens do with that information? (7) Besides review_N.md, what else does to-review produce, and where does the URL for it come from?",
+      "prompt": "Answer briefly, from the skill text only: (1) After implement finishes a task, should to-review launch automatically? (2) A finding is BLOCK severity but verification returns PLAUSIBLE (could not refute, could not fully confirm). What severity does it end up as in the report: BLOCK, CONCERN, or dropped entirely? (3) Should the orchestrator read the diff's file contents and form its own opinion on code quality? (4) If one lens agent fails or returns nothing parseable, does the whole review abort? (5) The diff adds new user-facing behavior with a passing unit test but no matching scenario in the plan's e2e report. Is that a pass? (6) implementation-notes.md logs a Deviation for this plan. What must the tests lens or plan-conformance lens do with that information? (7) Besides review_N.md, what else does to-review produce, and where does the URL for it come from? (8) How does agent execution differ between a host with native subagents and Pi?",
       "assertions": [
         "Answer 1: no, reviews are human-triggered only; to-review must never be launched automatically",
         "Answer 2: CONCERN (PLAUSIBLE demotes a BLOCK to CONCERN; only REFUTED gets dropped)",
@@ -13,7 +13,8 @@
         "Answer 4: no, a failed lens does not abort the review; it is noted so the verdict is honestly partial",
         "Answer 5: no; new user-facing behavior without a passing e2e-report scenario is a finding (BLOCK for a missing/failing e2e scenario per plan-conformance) even though a unit test exists",
         "Answer 6: check whether the conservative choice logged under the deviation still satisfies the plan's Success criteria; an unresolved deviation that changes promised user-facing behavior is at least a CONCERN",
-        "Answer 7: a review_N.html rendered via the same schema/template pattern used elsewhere, published via the Artifact tool using the file_path, with the URL reported alongside the local path"
+        "Answer 7: a review_N.html rendered via the same schema/template pattern used elsewhere and reported as a local path; it is published only when the user requests a link and the host has a publisher",
+        "Answer 8: hosts with native multi-agent support keep the existing plain parallel subagent batches; Pi uses the bundled runner to launch isolated pi --print processes in the same lens-then-verifier batches, never replacing the panel with orchestrator review"
       ]
     }
   ]

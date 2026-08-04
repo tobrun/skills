@@ -9,7 +9,7 @@ Methodology, scores, and findings for the eval run that verified the conciseness
 For each skill, an "old" and a "new" subagent were given the same task and pointed at the pre-refactor and post-refactor `SKILL.md` text respectively (old text sourced via `git show b7bb3bf:dev/skills/{skill}/SKILL.md`), then graded against the assertions in this directory's `{skill}.json`.
 
 - **Functional evals** (`to-plan`, `to-tasks`, `implement`): the subagent actually executes the skill against a realistic scratch fixture and produces a real artifact (a plan, task files, or code+tests+commit), which is graded directly.
-- **Comprehension evals** (`install`, `to-review`): a full run is either interactive (`install` needs AskUserQuestion rounds against a real codebase) or expensive (`to-review` fans out its own subagent panel), so instead the subagent answers policy questions strictly from the skill text, graded against known-correct answers.
+- **Comprehension evals** (`install`, `to-review`): a full run is either interactive (`install` needs question rounds against a real codebase) or expensive (`to-review` fans out its own subagent panel), so instead the subagent answers policy questions strictly from the skill text, graded against known-correct answers.
 
 Fixtures live under a scratch directory outside the repo (not checked in); the eval definitions and this results file are the persistent, re-runnable part of the harness.
 

@@ -6,17 +6,17 @@ disable-model-invocation: true
 
 # To Plan
 
-Turn the user's request into a written plan for human review before any implementation starts. The plan is the deliverable: do not implement anything. 
+Turn the user's request into a written plan for human review before any implementation starts. The plan is the deliverable: do not implement anything.
 
 ## Workflow
 
-1. Read the request or spec and explore the relevant code, the tests, and the current behavior directly - the code and its test suite are the source of truth for how the system works today. Check `~/tmp/{project-slug}/reports/` for a `*-discovery-notes.md` from a prior `discover` run matching this request's topic; if one exists, read it first and treat its answers as settled inputs, not open questions to re-litigate.
+1. Read the request or spec and explore the relevant code, the tests, and the current behavior directly - the code and its test suite are the source of truth for how the system works today. Check `/tmp/{project-slug}/reports/` for a `*-discovery-notes.md` from a prior `discover` run matching this request's topic; if one exists, read it first and treat its answers as settled inputs, not open questions to re-litigate.
 2. Interview the user before writing anything - see "Interview the user" below. This is where the real unknowns get resolved; a plan written without it is a guess.
 3. Pick a plan name: a kebab-case slug naming the outcome, not the activity (`self-serve-model-rollback`, not `rollback-work`). Reuse `discover`'s topic-slug when one was handed off.
 4. Write the plan to `.dev/{plan-name}/plan.md` using the structure below, folding in what the interview settled.
-5. Render the plan view locally and open it in the browser - see "Render and review locally" below. Do not publish it as an Artifact automatically.
+5. Render the plan view locally and open it with the host's browser integration when available - see "Render and review locally" below. Do not publish it automatically.
 6. If execution needs more than one task, recommend the user run `to-tasks`; never invoke it yourself. If it fits in one task, embed the execution detail directly in the plan's Execution section.
-7. Stop and present the plan for review: point the user at the plan view now open in their browser, note the local `plan.md` path, and name any assumption you proceeded on. Offer to publish the view as a shareable Artifact if they want to hand it to someone else, but only publish when they say yes. Do not implement; the follow-up is a reviewed plan handed to `implement`.
+7. Stop and present the plan for review: point the user at the rendered view, note the local `plan.md` path, and name any assumption you proceeded on. Offer to publish the view with an available artifact-publishing tool if they want a shareable link, but only publish when they say yes. Do not implement; the follow-up is a reviewed plan handed to `implement`.
 
 ## Jira sync
 
@@ -32,7 +32,7 @@ config, skip all Jira behavior and mentions.
 ## Interview the user
 
 A plan is only as good as the unknowns it resolves before implementation starts.
-After exploring, interview the user with the `AskUserQuestion` tool about anything the plan genuinely turns on that you cannot answer yourself: technical implementation choices, data model and API shape, UI and UX, edge cases, concerns, and tradeoffs.
+After exploring, interview the user with the host's structured user-input tool when available, or directly in chat otherwise, about anything the plan genuinely turns on that you cannot answer yourself: technical implementation choices, data model and API shape, UI and UX, edge cases, concerns, and tradeoffs.
 
 - Ask non-obvious questions only. If you have a clear recommendation and are almost certain it is right, propose it in the plan instead of asking - do not spend a question confirming the obvious.
 - One consequential unknown per question, most architecturally significant first, with concrete options where the code suggests plausible answers.
@@ -46,9 +46,9 @@ If, after exploring, there is genuinely nothing consequential left to ask, say s
 The rendered plan view is the primary review surface - the user reviews the plan in the browser, not by scrolling the chat transcript.
 
 - Map the plan onto `PLAN_DATA` per [references/data-schema.md](references/data-schema.md): goal, success criteria, scope, constraints, current state, the risks/assumptions/open-questions, a best-effort file/blast-radius list, and `steps` as the planned sequence of changes at approach altitude - leave a step's diff empty rather than inventing one, since no code exists yet.
-- Copy [templates/plan.html](templates/plan.html) to `~/tmp/{project-slug}/reports/{plan-name}.html`, replacing only the data block between the markers - never touch the rendering engine below them.
-- Open that local file in the default browser (`open` on macOS, `xdg-open` on Linux) so the user reviews it there directly. Keep the local path for step 7.
-- Do not publish it as an Artifact as part of this flow. Only publish (Artifact tool, stable emoji favicon, title and description from the plan's name and goal) when the user asks for a shareable link; then hand off the returned URL. `to-plan` is the sole owner of this artifact - no other skill re-renders or republishes it.
+- Copy [templates/plan.html](templates/plan.html) to `/tmp/{project-slug}/reports/{plan-name}.html`, replacing only the data block between the markers - never touch the rendering engine below them.
+- Open that local file with the host's browser integration when available; otherwise give the user a clickable local path. Do not fail solely because GUI launch is unavailable. Keep the local path for step 7.
+- Do not publish it as part of this flow. Only use an available artifact-publishing tool (stable plan favicon, title and description from the plan's name and goal) when the user asks for a shareable link; then hand off the returned URL. If no publisher exists, retain the local HTML deliverable. `to-plan` is the sole owner of this artifact - no other skill re-renders or republishes it.
 
 ## Plan structure
 

@@ -1,7 +1,7 @@
 {
   "name": "dev",
-  "version": "1.1.0",
-  "description": "Development workflow skills: discover unknowns before planning, plan and split work into layer-tagged tasks, implement test-first across unit/integration/e2e with a running notes log, review it with a verified fan-out panel, and turn finished work into a pitch or a comprehension quiz - no standing knowledge base, and every phase publishes its own HTML view as a shareable Artifact.",
+  "version": "1.2.0",
+  "description": "Development workflow skills: discover unknowns, plan and split work, implement test-first across unit/integration/e2e, run verified reviews, and render pitches or comprehension quizzes.",
   "author": {
     "name": "Tobrun"
   }

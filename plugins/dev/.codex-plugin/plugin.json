@@ -1,0 +1,26 @@
+{
+  "name": "dev",
+  "version": "1.2.0",
+  "description": "Development workflow skills for discovery, planning, task splitting, test-first implementation, verified review, pitches, and quizzes.",
+  "author": {
+    "name": "Tobrun"
+  },
+  "repository": "https://github.com/tobrun/skills",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Dev Workflow",
+    "shortDescription": "Plan, implement, and review tested changes.",
+    "longDescription": "Development workflow skills for discovery, planning, task splitting, test-first implementation, verified review, pitches, and quizzes.",
+    "developerName": "Tobrun",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Discover unknowns before planning this change.",
+      "Create a reviewable implementation plan.",
+      "Review the current branch with verification."
+    ]
+  }
+}

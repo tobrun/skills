@@ -8,7 +8,7 @@ Eval definitions for the `dev` plugin's skills: realistic prompts and objective 
 - `results.md` - the record of the most recent full run: scores, methodology, and findings.
 
 Most skills run in `"functional"` mode (a real fixture, a real subagent run, assertions checked against the actual output).
-`discover`, `to-review`, `to-pitch`, and `to-quiz` run in `"comprehension"` mode instead - each depends on either an interactive AskUserQuestion loop, a live codebase, or prior artifacts (a finished plan, implementation notes, an e2e report) that are too expensive to stage on every iteration, so these check policy comprehension of the skill text directly.
+`discover`, `to-review`, `to-pitch`, and `to-quiz` run in `"comprehension"` mode instead - each depends on either an interactive question loop, a live codebase, or prior artifacts (a finished plan, implementation notes, an e2e report) that are too expensive to stage on every iteration, so these check policy comprehension of the skill text directly.
 
 ## When to run these
 
