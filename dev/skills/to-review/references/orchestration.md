@@ -3,6 +3,12 @@
 The review always uses independent agents in two batches. Select the transport
 without changing the panel:
 
+Both transports use the same scratch root, such as `/tmp/to-review-{session-id}/`,
+with a `results/` directory per batch. Result files in that directory are the
+only channel for agent output. Never retrieve results by messaging an agent,
+waiting for relayed replies, or re-spawning an agent that already finished;
+a fresh spawn has none of the original context and its output must not be used.
+
 1. **Native transport (preferred):** when the host provides a multi-agent
    facility, launch all agents in a batch in one native parallel call. This is
    the existing Claude Code and Codex behavior; do not route those hosts
@@ -20,14 +26,29 @@ at the bottom for explicitly requested heavyweight runs only.
 
 ## Native transport
 
-Use the host's plain subagent tool exactly as provided. Launch one agent per
-selected lens in a single parallel call, then one agent per finding in a
-second parallel call. Native subagents receive the prompt contracts below
-directly.
+Use the host's plain subagent tool exactly as provided. Launch all agents of a
+batch in a single parallel call. Native subagents receive the prompt contracts
+below directly.
+
+Result delivery is file-based, because on some hosts subagents run in the
+background and their final message never reaches the orchestrator:
+
+1. Before launching a batch, create `{scratch-root}/{batch}/results/`.
+2. Each agent's prompt instructs it to write its JSON report to
+   `{scratch-root}/{batch}/results/{safe-agent-name}.json` as its last action,
+   then end with a one-line confirmation naming that path. The result file is
+   the deliverable; the final message is not.
+3. When the host signals that the batch's agents have finished, read the
+   result files. Do not poll agents for content in the meantime.
+4. A missing or unparseable file after one re-read marks only that agent as
+   failed, same as a crashed agent. Do not message it or spawn a replacement.
+
+Agents stay read-only in the repository; their only write is their own result
+file under the scratch root.
 
 ## Pi transport
 
-Use a scratch root such as `/tmp/to-review-{session-id}/`. For each batch:
+Use the shared scratch root. For each batch:
 
 1. Create `prompts/` and `results/` directories dedicated to that batch.
 2. Write one `{safe-agent-name}.md` prompt per agent. Include the complete
@@ -64,8 +85,11 @@ Each lens prompt is assembled from:
 5. The output contract below.
 
 Also state: `Do not modify repository files. This is a read-only review.`
+On the native transport, add the result-file instruction from the transport
+section; on Pi, the runner captures the final message instead, which must be
+exactly one fenced JSON block.
 
-Output contract (the agent's final message must be exactly one fenced JSON block):
+Output contract (the JSON every lens agent must produce):
 
 ```json
 {
@@ -89,23 +113,31 @@ Never retry a failed lens more than once.
 
 ## Batch 2: verifiers
 
-Collect every BLOCK and CONCERN from all lenses (NITs skip verification) and launch one verifier per finding, again all in a single message.
+Collect every BLOCK and CONCERN from all lenses (NITs skip verification),
+dedupe, and number the findings (`f1`, `f2`, ...) so verdicts map back.
+Launch one verifier per finding, again all in a single message.
+If that would exceed 10 verifiers, group the findings by file into at most 10
+shards and give each verifier its shard; each finding is still verified
+independently, one verdict object per finding.
 Verifier prompt:
 
 ```
-Adversarially verify this code-review finding from the "{lens}" lens.
-Your job is to REFUTE it.
-{finding as JSON}
+Adversarially verify each of these code-review findings, reported by the
+named lens. Your job is to REFUTE them.
+{findings as JSON, each with its id}
 Read the diff at {diffFile} and the actual files in the repo.
-Check whether the claimed problem is real: does the scenario actually
+Check whether each claimed problem is real: does the scenario actually
 trigger, is the claim accurate against the files, does something else
 already handle it?
-Reply with exactly one fenced JSON block:
-{"status": "CONFIRMED | PLAUSIBLE | REFUTED", "reason": "..."}
+Produce exactly one JSON array with one object per finding:
+[{"id": "f1", "status": "CONFIRMED | PLAUSIBLE | REFUTED", "reason": "..."}]
 CONFIRMED = you reproduced the reasoning against real files and it holds.
 PLAUSIBLE = you could not refute it, but could not fully confirm it either.
 REFUTED = wrong, unreachable, or already handled; say exactly why.
 ```
+
+Delivery follows the transport: on native, the verifier writes the array to
+its result file; on Pi, it replies with the array as one fenced JSON block.
 
 Aggregation of the verified results is plain reasoning per step 6 of the skill; do it yourself, not with another agent.
 

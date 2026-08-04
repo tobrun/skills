@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Development workflow skills: discover unknowns, plan and split work, implement test-first across unit/integration/e2e, run verified reviews, and render pitches or comprehension quizzes.",
   "author": {
     "name": "Tobrun"

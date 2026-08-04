@@ -45,6 +45,8 @@ Tell the user which lenses you selected and why before launching.
 
 Use the orchestration transport selected by [references/orchestration.md](references/orchestration.md). Prefer the host's native multi-agent facility, preserving its plain parallel subagents. On Pi, where no native subagent facility exists, launch isolated `pi --print` processes with the bundled runner. Both transports use the same two batches: all lens agents first, then all verifiers.
 If neither native subagents nor the Pi subprocess transport is available, stop and explain that this panel-based skill cannot preserve its verification contract.
+Agents hand their reports back as result files in the review scratch directory; once a batch finishes, read those files.
+Never chase results over agent messaging or re-spawn a finished agent to ask for its report.
 Every BLOCK or CONCERN is adversarially verified - the verifier's only job is to refute it against the actual repo.
 
 ### 6. Aggregate

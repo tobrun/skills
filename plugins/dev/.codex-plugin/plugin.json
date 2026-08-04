@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Development workflow skills for discovery, planning, task splitting, test-first implementation, verified review, pitches, and quizzes.",
   "author": {
     "name": "Tobrun"
