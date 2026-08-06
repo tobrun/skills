@@ -112,4 +112,5 @@ Re-reviewing the same plan later uses the same `file_path` convention: a new fil
 
 Summarize the verdict and top findings in chat, linking the `review_N.md` file, local HTML report, and published URL when one was requested and created.
 If the user accepts findings needing real work, suggest `to-tasks` to turn them into `task_N.md` files; do not invoke it yourself.
+This holds even when no plan exists: `to-tasks` bootstraps a minimal plan from the review's accepted findings.
 Also suggest, as independent optional next steps rather than a mandatory chain: `to-pitch` when the change needs buy-in from someone who wasn't in this conversation, and `to-quiz` when a reviewer wants a comprehension check before merging.

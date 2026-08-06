@@ -1,6 +1,6 @@
 ---
 name: to-tasks
-description: Split a plan at .dev/{plan-name}/plan.md into numbered task files (task_1.md, task_2.md, ...) sized for individual implementation. Use after to-plan when execution spans multiple tasks, or to break an existing plan into tasks.
+description: Split a plan at .dev/{plan-name}/plan.md into numbered task files (task_1.md, task_2.md, ...) sized for individual implementation. Use after to-plan when execution spans multiple tasks, after to-review to turn accepted findings into tasks, or to break an existing plan into tasks.
 disable-model-invocation: true
 ---
 
@@ -10,14 +10,29 @@ Split a plan's execution into ordered tasks, each its own file next to the plan.
 The audience is a junior engineer: write each task so one can pick it up and execute it in parallel with peers working other tasks, without needing this conversation or constant coordination.
 Every task carries its own acceptance criteria, test plan, and self-validation loop, so the engineer can prove their own work is done before handing it on.
 
-Input: an existing `.dev/{plan-name}/plan.md`.
+Input: an existing `.dev/{plan-name}/plan.md`, or a `.dev/{plan-name}/review_N.md` when the review ran without a plan.
 Output: `task_1.md`, `task_2.md`, ... plus a task index in the plan's Execution section.
 
 ## Before writing tasks
 
 - **Find the plan.** If the user named one, use it. Otherwise use the only plan directory with no `task_N.md` files yet. If more than one is a plausible match, or none is (every plan is already split, or none exists), ask which plan rather than guessing.
+- **Review findings without a plan are a valid input.** When the target directory has `review_N.md` files but no `plan.md` (the code was reviewed outside spec-driven development), do not ask for a plan. Instead bootstrap a minimal `plan.md` from the latest review, then split it as normal so the rest of the pipeline (`implement`, re-review, Jira) works unchanged. See "Bootstrapping a plan from a review".
 - **Re-running on an already-split plan is an update, not a fresh split.** Read the existing `task_N.md` files first, diff them against the current plan, and add or supersede only what changed (see "Numbering and updates"). Never blindly append a duplicate set starting from index 1.
 - **Discover the repo's real commands.** Before writing any self-validation loop, establish the actual test and typecheck invocations from `package.json` scripts, a `Makefile`, `pyproject.toml`/`pytest.ini`, `go.mod`, the CI config, or equivalent. If you cannot determine them, stop and ask the user - never guess `npm test` into a `pytest` repo.
+
+## Bootstrapping a plan from a review
+
+When the input is a review with no plan, write a minimal `.dev/{plan-name}/plan.md` before splitting:
+
+- Goal: resolve the accepted findings of `review_N.md` (the highest-numbered review); link that file.
+- Scope In: one line per accepted finding (blockers, concerns, and any nits the user wants fixed), quoting the finding's `{file:line} - {title}`. Scope Out: findings the user rejected or deferred, listed so they are visibly not dropped.
+- Success criteria: each accepted finding resolved, and a re-review of the same changes no longer reports it.
+- An empty Execution section for the task index.
+
+Then split that plan by the normal rules below.
+One task per finding is the default; merge findings only when they are one coherent change, and never into a catch-all.
+Each task's Goal names its source finding, and since findings are verified defects, include the review's triggering scenario as the reproduction (see the defect-task rule below).
+This bootstrap replaces `to-plan` only for review remediation; it is not a license to invent scope beyond the findings.
 
 ## Sizing tasks
 
