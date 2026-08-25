@@ -1,11 +1,11 @@
 # dev
 
-Development workflow skills for Claude Code, Codex, and Pi, built around two ideas: layered tests are the enforceable spec for behavior, and every phase produces something a human actually reviews as HTML, not markdown scrolling.
+Development workflow skills for Claude Code, Codex, opencode, and Pi, built around two ideas: layered tests are the enforceable spec for behavior, and every phase produces something a human actually reviews as HTML, not markdown scrolling.
 
 The skills chain loosely rather than as a rigid pipeline: `/discover` runs whichever pre-implementation moves (blind spot pass, brainstorm/prototype, interview) a given request actually needs, or none at all; `/to-plan` produces a reviewable plan; `/to-tasks` splits it into tasks with acceptance criteria tagged by test layer; `/implement` executes those tasks test-first across unit/integration/e2e, in parallel waves where dependencies allow, keeping a running implementation-notes log; `/to-review` verifies the result with a fan-out panel that checks e2e coverage and logged deviations; `/to-pitch` and `/to-quiz` turn finished work into a buy-in doc or a comprehension check.
 There is no standing knowledge base to maintain: the code, its tests, and the active plan under `.dev/{plan-name}/` are the only durable context.
 Every producing skill renders its own output as self-contained HTML under `/tmp/{project-slug}/reports/`. It publishes only when the user requests a shareable link and the host provides an artifact-publishing tool.
-Every skill is explicit-invocation only: Claude Code and Pi use `disable-model-invocation: true`, while the generated Codex distribution uses `agents/openai.yaml` with `allow_implicit_invocation: false`. Skills recommend the next step rather than launching each other.
+Every skill is explicit-invocation only: Claude Code and Pi use `disable-model-invocation: true`, the generated Codex distribution uses `agents/openai.yaml` with `allow_implicit_invocation: false`, and opencode enforces it with a `permission.skill` rule set to `ask` (see opencode installation below). Skills recommend the next step rather than launching each other.
 
 ## Skills
 
@@ -40,7 +40,7 @@ Every run then asks whether to push and open a PR, whether or not Jira is config
 Reviews a branch or PR with a panel of concern-focused agents, selected per diff.
 Every non-trivial finding is adversarially verified against the repo.
 Checks plan conformance, including whether `[e2e]`-tagged criteria have a passing scenario in the e2e report and whether logged deviations still satisfy Success criteria.
-Claude Code and Codex use their native parallel subagent facilities. Pi preserves the same independent two-batch panel by launching isolated `pi --print` subprocesses with the current provider, model, and reasoning level.
+Claude Code, Codex, and opencode use their native parallel subagent facilities. Pi preserves the same independent two-batch panel by launching isolated `pi --print` subprocesses with the current provider, model, and reasoning level.
 Renders `review_N.html` alongside the `review_N.md` file for reviewer handoff.
 
 ### to-pitch
@@ -105,6 +105,47 @@ codex plugin add dev@nurbot
 ```
 
 Invoke skills as `$dev:discover`, `$dev:to-plan`, and so on.
+
+## opencode installation
+
+opencode reads Claude-format `SKILL.md` files natively, so no generated distribution is needed.
+Clone this repository and symlink the source skills into opencode's global skill directory:
+
+```bash
+git clone https://github.com/tobrun/skills ~/ws/skills
+mkdir -p ~/.config/opencode/skills
+for skill in ~/ws/skills/dev/skills/*/; do
+  ln -sfn "$skill" ~/.config/opencode/skills/"$(basename "$skill")"
+done
+ln -sfn ~/ws/skills/dev/references ~/.config/opencode/references
+```
+
+The last symlink keeps the shared `references/jira.md` reachable through the `../../references/` links inside the skills.
+Symlinks mean a `git pull` updates the skills in place; restart opencode afterwards, since skills load at startup.
+
+opencode has no `disable-model-invocation` field (it is ignored harmlessly); skills load through a model-invoked `skill` tool.
+Preserve the explicit-invocation policy with a permission rule in `~/.config/opencode/opencode.json`:
+
+```json
+{
+  "permission": {
+    "skill": {
+      "*": "allow",
+      "discover": "ask",
+      "to-plan": "ask",
+      "to-tasks": "ask",
+      "implement": "ask",
+      "to-review": "ask",
+      "to-pitch": "ask",
+      "to-quiz": "ask"
+    }
+  }
+}
+```
+
+Invoke a skill by asking for it by name, for example "run the to-plan skill on this request"; the permission rule makes opencode confirm before loading one.
+Verify discovery with `opencode debug skill`.
+`to-review` runs its panel through opencode's native `task` subagents.
 
 ## Pi installation
 

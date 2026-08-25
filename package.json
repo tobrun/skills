@@ -1,6 +1,6 @@
 {
   "name": "@tobrun/dev-workflow",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Test-focused development workflow skills for Claude Code, Codex, and Pi.",
   "keywords": [
     "pi-package",

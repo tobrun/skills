@@ -11,8 +11,8 @@ a fresh spawn has none of the original context and its output must not be used.
 
 1. **Native transport (preferred):** when the host provides a multi-agent
    facility, launch all agents in a batch in one native parallel call. This is
-   the existing Claude Code and Codex behavior; do not route those hosts
-   through subprocesses.
+   the existing Claude Code, Codex, and opencode behavior; do not route those
+   hosts through subprocesses.
 2. **Pi transport:** when `PI_CODING_AGENT=true` and `pi` is available, write
    one prompt file per agent and run
    [scripts/run-pi-agents.sh](../scripts/run-pi-agents.sh). The runner launches
@@ -26,9 +26,11 @@ at the bottom for explicitly requested heavyweight runs only.
 
 ## Native transport
 
-Use the host's plain subagent tool exactly as provided. Launch all agents of a
-batch in a single parallel call. Native subagents receive the prompt contracts
-below directly.
+Use the host's plain subagent tool exactly as provided (the Agent tool on
+Claude Code, the `task` tool on opencode). Launch all agents of a batch in a
+single parallel call: on opencode that means issuing every `task` call of the
+batch in one message with the default general subagent. Native subagents
+receive the prompt contracts below directly.
 
 Result delivery is file-based, because on some hosts subagents run in the
 background and their final message never reaches the orchestrator:

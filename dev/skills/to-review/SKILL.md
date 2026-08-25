@@ -44,7 +44,7 @@ Tell the user which lenses you selected and why before launching.
 
 ### 5. Run the review panel
 
-Use the orchestration transport selected by [references/orchestration.md](references/orchestration.md). Prefer the host's native multi-agent facility, preserving its plain parallel subagents. On Pi, where no native subagent facility exists, launch isolated `pi --print` processes with the bundled runner. Both transports use the same two batches: all lens agents first, then all verifiers.
+Use the orchestration transport selected by [references/orchestration.md](references/orchestration.md). Prefer the host's native multi-agent facility (Claude Code and Codex subagents, the opencode `task` tool), preserving its plain parallel subagents. On Pi, where no native subagent facility exists, launch isolated `pi --print` processes with the bundled runner. Both transports use the same two batches: all lens agents first, then all verifiers.
 If neither native subagents nor the Pi subprocess transport is available, stop and explain that this panel-based skill cannot preserve its verification contract.
 Agents hand their reports back as result files in the review scratch directory; once a batch finishes, read those files.
 Never chase results over agent messaging or re-spawn a finished agent to ask for its report.
