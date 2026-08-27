@@ -1,0 +1,6 @@
+interface:
+  display_name: "Commit"
+  short_description: "Create granular commits with structured messages"
+  default_prompt: "Use $dev:commit to group the pending changes into granular, well-explained commits."
+policy:
+  allow_implicit_invocation: false

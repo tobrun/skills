@@ -1,7 +1,7 @@
 {
   "skill": "to-pitch",
   "mode": "comprehension",
-  "note": "A full run depends on a finished plan, implementation notes, and an e2e report already existing, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly instead.",
+  "note": "A full run depends on a finished spec, implementation notes, and an e2e report already existing, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly instead.",
   "evals": [
     {
       "id": "to-pitch-policy-questions",

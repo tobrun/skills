@@ -1,6 +1,0 @@
-interface:
-  display_name: "Discover"
-  short_description: "Surface unknowns before planning work"
-  default_prompt: "Use $dev:discover to surface consequential unknowns before planning this change."
-policy:
-  allow_implicit_invocation: false

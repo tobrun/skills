@@ -1,0 +1,29 @@
+{
+  "skill": "commit",
+  "mode": "comprehension",
+  "evals": [
+    {
+      "id": "granular-commits",
+      "prompt": "Commit my changes.",
+      "fixture": "a repo with pending changes: a bug fix with its test in src/auth/, an unrelated config tweak, and a README edit",
+      "assertions": [
+        "State is gathered with git status, git diff HEAD, and git log --oneline -5 in a single parallel message",
+        "The changes are grouped into separate commits: the fix with its test, the config change, and the docs change are never combined",
+        "Grouping is decided autonomously; the user is not asked how to group",
+        "Each message uses type(scope): subject with a What: and Why: body, and a Severity: trailer on the fix",
+        "No Co-Authored-By line is added",
+        "git add -A and git add . are never used; files are named explicitly"
+      ]
+    },
+    {
+      "id": "ledger-capture",
+      "prompt": "Commit my changes.",
+      "fixture": "a repo keeping docs/decisions.md and docs/contracts.md, where the diff changes a function named as a contract's guarantee site and the commit body carries a Considered: alternative",
+      "assertions": [
+        "The Considered: choice is evaluated against the promotion test and, if it qualifies, written as a D- entry to the matching area of docs/decisions.md, dated and sourced to the commit hash",
+        "The touched guarantee site gets a typed verdict: holds, broken, or needs-verify, with broken surfacing the relied-on sites as follow-up",
+        "Ledger and contract updates are committed as their own docs(decisions)/docs(contracts) commits, not folded into the code commit"
+      ]
+    }
+  ]
+}

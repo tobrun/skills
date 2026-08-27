@@ -7,7 +7,7 @@ This mirrors `review_N.md`'s structure exactly - it's the same content, publishe
 ```js
 const REVIEW_DATA = {
   title: "string - Review {N}: {title}",
-  planName: "string - the plan slug, or empty if no plan was found",
+  planName: "string - the .dev/{plan-name} slug, or empty if no spec was found",
   reviewIndex: 1,
   verdict: "PASS" | "CONCERNS" | "BLOCK",
   panel: ["lens", "..."],       // lenses run
@@ -16,7 +16,7 @@ const REVIEW_DATA = {
   date: "string - ISO date",
   summary: "string - 1-2 sentence summary, markdown-lite",
 
-  planConformance: "string - markdown-lite; omit the section entirely (set to '') if no plan was found",
+  specConformance: "string - the spec-conformance summary, markdown-lite; omit the section entirely (set to '') if no spec was found",
 
   previousFindings: [
     { finding: "string", status: "fixed" | "still open" }

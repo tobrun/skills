@@ -1,7 +1,7 @@
 # Test Layers
 
-Every acceptance criterion in a `task_N.md` is tagged `[unit]`, `[integration]`, or `[e2e]`.
-A criterion is not met until a concrete test exists at its tagged layer - a prose Given-When-Then with no test behind it is not done, however confident the implementation looks.
+Every scenario on a change set's `tests:` line in `spec.md` is tagged `[unit]`, `[integration]`, or `[e2e]`.
+A scenario is not met until a concrete test exists at its tagged layer - a prose input -> outcome with no test behind it is not done, however confident the implementation looks.
 The tag is what keeps tests acting as the spec: it says where the proof has to live, so it can't quietly stay in prose.
 
 ## The pyramid
@@ -12,7 +12,7 @@ Cost, speed, and breadth of failure differ by orders of magnitude between the la
 | ----- | ---------- | ------- | -------------- |
 | Unit | most of the suite | milliseconds | one business rule, exactly |
 | Integration | a middle band | sub-second to seconds | two owned components really agree |
-| E2E | a handful per plan | seconds to minutes | a whole user journey actually works |
+| E2E | a handful per spec | seconds to minutes | a whole user journey actually works |
 
 Two rules follow, and they matter more than the ratios:
 
@@ -26,14 +26,14 @@ Two shapes to avoid: the **ice-cream cone**, where the suite is mostly e2e and e
 Pure business logic, no I/O.
 Fast enough to run on every save.
 Mock only at the true architectural boundaries in [mocking.md](mocking.md) - everything else inside the application stays real.
-A unit criterion describes a computation or a business rule: "expired coupon is rejected," not "checkout endpoint returns 400."
+A unit scenario describes a computation or a business rule: "expired coupon is rejected," not "checkout endpoint returns 400."
 
 ## Integration
 
 Validates real collaboration between two or more components this codebase owns, at the seam between them: a service against a real test database, a module against a real module it calls.
 Never reaches the outside world.
 Prefer real wiring or a fake over a mock at the boundary, per [mocking.md](mocking.md).
-An integration criterion describes a cross-component contract: "the order API persists the order and a repository read returns it back."
+An integration scenario describes a cross-component contract: "the order API persists the order and a repository read returns it back."
 
 ## E2E
 
@@ -41,7 +41,7 @@ Drives the actual running application - the built artifact, not a test-harness s
 It never runs against production or a shared staging environment; the point is a repeatable journey, not a live probe.
 This is the only layer allowed to drive a browser.
 It produces the HTML scenario report in [e2e-report.md](e2e-report.md): screenshots for frontend systems, before/after data-model state for everything else.
-An e2e criterion describes user-observable, end-to-end behavior: "a guest can complete checkout with an expired coupon and sees the correct error."
+An e2e scenario describes user-observable, end-to-end behavior: "a guest can complete checkout with an expired coupon and sees the correct error."
 Keep the count small and reserve it for critical journeys - each scenario is also a piece of evidence someone reads in the report.
 
 ## Where tests.md and mocking.md apply

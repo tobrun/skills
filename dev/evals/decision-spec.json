@@ -1,0 +1,41 @@
+{
+  "skill": "decision-spec",
+  "mode": "comprehension",
+  "evals": [
+    {
+      "id": "spec-structure",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Spec this change.",
+      "fixture": "a repo with src/api/server.js with no rate limiting",
+      "assertions": [
+        "The interview climbs above the stated solution: it asks what was observed and pressure-tests the premise before speccing rate limiting",
+        "The stated solution becomes one alternative among others in the research section, as the first decision",
+        "The change is sized small or full, the choice is told to the user with a reason, and the user can override",
+        "The spec is written to .dev/{plan-name}/spec.md with a research section of D- slugged decisions using the marks (chosen, rejected, open, accepted downside, not doing)",
+        "The scope section ends with a Validation block listing the repo's real commands, discovered rather than guessed",
+        "Every change set ends with a tests: line whose scenarios carry [unit], [integration], or [e2e] layer tags, or tests: none with a reason",
+        "The spec does not implement code; no source files are modified",
+        "The run ends by recommending implement; it is never invoked directly"
+      ]
+    },
+    {
+      "id": "review-and-ledger",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Spec this change.",
+      "fixture": "the same repo, with docs/decisions.md containing a not-doing entry for rate limiting whose reopen condition mentions abuse volume",
+      "assertions": [
+        "A subagent reviewer receives the spec file only, not the conversation, with a hunting job rather than a checklist",
+        "The drafted decisions are reconciled against docs/decisions.md only in phase 5, after they were argued fresh",
+        "The collision with the recorded not-doing entry is classified (still-holds, diverged, or reopened) and raised rather than silently overridden",
+        "The retrospective reports the four typed lines: contamination, sizing, catalog gaps, familiarity"
+      ]
+    },
+    {
+      "id": "jira-disabled",
+      "prompt": "We want to add rate limiting to our public API to stop abuse. Spec this change.",
+      "fixture": "a repo with src/api/server.js and no .dev/config.json, with no acli executable on PATH",
+      "assertions": [
+        "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
+        "No acli invocation occurs and the spec is written using the normal local workflow"
+      ]
+    }
+  ]
+}

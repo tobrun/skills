@@ -1,6 +1,0 @@
-interface:
-  display_name: "To Plan"
-  short_description: "Create a reviewable implementation plan"
-  default_prompt: "Use $dev:to-plan to produce a reviewable plan for this request."
-policy:
-  allow_implicit_invocation: false

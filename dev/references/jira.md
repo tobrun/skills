@@ -48,14 +48,14 @@ acli jira workitem search --project PROJ --type Initiative --status open --json 
 Ask the user to choose one returned Initiative. If none is returned, stop with
 a clear message that an existing open Initiative is required; never create one.
 
-Create the plan Epic linked to the chosen Initiative, then verify it:
+Create the spec Epic linked to the chosen Initiative, then verify it:
 
 ```text
 acli jira workitem create --project PROJ --type Epic --summary SUMMARY --parent INITIATIVE-1 --json [--site SITE]
 acli jira workitem view EPIC-1 --json [--site SITE]
 ```
 
-Create a task under the Epic, then verify it:
+Create a task issue for a change set under the Epic, then verify it:
 
 ```text
 acli jira workitem create --project PROJ --type Task --summary SUMMARY --parent EPIC-1 --json [--site SITE]
@@ -72,33 +72,34 @@ acli jira workitem transition --issue EPIC-1 --transition "In Progress" --json [
 ```
 
 Use the same discovery and transition sequence for task issues. The
-implement orchestrator owns these calls. Task subagents never invoke `acli`.
+implement orchestrator owns these calls. Change-set subagents never invoke
+`acli`.
 
-When a task is superseded, transition the old issue to its available closed
-state and add the required comment:
+When a change set is superseded by a spec revision, transition the old issue
+to its available closed state and add the required comment:
 
 ```text
 acli jira workitem transition-list --issue TASK-1 --json [--site SITE]
 acli jira workitem transition --issue TASK-1 --transition "Done" --json [--site SITE]
-acli jira workitem comment --issue TASK-1 --body "superseded by task_3" --json [--site SITE]
+acli jira workitem comment --issue TASK-1 --body "superseded by change set 3" --json [--site SITE]
 ```
 
 ## Persistence and timing
 
-After the Epic is created, write `Jira: PROJ-1` directly under the plan title
-in `plan.md`. After each task issue is created, write its key directly under
-that task title in `task_N.md`. Add a `Jira` column to the plan task index and
-put the matching key in each row.
+After the Epic is created, write `Jira: PROJ-1` directly under the spec title
+in `spec.md`. After each task issue is created, write its key directly under
+the matching change set in the spec's change plan.
 
-to-plan lists Initiatives during its existing interview and creates the Epic
-only after local `plan.md` has been written. to-tasks creates one Task for each
-new local task after task files and the index exist. On supersede, close and
-comment the old issue before creating and persisting the replacement issue.
+decision-spec lists Initiatives during its interview and creates the Epic only
+after the change plan is final. It then creates one Task per change set; a
+re-run creates Tasks only for change sets that don't carry a key yet. On
+supersede, close and comment the old issue before creating and persisting the
+replacement issue.
 
 implement transitions the persisted Epic to In Progress at the start. The
-orchestrator transitions each persisted task issue to In Progress immediately
-when its wave is dispatched, and to Done only after the task is verified and
-its commit lands.
+orchestrator transitions each persisted change-set issue to In Progress
+immediately when its wave is dispatched, and to Done only after the change set
+is verified and its commit lands.
 
 ## Failure protocol
 

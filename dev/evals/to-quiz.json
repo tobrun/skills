@@ -1,7 +1,7 @@
 {
   "skill": "to-quiz",
   "mode": "comprehension",
-  "note": "A full run depends on a finished plan and e2e report already existing, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly, and specifically encodes the gate-honesty answer so a future edit can't silently overclaim enforcement.",
+  "note": "A full run depends on a finished spec and e2e report already existing, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly, and specifically encodes the gate-honesty answer so a future edit can't silently overclaim enforcement.",
   "evals": [
     {
       "id": "to-quiz-gate-honesty",

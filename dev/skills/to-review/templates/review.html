@@ -79,7 +79,7 @@
     </header>
 
     <section id="sec-conformance">
-      <h2 class="section-title">Plan conformance</h2>
+      <h2 class="section-title">Spec conformance</h2>
       <div class="card" id="conformance-text"></div>
     </section>
 
@@ -126,7 +126,7 @@ const REVIEW_DATA = {
   base: "main",
   date: "2026-01-01",
   summary: "Placeholder - replace REVIEW_DATA before sharing this file.",
-  planConformance: "",
+  specConformance: "",
   previousFindings: [],
   blockers: [],
   concerns: [],
@@ -172,8 +172,8 @@ document.getElementById("r-summary").innerHTML = mdLite(REVIEW_DATA.summary || "
 
 function toggleSection(id, show) { document.getElementById(id).style.display = show ? "" : "none"; }
 
-toggleSection("sec-conformance", !!REVIEW_DATA.planConformance);
-document.getElementById("conformance-text").innerHTML = mdLite(REVIEW_DATA.planConformance || "");
+toggleSection("sec-conformance", !!REVIEW_DATA.specConformance);
+document.getElementById("conformance-text").innerHTML = mdLite(REVIEW_DATA.specConformance || "");
 
 const prev = REVIEW_DATA.previousFindings || [];
 toggleSection("sec-previous", prev.length > 0);

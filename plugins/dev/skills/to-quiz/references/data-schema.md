@@ -5,8 +5,8 @@ Replace the whole object; the grading logic below the markers is generic and rea
 
 ```js
 const QUIZ_DATA = {
-  title: "string - the plan's title",
-  planName: "string - the plan slug",
+  title: "string - the spec's title",
+  planName: "string - the .dev/{plan-name} slug",
   generatedAt: "string - ISO date",
 
   context: "string - what this change is and why, markdown-lite",
@@ -35,5 +35,5 @@ const QUIZ_DATA = {
 - Every question traces back to something real: an acceptance criterion, an edge case a test covers, or a logged deviation - never invented trivia a careless reader could still answer correctly.
 - `linksToSection` must be one of `"context"`, `"intuition"`, `"what-was-done"` - whichever section of this document actually backs the answer; the template turns it into a jump link, so it must point somewhere real.
 - 3-6 questions total - more dilutes into busywork, fewer doesn't cover the change.
-- `whatWasDone.filesTouched` draws from the plan/task "Files and docs touched" sections, not a guess.
+- `whatWasDone.filesTouched` draws from the spec change plan's file lists, not a guess.
 - This artifact never claims to gate anything - the template's banner copy says so explicitly; don't soften that language when filling in `context`/`whatWasDone.summary`.

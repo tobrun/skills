@@ -3,55 +3,54 @@
   "mode": "functional",
   "evals": [
     {
-      "id": "no-tasks-yet",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with .dev/discount-pricing/plan.md and no task_N.md files",
+      "id": "no-spec-yet",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with .dev/discount-pricing/ containing only a review_1.md, and no spec.md",
       "assertions": [
-        "The user is asked to run to-tasks first rather than the plan being implemented straight from plan.md",
-        "to-tasks is not invoked automatically",
+        "The user is asked to run decision-spec first rather than work being implemented straight from the review",
+        "decision-spec is not invoked automatically",
         "No implementation code is written"
       ]
     },
     {
-      "id": "sequential-plan",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with .dev/{plan-name}/plan.md and task_1.md, task_2.md (task_2 depends on task_1), each with a small independently-verifiable behavior, acceptance criteria tagged [unit]",
+      "id": "sequential-spec",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with .dev/{plan-name}/spec.md whose change plan has change sets 1 and 2 with overlapping file lists, each with a small independently-verifiable behavior and tests: scenarios tagged [unit]",
       "assertions": [
-        "Both task_1 and task_2 are implemented, not just the first one",
-        "Task_2's work is attempted only after task_1's is committed (dependency order respected)",
-        "The two tasks are not launched concurrently, since task_2 depends on task_1",
+        "Both change sets are implemented, not just the first one",
+        "Change set 2's work is attempted only after change set 1's is committed (spec order respected, since their files overlap)",
         "Tests are behavior-named (e.g. \"applies a discount\") rather than test1/test2, cover cases beyond the happy path, and no assertion recomputes the expected value the way the implementation does",
-        "The user is not asked about running to-review after task_1 finishes - no review prompt appears until both tasks are done",
-        "Each task gets its own commit on the current branch (at least 2 commits)",
-        ".dev/{plan-name}/implementation-notes.md is created and has one entry per task",
-        "After both tasks are done, the user is asked to run to-review rather than a review panel being launched automatically"
+        "The user is not asked about running to-review after change set 1 finishes - no review prompt appears until both are done",
+        "Each change set gets its own commit on the current branch (at least 2 commits)",
+        ".dev/{plan-name}/implementation-notes.md is created and has one entry per change set",
+        "After both change sets are done, the user is asked to run to-review rather than a review panel being launched automatically"
       ]
     },
     {
       "id": "parallel-wave",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with .dev/{plan-name}/plan.md and task_1.md, task_2.md, task_3.md where task_1 and task_2 both have 'Depends on: None' and disjoint Files touched, task_3 depends on both; criteria tagged [unit] and [integration]",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with .dev/{plan-name}/spec.md whose change plan has change sets 1 and 2 with disjoint file lists introducing nothing the other consumes, and change set 3 touching files from both; scenarios tagged [unit] and [integration]",
       "assertions": [
-        "task_1 and task_2 are launched as subagents in a single message so they run concurrently",
-        "task_3 is not started until task_1 and task_2 are both committed",
+        "Change sets 1 and 2 are launched as subagents in a single message so they run concurrently",
+        "Change set 3 is not started until change sets 1 and 2 are both committed",
         "The subagents do not commit, stage, or otherwise touch git state - the orchestrator makes the commits",
         "The subagents do not write to implementation-notes.md themselves; the orchestrator appends each entry",
-        "The subagents are told not to launch the app or run e2e criteria",
-        "Each task's self-validation commands are re-run by the orchestrator rather than the subagent's claim being taken at face value",
-        "Three commits exist, one per task, in dependency-respecting order"
+        "The subagents are told not to launch the app or run e2e scenarios",
+        "The spec's Validation block commands are re-run by the orchestrator rather than the subagent's claim being taken at face value",
+        "Three commits exist, one per change set, in spec order"
       ]
     },
     {
       "id": "e2e-cli-mocked-env",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with a tiny Node CLI (bin/cli.js exposing a `total` command over a cart file) and .dev/cart-total/plan.md plus task_1.md whose acceptance criteria are tagged [unit] Given a cart with items When totaling Then the sum is correct, [integration] Given the CLI command When invoked with a cart file Then it reads and totals it, and [e2e] Given a user runs the built CLI against a real cart file When it exits Then it prints the correct total - kind: non-frontend",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with a tiny Node CLI (bin/cli.js exposing a `total` command over a cart file) and .dev/cart-total/spec.md with one change set whose tests: line carries [unit] a cart with items -> the sum is correct, [integration] the CLI command invoked with a cart file -> it reads and totals it, and [e2e] a user runs the built CLI against a real cart file -> it prints the correct total - kind: non-frontend",
       "assertions": [
         "A unit test exists for the totaling business logic in isolation, no process spawned",
         "An integration test exists that exercises the CLI command against a real (not mocked) cart-reading path",
-        "The e2e criterion is proven by actually invoking the built CLI as a subprocess against a real cart file, not by re-running the unit/integration tests",
+        "The e2e scenario is proven by actually invoking the built CLI as a subprocess against a real cart file, not by re-running the unit/integration tests",
         "The e2e run uses a mocked, seeded, deterministic environment - no real external service or production data is touched",
-        "The e2e pass happens after the task is committed, not interleaved with the unit/integration cycles",
-        ".dev/cart-total/implementation-notes.md exists and references what was done for the task",
+        "The e2e pass happens after the change set is committed, not interleaved with the unit/integration cycles",
+        ".dev/cart-total/implementation-notes.md exists and references what was done for the change set",
         "A cart-total-e2e-report.html is written locally under /tmp/{project-slug}/reports/, kind is non-frontend, and it contains a dataModelState entry with real before/after values rather than a screenshot",
         "No screenshot or dataUri field is fabricated for a kind: non-frontend report",
         "The report is opened with the host browser integration when available, or returned as a clickable local path; publication happens only when requested and supported"
@@ -59,7 +58,7 @@
     },
     {
       "id": "e2e-failure-loop",
-      "prompt": "Implement this plan.",
+      "prompt": "Implement this spec.",
       "fixture": "a git repo like e2e-cli-mocked-env, but the CLI has a latent formatting bug that only shows when the built binary runs end to end, so the first e2e capture fails",
       "assertions": [
         "The failing e2e scenario is diagnosed and fixed rather than reported as an accepted failure or a limitation",
@@ -71,21 +70,20 @@
     },
     {
       "id": "jira-disabled",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with a keyed .dev/{plan-name}/plan.md and task files, no .dev/config.json, and no acli executable on PATH",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with a keyed .dev/{plan-name}/spec.md, no .dev/config.json, and no acli executable on PATH",
       "assertions": [
         "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
-        "No acli invocation occurs",
         "After the e2e report the user is asked exactly push and open the PR?, and no push or PR command occurs before a yes"
       ]
     },
     {
       "id": "jira-enabled",
-      "prompt": "Implement this plan.",
-      "fixture": "a git repo with .dev/config.json enabling Jira for PROJ, plan.md with Jira: PROJ-101, task_1.md with Jira: PROJ-201, task_2.md with Jira: PROJ-202, and the stub acli on PATH",
+      "prompt": "Implement this spec.",
+      "fixture": "a git repo with .dev/config.json enabling Jira for PROJ, spec.md with Jira: PROJ-101 under its title and Jira: PROJ-201 / Jira: PROJ-202 under change sets 1 and 2, and the stub acli on PATH",
       "assertions": [
-        "The stub log transitions the Epic PROJ-101 to In Progress before task transitions",
-        "For each task, the stub log shows In Progress at dispatch before Done after that task's verification and commit",
+        "The stub log transitions the Epic PROJ-101 to In Progress before change-set transitions",
+        "For each change set, the stub log shows In Progress at dispatch before Done after that change set's verification and commit",
         "The final PR question is asked after the e2e report, and the proposed branch name and PR title start with the Epic key"
       ]
     }

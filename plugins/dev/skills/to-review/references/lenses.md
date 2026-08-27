@@ -4,18 +4,19 @@ Each lens is one agent in the panel.
 Select only lenses with surface in the diff; every lens sees the whole diff but stays in its lane.
 Each lens prompt gets: the brief, the diff file path, the lens definition below, and the shared rules at the bottom.
 
-## plan-conformance
+## spec-conformance
 
-Include whenever a plan directory was found.
-Checks the diff against `plan.md` and its task files, not against general quality:
+Include whenever a spec directory was found.
+Checks the diff against `spec.md` - its scope, change plan, and decisions - not against general quality:
 
-- Is each acceptance criterion of the tasks in scope actually met by the diff? Name the criterion and the evidence.
-- Do the plan's Success criteria hold (or have a credible measurement path) now that the work exists? A plan is done when its outcome is real, not when its tasks are closed.
-- Are tests written at the seams the plan or tasks agreed on, **and at the layer each criterion was tagged with** (`[unit|integration|e2e]`)? A criterion met by a test at the wrong layer (a unit test standing in for an e2e criterion) is a finding, not a pass.
-- Is every `[e2e]`-tagged criterion backed by a passing scenario in `implementation-notes.md`'s referenced `{plan-name}-e2e-report.html`? New user-facing behavior with no matching e2e scenario, or a scenario whose `status` is `fail`, is a BLOCK.
-- Check `implementation-notes.md` for logged Deviations: does the conservative choice still satisfy the plan's Success criteria, or does it need a call-out to the reviewer? An unresolved deviation that changes user-facing behavior from what the plan promised is a CONCERN at minimum.
-- If the plan named a README or user-facing doc change in its approach, is that change present in the diff? A promised doc update that never happened is a CONCERN.
-- Does the diff do significant work the plan never mentioned? Scope creep is a CONCERN, not a crime; name it so the reviewer can decide.
+- Does each in-scope change set's `tests:` scenario exist as a real test, **at the layer it was tagged with** (`[unit|integration|e2e]`)? A scenario met by a test at the wrong layer (a unit test standing in for an e2e scenario) is a finding, not a pass.
+- Do the scope section's invariants and error-handling entries hold in the diff? A broken invariant is a BLOCK.
+- Does the diff implement each change set's `✓` decisions, without smuggling in a `✗` rejected alternative? A `⚠` accepted downside that manifests is expected, not a finding - the spec already admits it.
+- Is a `docs/contracts.md` guarantee cited in the brief broken by the diff while its reliance sites still assume it? That is a BLOCK naming who gets hurt.
+- Is every `[e2e]`-tagged scenario backed by a passing entry in `{plan-name}-e2e-report.html`? New user-facing behavior with no matching e2e scenario, or a scenario whose `status` is `fail`, is a BLOCK.
+- Check `implementation-notes.md` for logged Deviations: does the conservative choice still satisfy the spec's scope and decisions, or does it need a call-out to the reviewer? An unresolved deviation that changes user-facing behavior from what the spec promised is a CONCERN at minimum.
+- If a change set named a README or user-facing doc file, is that change present in the diff? A promised doc update that never happened is a CONCERN.
+- Does the diff do significant work no change set describes? Scope creep is a CONCERN, not a crime; name it so the reviewer can decide.
 
 ## correctness
 
@@ -33,6 +34,7 @@ Rate exploitability in this codebase, not theoretical severity.
 
 Module boundaries, layering, dependency direction, abstraction quality, coupling introduced by the diff.
 Judge coherence against the patterns already established in the surrounding code; deviation from an established convention is a finding, personal style preference is not.
+When the repo keeps `docs/dependencies.md`, treat its edges as settled: a conforming diff needs no boundary debate, and a diff that edits the rules file is reviewed as the decision it is, not as incidental churn.
 
 ## tests
 
@@ -40,7 +42,7 @@ Test quality per this plugin's philosophy, not raw coverage:
 
 - Tests must live at public seams; tests that mock internal collaborators, test private methods, or verify through side channels are implementation-coupled findings.
 - Tautological tests (assertion recomputes the expected value the way the code does) are findings; expected values need an independent source of truth.
-- New behavior in the diff without a test at its seam is a finding. New user-facing behavior without a passing scenario in `{plan-name}-e2e-report.html` is a finding, even if unit/integration tests exist.
+- New behavior in the diff without a test at its seam is a finding. (Missing e2e backing for user-facing behavior belongs to spec-conformance, not here.)
 - Brittle patterns: global time/random patching, order-dependent tests, interaction assertions where a state assertion would do.
 
 ## simplify
@@ -73,7 +75,7 @@ Swallowed errors, catch-and-continue without logging, missing context in log lin
 ## docs
 
 Comments and docs touched or needed by the diff: stale or now-misleading comments, missing WHY comments on non-obvious constraints, public API docstrings.
-Doc updates promised by the plan belong to plan-conformance, not here.
+Doc updates promised by the spec belong to spec-conformance, not here.
 
 ## dead-code
 
@@ -85,7 +87,7 @@ If you cannot prove it dead, report at most a CONCERN and say what you could not
 
 Severity ladder:
 
-- **BLOCK**: a concrete problem you can name with the scenario that triggers it; would misbehave in production or violates the plan.
+- **BLOCK**: a concrete problem you can name with the scenario that triggers it; would misbehave in production or violates the spec.
 - **CONCERN**: a path you cannot convince yourself is safe, or a gap worth a conversation; include what you checked.
 - **NIT**: minor polish; skip NITs entirely on diffs over 15 files.
 

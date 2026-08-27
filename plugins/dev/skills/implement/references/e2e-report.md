@@ -5,8 +5,8 @@ Replace the whole object; the rendering engine below the markers is generic and 
 
 ```js
 const E2E_DATA = {
-  title: "string - the plan's title",
-  planName: "string - the plan slug",
+  title: "string - the spec's title",
+  planName: "string - the .dev/{plan-name} slug",
   generatedAt: "string - ISO date of the run this report captures",
 
   // Decides how each scenario renders: a screenshot gallery, or a data-model-state table.
@@ -44,7 +44,7 @@ const E2E_DATA = {
 ## Filling it in honestly
 
 - **Never fabricate a screenshot or a data-model-state entry.** Both must come from an actual run of the actual application - a screenshot invented to look plausible, or a before/after pair guessed instead of captured, defeats the entire point of this report being the enforceable proof behind an e2e criterion.
-- **kind is chosen once per plan**, based on whether the system under test has a UI a screenshot could meaningfully show. A CLI, a backend API, a batch job: `"non-frontend"`. Anything a user clicks through: `"frontend"`.
+- **kind is chosen once per spec**, based on whether the system under test has a UI a screenshot could meaningfully show. A CLI, a backend API, a batch job: `"non-frontend"`. Anything a user clicks through: `"frontend"`.
 - **dataModelState is a valid supplement even for a frontend scenario** when a step's real effect is invisible on screen (a queued job, a row written to a table the UI doesn't reflect yet).
 - **status must reflect what actually happened.** A scenario that failed and was then fixed gets re-run and re-captured, not silently flipped to pass.
 - **summary must match the scenarios array** - recompute it from the real counts, don't hand-write it separately.

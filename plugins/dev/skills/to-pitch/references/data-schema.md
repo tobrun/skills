@@ -5,8 +5,8 @@ Replace the whole object; the rendering engine below the markers is generic and 
 
 ```js
 const PITCH_DATA = {
-  title: "string - the plan's title, pitched as an outcome",
-  planName: "string - the plan slug",
+  title: "string - the spec's title, pitched as an outcome",
+  planName: "string - the .dev/{plan-name} slug",
   generatedAt: "string - ISO date",
 
   demo: {
@@ -27,7 +27,7 @@ const PITCH_DATA = {
 
   howVerified: {
     e2eSummary: "string - e.g. '14/14 e2e scenarios passing', pulled from the real e2e-report.html summary, never invented",
-    layersCovered: ["unit", "integration", "e2e"]   // whichever layers this plan's acceptance criteria actually exercised
+    layersCovered: ["unit", "integration", "e2e"]   // whichever layers the spec's tests: scenarios actually exercised
   },
 
   deviations: [
@@ -44,7 +44,7 @@ const PITCH_DATA = {
 
 - `demo.gifDataUri` is `null` for non-UI changes, or when nothing was captured - never fabricate a GIF or claim one exists.
 - `demo.beforeAfterExample` is required regardless - it's what non-visual readers see, and what carries the section when there's no GIF.
-- `howVerified.e2eSummary` and `layersCovered` are pulled from the real `{plan-name}-e2e-report.html`'s `E2E_DATA.summary` and the task-level acceptance-criteria layer tags, never invented or rounded up.
+- `howVerified.e2eSummary` and `layersCovered` are pulled from the real `{plan-name}-e2e-report.html`'s `E2E_DATA.summary` and the change sets' `tests:` layer tags, never invented or rounded up.
 - `deviations` is `[]` when `implementation-notes.md` logged none - the template omits the whole section rather than show an empty one.
-- `whatChanged.filesTouched` draws from the plan/task "Files and docs touched" sections, not a guess.
+- `whatChanged.filesTouched` draws from the spec change plan's file lists, not a guess.
 - Keep `whatChanged.before`/`after` to observable system behavior, not a restated diff - a reviewer should be able to picture the end state without reading code.
