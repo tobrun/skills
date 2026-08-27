@@ -14,31 +14,31 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "dev"
 DESTINATION = ROOT / "plugins" / "dev"
 
-DESCRIPTION = (
-    "Development workflow skills for discovery, planning, task splitting, "
-    "test-first implementation, verified review, pitches, and quizzes."
-)
-
 SKILL_UI = {
-    "discover": (
-        "Discover",
-        "Surface unknowns before planning work",
-        "Use $dev:discover to surface consequential unknowns before planning this change.",
+    "commit": (
+        "Commit",
+        "Create granular commits with structured messages",
+        "Use $dev:commit to group the pending changes into granular, well-explained commits.",
+    ),
+    "decision-spec": (
+        "Decision Spec",
+        "Spec a change by arguing its decisions",
+        "Use $dev:decision-spec to spec this change with argued decisions and a change plan.",
     ),
     "implement": (
         "Implement",
-        "Execute a plan test-first through e2e",
-        "Use $dev:implement to execute the current plan test-first and verify it end to end.",
+        "Execute a spec test-first through e2e",
+        "Use $dev:implement to execute the current spec test-first and verify it end to end.",
+    ),
+    "to-harden": (
+        "To Harden",
+        "Run a deterministic quality gauntlet",
+        "Use $dev:to-harden to run dependency, complexity, and mutation checks over this change.",
     ),
     "to-pitch": (
         "To Pitch",
         "Turn finished work into a buy-in document",
         "Use $dev:to-pitch to create a buy-in document for the completed change.",
-    ),
-    "to-plan": (
-        "To Plan",
-        "Create a reviewable implementation plan",
-        "Use $dev:to-plan to produce a reviewable plan for this request.",
     ),
     "to-quiz": (
         "To Quiz",
@@ -49,11 +49,6 @@ SKILL_UI = {
         "To Review",
         "Run a verified multi-agent code review",
         "Use $dev:to-review to review the current branch with adversarial verification.",
-    ),
-    "to-tasks": (
-        "To Tasks",
-        "Split a plan into testable vertical tasks",
-        "Use $dev:to-tasks to split the current plan into independently testable tasks.",
     ),
 }
 
@@ -95,11 +90,22 @@ def build(destination: Path) -> None:
     claude_manifest = json.loads(
         (SOURCE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
     )
-    destination.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(SOURCE / "skills", destination / "skills", dirs_exist_ok=True)
-    shutil.copytree(SOURCE / "references", destination / "references", dirs_exist_ok=True)
+    description = claude_manifest["description"]
+    shutil.copytree(SOURCE / "skills", destination / "skills")
+    shutil.copytree(SOURCE / "references", destination / "references")
 
-    for skill_name in sorted(SKILL_UI):
+    skill_names = sorted(
+        path.name for path in (destination / "skills").iterdir() if path.is_dir()
+    )
+    unlisted = [name for name in skill_names if name not in SKILL_UI]
+    orphaned = [name for name in SKILL_UI if name not in skill_names]
+    if unlisted or orphaned:
+        raise ValueError(
+            f"SKILL_UI out of sync with dev/skills/: "
+            f"missing entries {unlisted}, stale entries {orphaned}"
+        )
+
+    for skill_name in skill_names:
         skill_root = destination / "skills" / skill_name
         skill_md = skill_root / "SKILL.md"
         skill_md.write_text(
@@ -116,20 +122,20 @@ def build(destination: Path) -> None:
     manifest = {
         "name": "dev",
         "version": claude_manifest["version"],
-        "description": DESCRIPTION,
+        "description": description,
         "author": claude_manifest["author"],
         "repository": "https://github.com/tobrun/skills",
         "skills": "./skills/",
         "interface": {
             "displayName": "Dev Workflow",
             "shortDescription": "Plan, implement, and review tested changes.",
-            "longDescription": DESCRIPTION,
+            "longDescription": description,
             "developerName": claude_manifest["author"]["name"],
             "category": "Developer Tools",
             "capabilities": ["Interactive", "Write"],
             "defaultPrompt": [
-                "Discover unknowns before planning this change.",
-                "Create a reviewable implementation plan.",
+                "Spec this change with argued decisions.",
+                "Implement the current spec test-first.",
                 "Review the current branch with verification.",
             ],
         },

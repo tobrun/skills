@@ -142,7 +142,7 @@ const E2E_DATA = {
 (function render() {
   const d = E2E_DATA;
   document.title = d.title ? d.title + " - E2E Report" : "E2E Report";
-  document.getElementById("report-title").textContent = (d.title || "E2E Report") + " - E2E Report";
+  document.getElementById("report-title").textContent = document.title;
   document.getElementById("report-sub").textContent =
     (d.planName ? d.planName + " - " : "") + (d.generatedAt ? "generated " + d.generatedAt : "");
 
