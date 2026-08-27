@@ -48,6 +48,8 @@ This is a monorepo for Tobrun's Claude Code, Codex, and Pi skills. The root
 - Skill descriptions must state both what the skill does and when to use it.
 - No file in the repo may contain an em dash.
 - Keep `SKILL.md` body under roughly 150 lines; move detail to `references/`.
+- Keep skill instructions minimal: models treat long rule lists as guidelines and lose the middle of a grown context.
+  When a skill needs to enforce quality, prefer a deterministic check it loops against over adding more prose instructions.
 
 ## Key Commands
 
