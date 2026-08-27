@@ -2,7 +2,7 @@
 
 | Plugin | Use When | Tools |
 | ------ | -------- | ----- |
-| [dev](dev/) | A test-focused development workflow for Claude Code, Codex, opencode, and Pi. | `discover`, `to-plan`, `to-tasks`, `implement`, `to-review`, `to-pitch`, `to-quiz` |
+| [dev](dev/) | A test-focused development workflow for Claude Code, Codex, opencode, and Pi. | `decision-spec`, `commit`, `implement`, `to-harden`, `to-review`, `to-pitch`, `to-quiz` |
 
 ## Claude Code
 
@@ -11,7 +11,7 @@
 /plugin install dev@nurbot
 ```
 
-Invoke skills as `/discover`, `/to-plan`, and so on.
+Invoke skills as `/decision-spec`, `/implement`, and so on.
 
 ## Codex
 
@@ -20,7 +20,7 @@ codex plugin marketplace add tobrun/skills
 codex plugin add dev@nurbot
 ```
 
-Invoke skills as `$dev:discover`, `$dev:to-plan`, and so on. Both
+Invoke skills as `$dev:decision-spec`, `$dev:implement`, and so on. Both
 distributions are explicit-invocation only. The checked-in Codex package under
 `plugins/dev/` is generated from `dev/`:
 
@@ -42,7 +42,7 @@ done
 ln -sfn ~/ws/skills/dev/references ~/.config/opencode/references
 ```
 
-Ask the agent for a skill by name, for example "run the to-plan skill".
+Ask the agent for a skill by name, for example "run the decision-spec skill".
 Add a `permission.skill` rule set to `ask` to keep the skills human-triggered;
 see [dev/README.md](dev/README.md#opencode-installation) for the full setup.
 
@@ -52,7 +52,7 @@ see [dev/README.md](dev/README.md#opencode-installation) for the full setup.
 pi install git:github.com/tobrun/skills
 ```
 
-Invoke skills as `/skill:discover`, `/skill:to-plan`, and so on. Pi consumes
+Invoke skills as `/skill:decision-spec`, `/skill:implement`, and so on. Pi consumes
 `dev/skills/` directly through the root `package.json`; no generated Pi copy is
 needed.
 

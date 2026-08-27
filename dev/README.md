@@ -2,50 +2,50 @@
 
 Development workflow skills for Claude Code, Codex, opencode, and Pi, built around two ideas: layered tests are the enforceable spec for behavior, and every phase produces something a human actually reviews as HTML, not markdown scrolling.
 
-The skills chain loosely rather than as a rigid pipeline: `/discover` runs whichever pre-implementation moves (blind spot pass, brainstorm/prototype, interview) a given request actually needs, or none at all; `/to-plan` produces a reviewable plan; `/to-tasks` splits it into tasks with acceptance criteria tagged by test layer; `/implement` executes those tasks test-first across unit/integration/e2e, in parallel waves where dependencies allow, keeping a running implementation-notes log; `/to-review` verifies the result with a fan-out panel that checks e2e coverage and logged deviations; `/to-pitch` and `/to-quiz` turn finished work into a buy-in doc or a comprehension check.
-There is no standing knowledge base to maintain: the code, its tests, and the active plan under `.dev/{plan-name}/` are the only durable context.
+The skills chain loosely rather than as a rigid pipeline: `/decision-spec` interviews for the real problem, argues every design decision against alternatives, and writes a self-contained spec whose change plan carries layer-tagged test scenarios; `/implement` executes the spec's change sets across unit/integration/e2e, proving every scenario with a test that has been seen to fail, in parallel waves where file lists allow, keeping a running implementation-notes log; `/to-harden` runs a deterministic quality gauntlet - dependency rules, coverage-weighted complexity, mutation testing - looping fix agents until the checkers pass; `/to-review` verifies the result with a fan-out panel that checks spec conformance, e2e coverage, and logged deviations; `/commit` groups pending changes into granular commits with structured what/why messages; `/to-pitch` and `/to-quiz` turn finished work into a buy-in doc or a comprehension check.
+The durable context is deliberately small: the code, its tests, the active spec under `.dev/{plan-name}/`, and three repo-tracked registries the skills maintain in the consuming project - `docs/decisions.md` (design decisions with their argued alternatives, read only after a review forms its findings), `docs/contracts.md` (boundary guarantees, read as premises before a review walks the diff), and `docs/dependencies.md` (machine-checkable module dependency rules, enforced by `to-harden`).
 Every producing skill renders its own output as self-contained HTML under `/tmp/{project-slug}/reports/`. It publishes only when the user requests a shareable link and the host provides an artifact-publishing tool.
 Every skill is explicit-invocation only: Claude Code and Pi use `disable-model-invocation: true`, the generated Codex distribution uses `agents/openai.yaml` with `allow_implicit_invocation: false`, and opencode enforces it with a `permission.skill` rule set to `ask` (see opencode installation below). Skills recommend the next step rather than launching each other.
 
 ## Skills
 
-### discover
+### decision-spec
 
-Runs the pre-implementation moves that reduce unknowns before a plan is worth writing: a blind spot pass over unfamiliar territory, a brainstorm/prototype pass (with cheap HTML mockups) when the shape isn't decided, and a one-question-at-a-time interview for ambiguities that would change architecture.
-Picks only the modes a real signal points to, in whatever order and combination the situation needs, and says so plainly when none apply.
-Writes a discovery artifact plus a plain-markdown companion that `to-plan` reads back in directly.
-
-### to-plan
-
-Turns a feature request, spec, or problem statement into a plan for human review at `.dev/{plan-name}/plan.md`, reading a prior `/discover` pass's notes when one exists.
-The plan describes the current state and the proposed approach as a before/after picture.
-Every run renders `{plan-name}.html` as a walkable timeline with a blast-radius file graph.
-If execution spans multiple tasks it recommends `/to-tasks`; otherwise the execution detail is embedded directly in the plan.
-
-### to-tasks
-
-Splits an existing plan into `.dev/{plan-name}/task_1.md`, `task_2.md`, and so on, plus a task index in the plan.
-Each task is a self-contained vertical slice a junior engineer can execute in parallel with peers: acceptance criteria tagged by test layer (`[unit|integration|e2e]`), a test plan mapping each criterion to a concrete test, and a self-validation loop built from the repo's real commands to prove the task is done before handoff.
-It verifies the split covers every plan scope item before finishing, and does not re-render the plan view - that stays `to-plan`'s approach-review surface.
+Specs a change by interviewing for the real problem behind the request, cataloging every design decision (with a subagent blind-spot pass on full-size changes), and arguing each one against alternatives in a `✓`/`✗`/`?`/`⚠`/`⊘` notation with evidence marks.
+Writes a self-contained spec at `.dev/{plan-name}/spec.md` - research decisions, scope with invariants and a Validation block of the repo's real commands, and a change plan of numbered change sets each ending in a layer-tagged `tests:` line - designed as a fresh-context handoff to `implement`.
+Promotes durable decisions to `docs/decisions.md` and cross-boundary invariants to `docs/contracts.md`, renders an expandable-card spec view, and has a reverse mode that audits the implicit decisions already embedded in existing code.
 
 ### implement
 
-Executes a plan's task files test-first, at the layer each acceptance criterion is tagged with - unit for business logic, integration for real cross-component seams, e2e for driving the actual running application.
-Runs independent tasks in parallel as waves of subagents derived from the tasks' `Depends on` graph, committing each task and appending to a running `implementation-notes.md` that logs any deviations forced by an edge case.
-Once every task is committed, drives the real app against a mocked environment, loops until every e2e scenario passes, then renders the e2e report: screenshots per scenario for frontend systems, Test Scenario and Data Model State tables for everything else.
+Executes a spec's change sets at the layer each `tests:` scenario is tagged with - unit for business logic, integration for real cross-component seams, e2e for driving the actual running application.
+Enforces outcomes rather than rituals: every test must have been seen to fail before its green counts, with strict failing-test-first reserved for bug fixes, where red is the proof the issue was actually reproduced.
+Runs independent change sets in parallel as waves of subagents batched by disjoint file lists in spec order, committing each change set and appending to a running `implementation-notes.md` that logs any deviations forced by an edge case.
+Once every change set is committed, drives the real app against a mocked environment, loops until every e2e scenario passes, then renders the e2e report: screenshots per scenario for frontend systems, Test Scenario and Data Model State tables for everything else.
 Every run then asks whether to push and open a PR, whether or not Jira is configured (see Jira integration below).
+
+### to-harden
+
+Puts a change through deterministic tools that cannot be argued with, looping fresh-context fix agents until every check passes: module dependency rules from `docs/dependencies.md`, coverage-weighted cyclomatic complexity per function, and mutation testing over the in-scope files.
+Acquires tools up an explicit ladder - the repo's own tooling, the ecosystem's established tool, or a small repo-fitted script committed under `tools/harden/` for reuse - and treats thresholds as recorded decisions in `docs/decisions.md`, never silently adjusted config.
+Checks mechanics, not meaning: it recommends `to-review` for judgment-based verification afterwards.
 
 ### to-review
 
 Reviews a branch or PR with a panel of concern-focused agents, selected per diff.
 Every non-trivial finding is adversarially verified against the repo.
-Checks plan conformance, including whether `[e2e]`-tagged criteria have a passing scenario in the e2e report and whether logged deviations still satisfy Success criteria.
+Reads `docs/contracts.md` boundary guarantees as premises before the panel runs, checks spec conformance - including whether `[e2e]`-tagged scenarios have a passing entry in the e2e report and whether logged deviations still satisfy the spec - and reconciles verified findings against `docs/decisions.md` only after judgment, reporting still-holds/reopened/diverged instead of re-litigating settled questions.
 Claude Code, Codex, and opencode use their native parallel subagent facilities. Pi preserves the same independent two-batch panel by launching isolated `pi --print` subprocesses with the current provider, model, and reasoning level.
 Renders `review_N.html` alongside the `review_N.md` file for reviewer handoff.
 
+### commit
+
+Groups all pending changes into granular, logically-separate commits - splitting within a file when needed - with structured messages: a `type(scope):` subject, `What:`/`Why:` body, optional `Considered:`/`Constraint:`/`Directive:`/`Symptoms:` sections, and `Severity:`/`Risk:` metadata trailers.
+After committing, syncs drifted docs and captures durable decisions and contracts from the commit bodies into `docs/decisions.md` and `docs/contracts.md`, which is what keeps the ledger current without excavating git history later.
+Pushes by default; say "commit only" to skip the push.
+
 ### to-pitch
 
-Packages a finished plan, its prototype, implementation notes, and e2e evidence into one buy-in document: demo first, then why, what changed, how it was verified, and how to try it.
+Packages a finished change - its spec, implementation notes, and e2e evidence - into one buy-in document: demo first, then why, what changed, how it was verified, and how to try it.
 
 ### to-quiz
 
@@ -72,15 +72,15 @@ Create `.dev/config.json` in the consuming repository:
 file or `jira.enabled: false` keeps the workflow pure-local with no Jira
 calls or questions.
 
-The hierarchy is Initiative > Epic > Task. `to-plan` asks you to choose an
-existing open Initiative, creates one Epic under it, and stores the Epic key in
-the plan. `to-tasks` creates one Jira Task under that Epic for each local task,
-stores each key in the task file and index, and comments and closes old issues
-when a task is superseded. `implement` moves the Epic to In Progress at start,
-moves each task through In Progress and Done as the orchestrator dispatches and
-commits it, then asks `push and open the PR?` on every run. A yes creates a
-keyed branch when needed, pushes it, and opens a PR whose title starts with the
-Epic key. A no stops after the e2e report.
+The hierarchy is Initiative > Epic > Task. `decision-spec` asks you to choose
+an existing open Initiative, creates one Epic under it once the change plan is
+final, stores the Epic key in the spec, and creates one Jira Task per change
+set, storing each key under its change set and closing old issues when a
+change set is superseded. `implement` moves the Epic to In Progress at start,
+moves each change-set issue through In Progress and Done as the orchestrator
+dispatches and commits it, then asks `push and open the PR?` on every run. A
+yes creates a keyed branch when needed, pushes it, and opens a PR whose title
+starts with the Epic key. A no stops after the e2e report.
 
 One-time Jira administration is required. Install the GitHub for Jira
 integration, then add an automation rule: "when a linked pull request is
@@ -95,7 +95,7 @@ skills do not poll for merges.
 /plugin install dev@nurbot
 ```
 
-Invoke skills as `/discover`, `/to-plan`, and so on.
+Invoke skills as `/decision-spec`, `/implement`, and so on.
 
 ## Codex installation
 
@@ -104,7 +104,7 @@ codex plugin marketplace add tobrun/skills
 codex plugin add dev@nurbot
 ```
 
-Invoke skills as `$dev:discover`, `$dev:to-plan`, and so on.
+Invoke skills as `$dev:decision-spec`, `$dev:implement`, and so on.
 
 ## opencode installation
 
@@ -120,7 +120,7 @@ done
 ln -sfn ~/ws/skills/dev/references ~/.config/opencode/references
 ```
 
-The last symlink keeps the shared `references/jira.md` reachable through the `../../references/` links inside the skills.
+The last symlink keeps the shared references (`jira.md`, `decision-ledger.md`, `contracts.md`) reachable through the `../../references/` links inside the skills.
 Symlinks mean a `git pull` updates the skills in place; restart opencode afterwards, since skills load at startup.
 
 opencode has no `disable-model-invocation` field (it is ignored harmlessly); skills load through a model-invoked `skill` tool.
@@ -131,10 +131,10 @@ Preserve the explicit-invocation policy with a permission rule in `~/.config/ope
   "permission": {
     "skill": {
       "*": "allow",
-      "discover": "ask",
-      "to-plan": "ask",
-      "to-tasks": "ask",
+      "decision-spec": "ask",
+      "commit": "ask",
       "implement": "ask",
+      "to-harden": "ask",
       "to-review": "ask",
       "to-pitch": "ask",
       "to-quiz": "ask"
@@ -143,7 +143,7 @@ Preserve the explicit-invocation policy with a permission rule in `~/.config/ope
 }
 ```
 
-Invoke a skill by asking for it by name, for example "run the to-plan skill on this request"; the permission rule makes opencode confirm before loading one.
+Invoke a skill by asking for it by name, for example "run the decision-spec skill on this request"; the permission rule makes opencode confirm before loading one.
 Verify discovery with `opencode debug skill`.
 `to-review` runs its panel through opencode's native `task` subagents.
 
@@ -153,7 +153,7 @@ Verify discovery with `opencode debug skill`.
 pi install git:github.com/tobrun/skills
 ```
 
-Invoke skills as `/skill:discover`, `/skill:to-plan`, and so on. Pi loads the
+Invoke skills as `/skill:decision-spec`, `/skill:implement`, and so on. Pi loads the
 source skills directly. A `to-review` run starts multiple model processes, one
 per selected lens and then one per non-trivial finding verifier, so its model
 usage scales with the panel size.

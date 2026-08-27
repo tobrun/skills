@@ -1,7 +1,7 @@
 {
   "name": "dev",
-  "version": "1.2.2",
-  "description": "Development workflow skills for discovery, planning, task splitting, test-first implementation, verified review, pitches, and quizzes.",
+  "version": "2.1.0",
+  "description": "Development workflow skills: spec changes with argued decisions, implement across unit/integration/e2e with every scenario proven by tests, harden with deterministic quality gauntlets, run verified reviews, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
   "author": {
     "name": "Tobrun"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Dev Workflow",
     "shortDescription": "Plan, implement, and review tested changes.",
-    "longDescription": "Development workflow skills for discovery, planning, task splitting, test-first implementation, verified review, pitches, and quizzes.",
+    "longDescription": "Development workflow skills: spec changes with argued decisions, implement across unit/integration/e2e with every scenario proven by tests, harden with deterministic quality gauntlets, run verified reviews, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
     "developerName": "Tobrun",
     "category": "Developer Tools",
     "capabilities": [
@@ -18,8 +18,8 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Discover unknowns before planning this change.",
-      "Create a reviewable implementation plan.",
+      "Spec this change with argued decisions.",
+      "Implement the current spec test-first.",
       "Review the current branch with verification."
     ]
   }
