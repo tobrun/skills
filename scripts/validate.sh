@@ -408,6 +408,32 @@ check_skill_length() {
 }
 
 # ===========================================================================
+# R15: every relative markdown link in dev/ resolves to an existing file
+# ===========================================================================
+check_links() {
+  local broken
+  broken=$(python3 - <<'PYEOF'
+import re, pathlib
+
+link_re = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
+for path in sorted(pathlib.Path("dev").rglob("*.md")):
+    text = path.read_text(encoding="utf-8")
+    for target in link_re.findall(text):
+        if target.startswith(("http://", "https://", "mailto:", "/")):
+            continue
+        resolved = (path.parent / target).resolve()
+        if not resolved.exists():
+            print(f"{path}: broken link -> {target}")
+PYEOF
+)
+  if [ -n "$broken" ]; then
+    while IFS= read -r line; do
+      fail "R15" "${line%%:*}" "${line#*: }"
+    done <<< "$broken"
+  fi
+}
+
+# ===========================================================================
 # C01: Generated Codex distribution is current and structurally valid
 # ===========================================================================
 check_codex() {
@@ -538,6 +564,7 @@ check_12
 check_13
 check_14
 check_skill_length
+check_links
 check_codex
 check_pi
 
