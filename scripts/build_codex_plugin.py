@@ -86,8 +86,9 @@ def build(destination: Path) -> None:
         (SOURCE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8")
     )
     description = claude_manifest["description"]
-    shutil.copytree(SOURCE / "skills", destination / "skills")
-    shutil.copytree(SOURCE / "references", destination / "references")
+    junk = shutil.ignore_patterns(".DS_Store")
+    shutil.copytree(SOURCE / "skills", destination / "skills", ignore=junk)
+    shutil.copytree(SOURCE / "references", destination / "references", ignore=junk)
 
     skill_names = sorted(
         path.name for path in (destination / "skills").iterdir() if path.is_dir()
@@ -150,7 +151,7 @@ def snapshot(root: Path) -> dict[str, bytes]:
     return {
         path.relative_to(root).as_posix(): path.read_bytes()
         for path in sorted(root.rglob("*"))
-        if path.is_file()
+        if path.is_file() and path.name != ".DS_Store"
     }
 
 
