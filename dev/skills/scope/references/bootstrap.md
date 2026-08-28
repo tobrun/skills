@@ -2,7 +2,7 @@
 
 Build `docs/decisions.md` in one pass from commit history.
 The commit skill's message format records `Why:` / `Considered:` / `Constraint:` / `Directive:` bodies and `Severity:` / `Risk:` trailers - in a repo that has used it for a while, the decisions are already written down, scattered across hundreds of commits.
-Bootstrap lifts the durable ones into the ledger; after that, commit-time capture (the commit skill's sync-checks reference, Step 4c) keeps it current and this never runs again.
+Bootstrap lifts the durable ones into the ledger; after that, commit-time capture (the ledger-capture step of the commit skill's sync-checks reference) keeps it current and this never runs again.
 
 Run for the whole repo or scoped to an area the user names.
 
@@ -34,7 +34,7 @@ For each area, read the candidate commits' full bodies (`git show --format=fulle
 - `⚠` any downside the body admits.
 - Dated with the commit date, sourced to the hash.
 
-Qualification bar is Step 4c's: a choice qualifies when someone could plausibly argue it differently later - `Considered:` exists, or the `Why:` defends a tradeoff.
+Qualification bar is the ledger-capture step's: a choice qualifies when someone could plausibly argue it differently later - `Considered:` exists, or the `Why:` defends a tradeoff.
 Routine implementation narration doesn't qualify no matter how detailed.
 
 Evidence marks ([../../../references/decision-ledger.md](../../../references/decision-ledger.md) Notation): a claim the body makes from observation - "we saw timeouts in prod" - is a dated claim sourced to the hash; that's a citation, and its staleness is judged at read time.
@@ -65,7 +65,7 @@ Mechanical, from the trailer harvest, per the area-header semantics in [../../..
 Date each line `(updated <date>, bootstrap)`.
 
 Familiarity lines are not derivable from commits - leave them absent.
-The decision-spec quiz fills them in as areas come up.
+The scope quiz fills them in as areas come up.
 
 ## 5. Write and present
 

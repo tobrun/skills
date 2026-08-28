@@ -74,7 +74,7 @@ Commits without severity trailers leave the level untouched.
 A section without a risk line carries no signal - treat it as unassessed, not as safe.
 
 `familiarity: high | medium | low - quizzed <date>`.
-Written by decision-spec's quiz whenever it covers the area; a section without one is treated as low.
+Written by scope's quiz whenever it covers the area; a section without one is treated as low.
 Consumers apply it at presentation time, as a prior on whether anyone ever decided the thing being flagged: an odd value in a high-familiarity area was probably chosen, so present the finding as a question - "was this deliberate?" - not a recommendation.
 The same value in a low-familiarity area was probably never chosen by anyone, so present it as a finding and explain the tradeoff space, because the user couldn't have known there was a decision to make.
 It also sets explanation depth: terse where familiarity is high, more background where it's low.
@@ -113,8 +113,7 @@ The order is the point:
      Surface the disagreement as its own item: either the old decision missed something or the new analysis lacks its context.
      Never silently suppress, never silently override.
 
-   Reconcile also maintains evidence marks on the entries it touched: a `?` the run can check now resolves to a citation; a citation that no longer resolves downgrades to `?`.
-   Both are ledger writes and wait for step 4 like any other.
+   Reconcile also maintains evidence marks on the entries it touched, per Notation; those are ledger writes and wait for step 4 like any other.
 
    Findings with no collision pass through unchanged.
    The reconcile report also states whether the pass was `clean` or `contaminated` - contaminated meaning recorded conclusions entered context before findings were formed (an unlucky grep, a file read that pulled them in).
@@ -125,5 +124,5 @@ The order is the point:
    Recovery rides along with reporting; it is not a separate pass over the code.
 4. **Write back.**
    After the user responds to findings: a declined recommendation becomes a `⊘` line with a concrete reopen condition, dated, sourced to this audit - declined always gets written; that's what makes the next run stateful.
-   An accepted one becomes a `✓` entry if it passes the promotion test, or warrants a recommended decision-spec run if it carries enough decisions to need one.
+   An accepted one becomes a `✓` entry if it passes the promotion test, or warrants a recommended scope run if it carries enough decisions to need one.
    A recommendation that's real but needs a call the run can't make becomes an `[open]` entry carrying the alternatives - escalations get a durable home instead of dying in a run directory.

@@ -2,20 +2,20 @@
 
 Development workflow skills for Claude Code, Codex, opencode, and Pi, built around two ideas: layered tests are the enforceable spec for behavior, and every phase produces something a human actually reviews as HTML, not markdown scrolling.
 
-The skills chain loosely rather than as a rigid pipeline: `/decision-spec` interviews for the real problem, argues every design decision against alternatives, and writes a self-contained spec whose change plan carries layer-tagged test scenarios; `/implement` executes the spec's change sets across unit/integration/e2e, proving every scenario with a test that has been seen to fail, in parallel waves where file lists allow, keeping a running implementation-notes log; `/to-harden` runs a deterministic quality gauntlet - dependency rules, coverage-weighted complexity, mutation testing - looping fix agents until the checkers pass; `/to-review` verifies the result with a fan-out panel that checks spec conformance, e2e coverage, and logged deviations; `/commit` groups pending changes into granular commits with structured what/why messages; `/to-pitch` and `/to-quiz` turn finished work into a buy-in doc or a comprehension check.
-The durable context is deliberately small: the code, its tests, the active spec under `.dev/{plan-name}/`, and three repo-tracked registries the skills maintain in the consuming project - `docs/decisions.md` (design decisions with their argued alternatives, read only after a review forms its findings), `docs/contracts.md` (boundary guarantees, read as premises before a review walks the diff), and `docs/dependencies.md` (machine-checkable module dependency rules, enforced by `to-harden`).
+The skills chain loosely rather than as a rigid pipeline: `/scope` interviews for the real problem, argues every design decision against alternatives, and writes a self-contained spec whose change plan carries layer-tagged test scenarios; `/build` executes the spec's change sets across unit/integration/e2e, proving every scenario with a test that has been seen to fail, in parallel waves where file lists allow, keeping a running implementation-notes log; `/ship` runs a deterministic quality gauntlet - dependency rules, coverage-weighted complexity, mutation testing - looping fix agents until the checkers pass, then verifies the result with a fan-out review panel that checks spec conformance, e2e coverage, and logged deviations; `/commit` groups pending changes into granular commits with structured what/why messages; `/to-pitch` and `/to-quiz` turn finished work into a buy-in doc or a comprehension check.
+The durable context is deliberately small: the code, its tests, the active spec under `.dev/{plan-name}/`, and three repo-tracked registries the skills maintain in the consuming project - `docs/decisions.md` (design decisions with their argued alternatives, read only after a review forms its findings), `docs/contracts.md` (boundary guarantees, read as premises before a review walks the diff), and `docs/dependencies.md` (machine-checkable module dependency rules, enforced by `ship`).
 Every producing skill renders its own output as self-contained HTML under `/tmp/{project-slug}/reports/`. It publishes only when the user requests a shareable link and the host provides an artifact-publishing tool.
 Every skill is explicit-invocation only: Claude Code and Pi use `disable-model-invocation: true`, the generated Codex distribution uses `agents/openai.yaml` with `allow_implicit_invocation: false`, and opencode enforces it with a `permission.skill` rule set to `ask` (see opencode installation below). Skills recommend the next step rather than launching each other.
 
 ## Skills
 
-### decision-spec
+### scope
 
 Specs a change by interviewing for the real problem behind the request, cataloging every design decision (with a subagent blind-spot pass on full-size changes), and arguing each one against alternatives in a `✓`/`✗`/`?`/`⚠`/`⊘` notation with evidence marks.
-Writes a self-contained spec at `.dev/{plan-name}/spec.md` - research decisions, scope with invariants and a Validation block of the repo's real commands, and a change plan of numbered change sets each ending in a layer-tagged `tests:` line - designed as a fresh-context handoff to `implement`.
+Writes a self-contained spec at `.dev/{plan-name}/spec.md` - research decisions, scope with invariants and a Validation block of the repo's real commands, and a change plan of numbered change sets each ending in a layer-tagged `tests:` line - designed as a fresh-context handoff to `build`.
 Promotes durable decisions to `docs/decisions.md` and cross-boundary invariants to `docs/contracts.md`, renders an expandable-card spec view, and has a reverse mode that audits the implicit decisions already embedded in existing code.
 
-### implement
+### build
 
 Executes a spec's change sets at the layer each `tests:` scenario is tagged with - unit for business logic, integration for real cross-component seams, e2e for driving the actual running application.
 Enforces outcomes rather than rituals: every test must have been seen to fail before its green counts, with strict failing-test-first reserved for bug fixes, where red is the proof the issue was actually reproduced.
@@ -23,15 +23,12 @@ Runs independent change sets in parallel as waves of subagents batched by disjoi
 Once every change set is committed, drives the real app against a mocked environment, loops until every e2e scenario passes, then renders the e2e report: screenshots per scenario for frontend systems, Test Scenario and Data Model State tables for everything else.
 Every run then asks whether to push and open a PR, whether or not Jira is configured (see Jira integration below).
 
-### to-harden
+### ship
 
-Puts a change through deterministic tools that cannot be argued with, looping fresh-context fix agents until every check passes: module dependency rules from `docs/dependencies.md`, coverage-weighted cyclomatic complexity per function, and mutation testing over the in-scope files.
-Acquires tools up an explicit ladder - the repo's own tooling, the ecosystem's established tool, or a small repo-fitted script committed under `tools/harden/` for reuse - and treats thresholds as recorded decisions in `docs/decisions.md`, never silently adjusted config.
-Checks mechanics, not meaning: it recommends `to-review` for judgment-based verification afterwards.
-
-### to-review
-
-Reviews a branch or PR with a panel of concern-focused agents, selected per diff.
+Runs the quality pass that finishes a change, in two phases; by default both run, and either can be requested alone ("gauntlet only", "review only").
+Phase 1 puts the change through deterministic tools that cannot be argued with, looping fresh-context fix agents until every check passes: module dependency rules from `docs/dependencies.md`, coverage-weighted cyclomatic complexity per function, and mutation testing over the in-scope files.
+It acquires tools up an explicit ladder - the repo's own tooling, the ecosystem's established tool, or a small repo-fitted script committed under `tools/harden/` for reuse - and treats thresholds as recorded decisions in `docs/decisions.md`, never silently adjusted config.
+Phase 2 reviews the post-fix diff with a read-only panel of concern-focused agents, selected per diff; the gauntlet checks mechanics, the panel judges meaning.
 Every non-trivial finding is adversarially verified against the repo.
 Reads `docs/contracts.md` boundary guarantees as premises before the panel runs, checks spec conformance - including whether `[e2e]`-tagged scenarios have a passing entry in the e2e report and whether logged deviations still satisfy the spec - and reconciles verified findings against `docs/decisions.md` only after judgment, reporting still-holds/reopened/diverged instead of re-litigating settled questions.
 Claude Code, Codex, and opencode use their native parallel subagent facilities. Pi preserves the same independent two-batch panel by launching isolated `pi --print` subprocesses with the current provider, model, and reasoning level.
@@ -72,11 +69,11 @@ Create `.dev/config.json` in the consuming repository:
 file or `jira.enabled: false` keeps the workflow pure-local with no Jira
 calls or questions.
 
-The hierarchy is Initiative > Epic > Task. `decision-spec` asks you to choose
+The hierarchy is Initiative > Epic > Task. `scope` asks you to choose
 an existing open Initiative, creates one Epic under it once the change plan is
 final, stores the Epic key in the spec, and creates one Jira Task per change
 set, storing each key under its change set and closing old issues when a
-change set is superseded. `implement` moves the Epic to In Progress at start,
+change set is superseded. `build` moves the Epic to In Progress at start,
 moves each change-set issue through In Progress and Done as the orchestrator
 dispatches and commits it, then asks `push and open the PR?` on every run. A
 yes creates a keyed branch when needed, pushes it, and opens a PR whose title
@@ -95,7 +92,7 @@ skills do not poll for merges.
 /plugin install dev@nurbot
 ```
 
-Invoke skills as `/decision-spec`, `/implement`, and so on.
+Invoke skills as `/scope`, `/build`, and so on.
 
 ## Codex installation
 
@@ -104,7 +101,7 @@ codex plugin marketplace add tobrun/skills
 codex plugin add dev@nurbot
 ```
 
-Invoke skills as `$dev:decision-spec`, `$dev:implement`, and so on.
+Invoke skills as `$dev:scope`, `$dev:build`, and so on.
 
 ## opencode installation
 
@@ -131,11 +128,10 @@ Preserve the explicit-invocation policy with a permission rule in `~/.config/ope
   "permission": {
     "skill": {
       "*": "allow",
-      "decision-spec": "ask",
+      "scope": "ask",
       "commit": "ask",
-      "implement": "ask",
-      "to-harden": "ask",
-      "to-review": "ask",
+      "build": "ask",
+      "ship": "ask",
       "to-pitch": "ask",
       "to-quiz": "ask"
     }
@@ -143,9 +139,9 @@ Preserve the explicit-invocation policy with a permission rule in `~/.config/ope
 }
 ```
 
-Invoke a skill by asking for it by name, for example "run the decision-spec skill on this request"; the permission rule makes opencode confirm before loading one.
+Invoke a skill by asking for it by name, for example "run the scope skill on this request"; the permission rule makes opencode confirm before loading one.
 Verify discovery with `opencode debug skill`.
-`to-review` runs its panel through opencode's native `task` subagents.
+`ship` runs its review panel through opencode's native `task` subagents.
 
 ## Pi installation
 
@@ -153,7 +149,7 @@ Verify discovery with `opencode debug skill`.
 pi install git:github.com/tobrun/skills
 ```
 
-Invoke skills as `/skill:decision-spec`, `/skill:implement`, and so on. Pi loads the
-source skills directly. A `to-review` run starts multiple model processes, one
-per selected lens and then one per non-trivial finding verifier, so its model
-usage scales with the panel size.
+Invoke skills as `/skill:scope`, `/skill:build`, and so on. Pi loads the
+source skills directly. A `ship` review phase starts multiple model processes,
+one per selected lens and then one per non-trivial finding verifier, so its
+model usage scales with the panel size.

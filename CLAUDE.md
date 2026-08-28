@@ -43,7 +43,7 @@ This is a monorepo for Tobrun's Claude Code, Codex, and Pi skills. The root
   after changing `dev/`; the generator removes Claude-only frontmatter and
   writes Codex `agents/openai.yaml` invocation policy.
 - Keep the root Pi package version equal to `dev/.claude-plugin/plugin.json`.
-- Preserve native subagent behavior in `to-review`; Pi-specific orchestration
+- Preserve native subagent behavior in `ship`; Pi-specific orchestration
   belongs in its subprocess transport and bundled runner.
 - Skill descriptions must state both what the skill does and when to use it.
 - No file in the repo may contain an em dash.

@@ -1,7 +1,6 @@
 # REVIEW_DATA Schema
 
-The shape to populate in `templates/review.html` between the `REVIEW_DATA_START` / `REVIEW_DATA_END` markers.
-Replace the whole object; the rendering engine below the markers is generic and reads only this shape.
+The shape to populate in `templates/review.html` between the `REVIEW_DATA_START` / `REVIEW_DATA_END` markers, per the shared etiquette in [../../../references/reporting.md](../../../references/reporting.md).
 This mirrors `review_N.md`'s structure exactly - it's the same content, published as the artifact a PR reviewer actually opens.
 
 ```js
@@ -44,5 +43,4 @@ const REVIEW_DATA = {
 
 - This is a direct transcription of `review_N.md` into data, not a separate editorial pass - the two must agree.
 - `blockers`/`concerns` only include findings that survived adversarial verification (CONFIRMED, or PLAUSIBLE demoted to CONCERN) - never a REFUTED finding.
-- `panel`/`failedLenses` should make an honestly partial review visible, not hide it behind a clean-looking verdict.
 - `previousFindings` is only non-empty on a re-review; omit the section in the template when empty rather than showing "none."

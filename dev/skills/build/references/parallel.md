@@ -1,6 +1,6 @@
 # Parallel Execution
 
-`decision-spec` ordered the change plan so each change set builds only on the ones before it, and listed each change set's files.
+`scope` ordered the change plan so each change set builds only on the ones before it, and listed each change set's files.
 This file is how to cash that in: you are the orchestrator, subagents are the implementers.
 
 ## Waves
@@ -59,4 +59,4 @@ If two change sets in a wave edited the same file anyway, reconcile it yourself 
 ## When not to parallelize
 
 - The spec has one change set, or every change set's files overlap with the one before it: run them sequentially yourself.
-- Two change sets batched into a wave visibly collide anyway: treat that as a `decision-spec` sizing miss, run them sequentially, and note it in `implementation-notes.md`.
+- Two change sets batched into a wave visibly collide anyway: treat that as a `scope` sizing miss, run them sequentially, and note it in `implementation-notes.md`.

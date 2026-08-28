@@ -1,5 +1,5 @@
 {
-  "skill": "decision-spec",
+  "skill": "scope",
   "mode": "comprehension",
   "evals": [
     {
@@ -14,7 +14,7 @@
         "The scope section ends with a Validation block listing the repo's real commands, discovered rather than guessed",
         "Every change set ends with a tests: line whose scenarios carry [unit], [integration], or [e2e] layer tags, or tests: none with a reason",
         "The spec does not implement code; no source files are modified",
-        "The run ends by recommending implement; it is never invoked directly"
+        "The run ends by recommending build; it is never invoked directly"
       ]
     },
     {

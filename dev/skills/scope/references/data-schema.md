@@ -1,7 +1,7 @@
 # SPEC_DATA Schema
 
 The shape to populate in `templates/spec.html` between the `SPEC_DATA_START` / `SPEC_DATA_END` markers.
-Replace the whole object; the rendering engine below the markers is generic and reads only this shape.
+Replace the whole object per the shared etiquette in [../../../references/reporting.md](../../../references/reporting.md).
 
 ```js
 const SPEC_DATA = {
@@ -62,4 +62,4 @@ const SPEC_DATA = {
 - **Marks are the content** - the because clauses, ⚠ downsides, and ⊘ reopen conditions are why the artifact is worth opening; never flatten them into bare labels.
 - **flags should be empty** in a spec whose interview ran to completion - a ⚑ still open means the change plan is not final. Surface it loudly rather than hiding it.
 - **Don't invent a decision that wasn't argued** - a decision with one alternative and no because clause is a statement, not a decision; leave it out or argue it first.
-- **tests entries are the acceptance criteria** - keep layer tags accurate; `implement` and `to-review` treat them as the enforceable spec.
+- **tests entries are the acceptance criteria** - keep layer tags accurate; `build` and `ship` treat them as the enforceable spec.

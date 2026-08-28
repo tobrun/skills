@@ -478,7 +478,7 @@ check_codex() {
 # ===========================================================================
 check_pi() {
   local package="package.json"
-  local runner="dev/skills/to-review/scripts/run-pi-agents.sh"
+  local runner="dev/skills/ship/scripts/run-pi-agents.sh"
   local package_version
   local plugin_version
 
@@ -509,13 +509,13 @@ check_pi() {
   fi
 
   if ! grep -q 'Native transport (preferred)' \
-    dev/skills/to-review/references/orchestration.md; then
-    fail "P01" "dev/skills/to-review/references/orchestration.md" \
+    dev/skills/ship/references/orchestration.md; then
+    fail "P01" "dev/skills/ship/references/orchestration.md" \
       "Missing native multi-agent transport"
   fi
   if ! grep -q 'PI_CODING_AGENT=true' \
-    dev/skills/to-review/references/orchestration.md; then
-    fail "P01" "dev/skills/to-review/references/orchestration.md" \
+    dev/skills/ship/references/orchestration.md; then
+    fail "P01" "dev/skills/ship/references/orchestration.md" \
       "Missing Pi subprocess transport"
   fi
 }

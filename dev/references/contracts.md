@@ -28,7 +28,7 @@ C-order-status: GET /orders never returns a status outside {pending, paid, faile
 
 Each entry: a `C-` kebab slug, one sentence stating the guarantee or invariant, a `guaranteed by:` line naming the enforcing code, a `relied on by:` line naming the sites that assume it, and a date + source.
 When a recorded decision created the guarantee, the decision's slug is the source - `(2026-08-21, D-retry-ownership)` - which makes breaking the contract traceable to the choice behind it; a contract with no parent decision cites its spec, audit, or commit as usual.
-Evidence marks and their maintenance follow [decision-ledger.md](decision-ledger.md) Notation exactly: code is cited by function name, never line number; an unchecked assertion carries `? verify: <what would confirm it>`.
+Evidence marks and their maintenance follow [decision-ledger.md](decision-ledger.md) Notation exactly.
 
 Entries are filed under the area that owns the *guarantee* side - that's where the enforcing code lives, so that's where a change breaks it.
 The `relied on by:` line makes the entry findable from the other side; a consumer searching by either module's name retrieves it.
@@ -57,11 +57,11 @@ Module-internal behavior doesn't qualify - it has no second side to mislead.
 Contract writes are candidates until the user approves them, like every other durable write in this toolkit.
 
 - **Commit capture and maintenance.**
-  The commit skill captures new guarantees a commit establishes and re-checks recorded contracts whose guarantee sites the diff touches, with typed verdicts per its sync-checks reference (Step 4c).
+  The commit skill captures new guarantees a commit establishes and re-checks recorded contracts whose guarantee sites the diff touches, with typed verdicts per the ledger-capture step of its sync-checks reference.
   This check is what keeps citations trustworthy enough to refute anything.
 - **Review refutations.**
   When verification refutes a finding by discovering a boundary fact recorded nowhere - the guard, the value domain, the retry owner - that fact becomes a `C-` write candidate, so the next run inherits the premise instead of re-assuming.
 - **Spec invariants.**
-  A decision-spec scope section records inputs, outputs, and invariants per change; the invariants that cross a boundary promote here at spec promotion time.
+  The spec's scope section (written by `scope`) records inputs, outputs, and invariants per change; the invariants that cross a boundary promote here at spec promotion time.
 - **Audit recovery.**
   An audit that observes an undocumented reliance ("billing assumes exactly-once but nothing guarantees it") records the gap as a `C-` candidate with the `?` on whichever side is unverified.

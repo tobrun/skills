@@ -6,7 +6,7 @@ Pass `diffFile`, `brief`, `planContext`, `lenses` (as `{key, prompt}` with the f
 
 ```js
 export const meta = {
-  name: 'to-review',
+  name: 'ship',
   description: 'Concern-based diff review with adversarial verification of findings',
   phases: [
     { title: 'Review', detail: 'one agent per selected lens' },

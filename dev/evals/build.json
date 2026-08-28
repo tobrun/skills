@@ -1,5 +1,5 @@
 {
-  "skill": "implement",
+  "skill": "build",
   "mode": "functional",
   "evals": [
     {
@@ -7,8 +7,8 @@
       "prompt": "Implement this spec.",
       "fixture": "a git repo with .dev/discount-pricing/ containing only a review_1.md, and no spec.md",
       "assertions": [
-        "The user is asked to run decision-spec first rather than work being implemented straight from the review",
-        "decision-spec is not invoked automatically",
+        "The user is asked to run scope first rather than work being implemented straight from the review",
+        "scope is not invoked automatically",
         "No implementation code is written"
       ]
     },
@@ -20,10 +20,10 @@
         "Both change sets are implemented, not just the first one",
         "Change set 2's work is attempted only after change set 1's is committed (spec order respected, since their files overlap)",
         "Tests are behavior-named (e.g. \"applies a discount\") rather than test1/test2, cover cases beyond the happy path, and no assertion recomputes the expected value the way the implementation does",
-        "The user is not asked about running to-review after change set 1 finishes - no review prompt appears until both are done",
+        "The user is not asked about running ship after change set 1 finishes - no review prompt appears until both are done",
         "Each change set gets its own commit on the current branch (at least 2 commits)",
         ".dev/{plan-name}/implementation-notes.md is created and has one entry per change set",
-        "After both change sets are done, the user is asked to run to-review rather than a review panel being launched automatically"
+        "After both change sets are done, the user is asked to run ship rather than a review panel or gauntlet being launched automatically"
       ]
     },
     {
@@ -65,7 +65,7 @@
         "The fix is driven by a new failing test at the layer that can catch it, not only by patching until the e2e passes",
         "The scenario is re-run and re-captured after the fix, not flipped to pass with the original capture",
         "The final report's summary counts match the scenarios array and reflect the passing re-run",
-        "The user is asked to run to-review only after the e2e run is green"
+        "The user is asked to run ship only after the e2e run is green"
       ]
     },
     {

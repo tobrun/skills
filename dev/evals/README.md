@@ -4,11 +4,11 @@ Status: maintained
 
 Eval definitions for the `dev` plugin's skills: realistic prompts and objective assertions used to check whether a skill change preserved behavior.
 
-- `{skill}.json` - one file per skill: the eval prompt(s), the fixture each expects, and the assertions to grade the output against. Covers all 7 skills: `decision-spec`, `commit`, `implement`, `to-harden`, `to-review`, `to-pitch`, `to-quiz`.
+- `{skill}.json` - one file per skill: the eval prompt(s), the fixture each expects, and the assertions to grade the output against. Covers all 6 skills: `scope`, `commit`, `build`, `ship`, `to-pitch`, `to-quiz`.
 - `results.md` - the record of the most recent full run: scores, methodology, and findings.
 
-`implement` runs in `"functional"` mode (a real fixture, a real subagent run, assertions checked against the actual output).
-`decision-spec`, `commit`, `to-harden`, `to-review`, `to-pitch`, and `to-quiz` run in `"comprehension"` mode instead - each depends on either an interactive question loop, a live codebase, or prior artifacts (a finished spec, implementation notes, an e2e report) that are too expensive to stage on every iteration, so these check policy comprehension of the skill text directly.
+`build` runs in `"functional"` mode (a real fixture, a real subagent run, assertions checked against the actual output).
+`scope`, `commit`, `ship`, `to-pitch`, and `to-quiz` run in `"comprehension"` mode instead - each depends on either an interactive question loop, a live codebase, or prior artifacts (a finished spec, implementation notes, an e2e report) that are too expensive to stage on every iteration, so these check policy comprehension of the skill text directly.
 
 ## When to run these
 

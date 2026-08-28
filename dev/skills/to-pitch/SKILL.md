@@ -18,9 +18,9 @@ Say so and skip rather than manufacture ceremony.
 
 1. Locate the spec directory per [../../references/plan-layout.md](../../references/plan-layout.md).
 2. Read whatever exists, degrading gracefully when something doesn't:
-   - `.dev/{plan-name}/spec.md` - the scope section (the goal and before/after), the change plan (files touched, layer-tagged `tests:` scenarios), and the research section (the chosen direction, the rejected alternatives, and the rationale - the raw material for "Why").
-   - `.dev/{plan-name}/implementation-notes.md` (from `implement`) - what was done, and any Deviations.
-   - `/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`'s data block - the scenario summary, as verification evidence (scenario fields and summary only, never the base64 screenshot payloads).
+   - `.dev/{plan-name}/spec.md` - the scope, change plan, and research sections.
+   - `.dev/{plan-name}/implementation-notes.md` (from `build`) - what was done, and any Deviations.
+   - `/tmp/{project-slug}/reports/{plan-name}-e2e-report.html`'s data block - verification evidence, read per the rules in [../../references/reporting.md](../../references/reporting.md).
 3. Capture the demo. For UI-affecting changes, use an installed `run` skill when direct skill invocation is available; otherwise launch the app from its documented command. Record a short clip with available browser automation when GIF capture exists, or use a concise screenshot sequence otherwise. For non-UI changes, lead with the clearest before/after example.
 4. Map everything onto `PITCH_DATA` per [references/data-schema.md](references/data-schema.md) in this section order: Demo, Why, What changed, How we verified it, Deviations (omit the section entirely when none were logged), Try it yourself.
 5. Render [templates/pitch.html](templates/pitch.html) to `/tmp/{project-slug}/reports/{plan-name}-pitch.html`, opening and publishing per [../../references/reporting.md](../../references/reporting.md) (stable pitch favicon; title and description from the spec).

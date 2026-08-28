@@ -3,7 +3,7 @@
 The review always uses independent agents in two batches. Select the transport
 without changing the panel:
 
-Both transports use the same scratch root, such as `/tmp/to-review-{session-id}/`,
+Both transports use the same scratch root, such as `/tmp/ship-{session-id}/`,
 with a `results/` directory per batch. Result files in that directory are the
 only channel for agent output. Never retrieve results by messaging an agent,
 waiting for relayed replies, or re-spawning an agent that already finished;
@@ -42,9 +42,9 @@ background and their final message never reaches the orchestrator:
    then end with a one-line confirmation naming that path. The result file is
    the deliverable; the final message is not.
 3. When the host signals that the batch's agents have finished, read the
-   result files. Do not poll agents for content in the meantime.
+   result files.
 4. A missing or unparseable file after one re-read marks only that agent as
-   failed, same as a crashed agent. Do not message it or spawn a replacement.
+   failed, same as a crashed agent.
 
 Agents stay read-only in the repository; their only write is their own result
 file under the scratch root.
@@ -60,7 +60,7 @@ Use the shared scratch root. For each batch:
 3. From the repository root, run:
 
    ```bash
-   bash {to-review-skill-root}/scripts/run-pi-agents.sh \
+   bash {ship-skill-root}/scripts/run-pi-agents.sh \
      {batch-root}/prompts \
      {batch-root}/results
    ```
@@ -111,7 +111,7 @@ Output contract (the JSON every lens agent must produce):
 }
 ```
 
-If an agent errors or returns something unparseable, record it as a failed lens and continue; the report notes it so the verdict is honestly partial.
+If an agent errors or returns something unparseable, record it as a failed lens and continue.
 Never retry a failed lens more than once.
 
 ## Batch 2: verifiers
@@ -143,4 +143,4 @@ REFUTED = wrong, unreachable, or already handled; say exactly why.
 Delivery follows the transport: on native, the verifier writes the array to
 its result file; on Pi, it replies with the array as one fenced JSON block.
 
-Aggregation of the verified results is plain reasoning per step 6 of the skill; do it yourself, not with another agent.
+Aggregation of the verified results is plain reasoning per the skill's Aggregate step; do it yourself, not with another agent.

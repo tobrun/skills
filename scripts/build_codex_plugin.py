@@ -20,20 +20,20 @@ SKILL_UI = {
         "Create granular commits with structured messages",
         "Use $dev:commit to group the pending changes into granular, well-explained commits.",
     ),
-    "decision-spec": (
-        "Decision Spec",
-        "Spec a change by arguing its decisions",
-        "Use $dev:decision-spec to spec this change with argued decisions and a change plan.",
-    ),
-    "implement": (
-        "Implement",
+    "build": (
+        "Build",
         "Execute a spec test-first through e2e",
-        "Use $dev:implement to execute the current spec test-first and verify it end to end.",
+        "Use $dev:build to execute the current spec test-first and verify it end to end.",
     ),
-    "to-harden": (
-        "To Harden",
-        "Run a deterministic quality gauntlet",
-        "Use $dev:to-harden to run dependency, complexity, and mutation checks over this change.",
+    "scope": (
+        "Scope",
+        "Spec a change by arguing its decisions",
+        "Use $dev:scope to spec this change with argued decisions and a change plan.",
+    ),
+    "ship": (
+        "Ship",
+        "Harden then review a change with verification",
+        "Use $dev:ship to run the quality gauntlet and the verified review over this change.",
     ),
     "to-pitch": (
         "To Pitch",
@@ -44,11 +44,6 @@ SKILL_UI = {
         "To Quiz",
         "Create a graded change comprehension quiz",
         "Use $dev:to-quiz to create a comprehension check for the completed change.",
-    ),
-    "to-review": (
-        "To Review",
-        "Run a verified multi-agent code review",
-        "Use $dev:to-review to review the current branch with adversarial verification.",
     ),
 }
 
@@ -128,15 +123,15 @@ def build(destination: Path) -> None:
         "skills": "./skills/",
         "interface": {
             "displayName": "Dev Workflow",
-            "shortDescription": "Plan, implement, and review tested changes.",
+            "shortDescription": "Scope, build, and ship tested changes.",
             "longDescription": description,
             "developerName": claude_manifest["author"]["name"],
             "category": "Developer Tools",
             "capabilities": ["Interactive", "Write"],
             "defaultPrompt": [
-                "Spec this change with argued decisions.",
-                "Implement the current spec test-first.",
-                "Review the current branch with verification.",
+                "Scope this change with argued decisions.",
+                "Build the current spec test-first.",
+                "Ship this change with the gauntlet and a verified review.",
             ],
         },
     }

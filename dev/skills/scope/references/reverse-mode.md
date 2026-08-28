@@ -15,8 +15,6 @@ When the user points at existing code instead of a planned change - "audit the d
    The rest are new.
 4. **Talk through the new ones worth deciding**, ordered by blast radius if the value is wrong.
    A decision the user ratifies gets `✓` with the real because clause.
-   One worth changing gets a recommended normal decision-spec run; never launch it yourself.
+   One worth changing gets a recommended normal scope run; never launch it yourself.
 5. **Write out.**
    Reverse mode produces no spec file - everything lands in the ledger: ratified decisions, the quiz's familiarity line, and unexamined defaults not worth deciding, recorded with their `no known problem` line if they pass the promotion test so the next audit doesn't re-litigate them.
-
-To seed a ledger from commit history instead of code - the commit skill's message format records `Why:`/`Considered:` bodies, so the decisions are already written down - follow [bootstrap.md](bootstrap.md).

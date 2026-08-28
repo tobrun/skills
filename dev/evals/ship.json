@@ -1,0 +1,36 @@
+{
+  "skill": "ship",
+  "mode": "comprehension",
+  "note": "A full run depends on a real codebase with a diff, test suite, and toolchain, and fans out its own subagent panel - both too expensive to stage per iteration. These evals check policy comprehension of the skill text directly instead.",
+  "evals": [
+    {
+      "id": "gauntlet-policy",
+      "prompt": "Answer briefly, from the skill text only: (1) A mutation run leaves three surviving mutants and fixing them is tedious. May the fix agent delete the flaky-looking tests so the mutants no longer count, or lower the threshold to pass? (2) docs/dependencies.md forbids ui -> infra but the change needs data from infra. What are the legitimate fixes, and who may edit the rules file? (3) The repo has no mutation framework. Do you skip mutation testing, hand-roll a full harness, or something else? (4) The complexity threshold of 6 seems too strict for this codebase and the user agrees to 8. What must happen besides using 8? (5) What is the default scope of a run, and when does it widen? (6) A violation has survived two fix rounds on the same root cause. What happens next? (7) After the gauntlet passes, is the change verified? What happens next?",
+      "fixture": "none - policy questions answered from the skill text",
+      "assertions": [
+        "Answer 1: no on both; agents never delete tests to moot a mutant, never weaken a check or edit thresholds to pass",
+        "Answer 2: invert the dependency, insert an interface, or split the module; the rules file is edited only through a scope change set, never by a fix agent",
+        "Answer 3: neither skip nor a full hand-rolled harness first; follow the acquisition ladder - repo tooling, then the ecosystem's established framework, then a small repo-fitted script committed under tools/harden/",
+        "Answer 4: the accepted threshold is recorded as a D- entry in docs/decisions.md, dated and sourced to this run, so the next run reads it instead of re-arguing; never adjusted silently",
+        "Answer 5: the branch diff against the default branch; full-repo only when the user asks",
+        "Answer 6: it becomes a human call - presented as a real defect, a threshold worth changing, or a rule the spec should have amended; the loop does not grind on",
+        "Answer 7: mechanics only, not meaning; by default the review phase runs next over the post-fix diff, and commit is recommended for the accumulated fixes at wrap up, never invoked"
+      ]
+    },
+    {
+      "id": "review-policy",
+      "prompt": "Answer briefly, from the skill text only: (1) After build finishes a task, should ship launch automatically? (2) A finding is BLOCK severity but verification returns PLAUSIBLE (could not refute, could not fully confirm). What severity does it end up as in the report: BLOCK, CONCERN, or dropped entirely? (3) Should the orchestrator read the diff's file contents and form its own opinion on code quality? (4) If one lens agent fails or returns nothing parseable, does the whole review abort? (5) The diff adds new user-facing behavior with a passing unit test but no matching scenario in the spec's e2e report. Is that a pass? (6) implementation-notes.md logs a Deviation for this spec. What must the tests lens or spec-conformance lens do with that information? (7) Besides review_N.md, what else does the review phase produce, and where does the URL for it come from? (8) How does agent execution differ between a host with native subagents and Pi? (9) The user asks for a review only run. Does the gauntlet run?",
+      "assertions": [
+        "Answer 1: no, ship is human-triggered only; it must never be launched automatically",
+        "Answer 2: CONCERN (PLAUSIBLE demotes a BLOCK to CONCERN; only REFUTED gets dropped)",
+        "Answer 3: no, the orchestrator does not review the code itself; the panel of subagents does",
+        "Answer 4: no, a failed lens does not abort the review; it is noted so the verdict is honestly partial",
+        "Answer 5: no; new user-facing behavior without a passing e2e-report scenario is a finding (BLOCK for a missing/failing e2e scenario per spec-conformance) even though a unit test exists",
+        "Answer 6: check whether the conservative choice logged under the deviation still satisfies the spec's scope and decisions; an unresolved deviation that changes promised user-facing behavior is at least a CONCERN",
+        "Answer 7: a review_N.html rendered via the same schema/template pattern used elsewhere and reported as a local path; it is published only when the user requests a link and the host has a publisher",
+        "Answer 8: hosts with native multi-agent support keep the existing plain parallel subagent batches; Pi uses the bundled runner to launch isolated pi --print processes in the same lens-then-verifier batches, never replacing the panel with orchestrator review",
+        "Answer 9: no; a single phase runs on request, and the mutating gauntlet is skipped entirely in a review-only run"
+      ]
+    }
+  ]
+}

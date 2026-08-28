@@ -2,8 +2,8 @@
 
 Status: no run recorded for the current skill set.
 
-The last recorded run (2026-07-24) covered the pre-pivot five-skill chain and was invalidated by the pivot to the decision-spec pipeline; its scores were removed rather than left to invite false confidence.
-Run the harness below against the current 7 skills (`decision-spec`, `commit`, `implement`, `to-harden`, `to-review`, `to-pitch`, `to-quiz`) and replace this file with the dated results.
+The last recorded run (2026-07-24) covered the pre-pivot five-skill chain and was invalidated by the pivot to the scope pipeline; its scores were removed rather than left to invite false confidence.
+Run the harness below against the current 6 skills (`scope`, `commit`, `build`, `ship`, `to-pitch`, `to-quiz`) and replace this file with the dated results.
 
 ## Re-running this harness
 

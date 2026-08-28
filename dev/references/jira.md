@@ -31,7 +31,7 @@ acli jira auth status [--site SITE]
 ```
 
 If the check fails, stop and ask the user to install or authenticate `acli`, or
-disable Jira sync. Do not continue with only local state.
+disable Jira sync, per the failure protocol below.
 
 ## Command shapes
 
@@ -62,8 +62,9 @@ acli jira workitem create --project PROJ --type Task --summary SUMMARY --parent 
 acli jira workitem view TASK-1 --json [--site SITE]
 ```
 
-Before any transition, discover the project's available transitions from a
-representative issue. Match the displayed names exactly and require one
+Discover the project's available transitions once per issue type per run, from
+a representative issue, and reuse the names; re-discover only after a failed or
+ambiguous transition. Match the displayed names exactly and require one
 unambiguous transition for the requested state:
 
 ```text
@@ -71,9 +72,7 @@ acli jira workitem transition-list --issue EPIC-1 --json [--site SITE]
 acli jira workitem transition --issue EPIC-1 --transition "In Progress" --json [--site SITE]
 ```
 
-Use the same discovery and transition sequence for task issues. The
-implement orchestrator owns these calls. Change-set subagents never invoke
-`acli`.
+Use the same discovery and transition sequence for task issues.
 
 When a change set is superseded by a spec revision, transition the old issue
 to its available closed state and add the required comment:
@@ -90,13 +89,13 @@ After the Epic is created, write `Jira: PROJ-1` directly under the spec title
 in `spec.md`. After each task issue is created, write its key directly under
 the matching change set in the spec's change plan.
 
-decision-spec lists Initiatives during its interview and creates the Epic only
+`scope` lists Initiatives during its interview and creates the Epic only
 after the change plan is final. It then creates one Task per change set; a
 re-run creates Tasks only for change sets that don't carry a key yet. On
 supersede, close and comment the old issue before creating and persisting the
 replacement issue.
 
-implement transitions the persisted Epic to In Progress at the start. The
+build transitions the persisted Epic to In Progress at the start. The
 orchestrator transitions each persisted change-set issue to In Progress
 immediately when its wave is dispatched, and to Done only after the change set
 is verified and its commit lands.
@@ -110,7 +109,7 @@ operation and ask the user how to proceed. Never silently skip Jira, continue
 with divergent local-only state, invent an issue key, or mark a transition
 successful without verification.
 
-The Epic is not polled or closed by the skills. When implement asks permission
+The Epic is not polled or closed by the skills. When build asks permission
 to push and open a PR, include the Epic key in the proposed branch name and at
 the start of the PR title. A documented Jira automation rule closes the Epic
 after the linked PR is merged.

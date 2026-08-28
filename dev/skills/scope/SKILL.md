@@ -1,10 +1,10 @@
 ---
-name: decision-spec
+name: scope
 description: Spec a change by interviewing for the real problem, arguing every design decision against alternatives, and writing a self-contained spec with a change plan at .dev/{plan-name}/spec.md. Use to plan work before implementation, to turn accepted review findings into new change sets, or to audit the decisions already embedded in existing code.
 disable-model-invocation: true
 ---
 
-# Decision Spec
+# Scope
 
 You are making changes, and writing a spec to help with this.
 The spec is a fresh-context handoff: planning happens here, and implementation happens in another session (often another model) that reads only the spec.
@@ -27,7 +27,7 @@ Small changes run the lighter variants marked in each phase below; the spec file
 
 **Iterate small.**
 Bias toward the smallest spec that delivers observable behavior: a slice implemented and looked at teaches more than a bigger plan, and plans rarely survive contact with the code.
-A big request becomes a first slice specced now, with later slices as `⊘` lines naming what reopens them; once implement and review land, reopen the spec and append the next change sets with continued numbering.
+A big request becomes a first slice specced now, with later slices as `⊘` lines naming what reopens them; once build and ship land, reopen the spec per "Starting from review findings" below.
 The ledger carries the decisions across slices, so nothing argued is lost by going small.
 
 For full-size changes, quiz the user on the code and domain involved: about 10 questions, medium to hard, zero jargon, each with enough context to be answerable.
@@ -62,7 +62,7 @@ Each entry: the decision phrased as a question, then one line per alternative - 
 A chosen alternative with a known downside states it after `⚠`: the tradeoff was seen and accepted, so a future reader doesn't re-litigate it.
 A decision with no `✓` yet is marked `[open]`; the change plan can't link to it until it's decided.
 A decision can also resolve to *not doing it*: every alternative gets `✗`, and a closing `⊘` line carries the rationale and the condition that would reopen it.
-When a because clause leans on an observed fact that would flip the decision if false, cite it in place or mark it `? verify: <what would confirm it>`; judgment clauses take no mark. Full rules in [../../references/decision-ledger.md](../../references/decision-ledger.md). This applies from phase 1 onward - the premise pressure-test data lands in the spec cited or marked.
+Evidence marks follow the Notation in [../../references/decision-ledger.md](../../references/decision-ledger.md), from phase 1 onward - the premise pressure-test data lands in the spec cited or marked.
 Anywhere in the doc, `⚑` marks a line waiting on the user. Resolve and remove every `⚑` before the change plan is final.
 
 ```
@@ -95,7 +95,7 @@ Writing style for the spec: ELI12, no similes or metaphors.
 
 1. Spawn a subagent reviewer with the spec file only - not the conversation, not your reasoning. Give it a hunting job, not a checklist: find the decisions this spec makes without realizing it, the alternatives rejected without a stated reason, and the chosen options whose downsides the spec doesn't admit. It succeeds by finding problems; "looks complete" is a failed review. For small changes, run this hunt yourself against the spec file.
 2. While it runs, research how to implement everything: exact call sites, APIs, the idioms from the phase 2 prior-art hunt. Ask the user when you hit weird stuff.
-3. Also while it runs, reconcile the drafted decisions against the project's `docs/decisions.md`, if it keeps one ([../../references/decision-ledger.md](../../references/decision-ledger.md)). The decisions were argued fresh, so this diff means something: `still-holds` (note the prior entry), `diverged` (raise with the user, mark `⚑` until resolved), or `reopened` (cite the tripped condition in the because clause). Maintain evidence marks on colliding entries: a checkable `?` resolves to a citation; a citation pointing at vanished code downgrades to `?`.
+3. Also while it runs, reconcile the drafted decisions against the project's `docs/decisions.md`, if it keeps one, per the recommender contract in [../../references/decision-ledger.md](../../references/decision-ledger.md). The decisions were argued fresh, so this diff means something; a `diverged` classification is raised with the user and marked `⚑` until resolved.
 4. When the reviewer returns, ask remaining questions and update the doc. Anything unanswerable stays as a `⚑` line.
 
 ## 6. Change plan
@@ -104,7 +104,7 @@ At the bottom of the spec. Short fragmented sentences. Link decisions by ID wher
 Each change set ends with a `tests:` line - concrete scenarios as input -> expected outcome, each tagged with its test layer (`[unit]`, `[integration]`, `[e2e]`), covering happy path, edge cases, and failure paths.
 Specific enough that whoever writes the tests invents nothing; the author tags layers here because a fresh implementation session can't recover that intent.
 A change set with nothing to test says so with a reason: `tests: none - config-only`. A missing `tests:` line reads as "nobody thought about it", not "nothing to test".
-Order change sets so each builds only on the ones before it; keep file lists disjoint where possible - `implement` parallelizes consecutive change sets whose files don't overlap.
+Order change sets so each builds only on the ones before it; keep file lists disjoint where possible - `build` parallelizes consecutive change sets whose files don't overlap.
 
 ```
 1. Change set 1
@@ -119,13 +119,13 @@ Order change sets so each builds only on the ones before it; keep file lists dis
 
 ## 7. Visualize
 
-Full-size changes only. Map the settled spec onto `SPEC_DATA` per [references/data-schema.md](references/data-schema.md) and render [templates/spec.html](templates/spec.html) to `/tmp/{project-slug}/reports/{plan-name}-spec.html`, opening and publishing per [../../references/reporting.md](../../references/reporting.md). decision-spec is the sole owner of this artifact.
+Full-size changes only. Map the settled spec onto `SPEC_DATA` per [references/data-schema.md](references/data-schema.md) and render [templates/spec.html](templates/spec.html) to `/tmp/{project-slug}/reports/{plan-name}-spec.html`, opening and publishing per [../../references/reporting.md](../../references/reporting.md).
 
 ## 8. Promote to the ledger
 
-Copy into `docs/decisions.md` every decision that passes the promotion test: would a future spec or audit in this area need to know this was decided?
+Copy into `docs/decisions.md` every decision that passes the promotion test in [../../references/decision-ledger.md](../../references/decision-ledger.md).
 Entries go in verbatim, dated, sourced to this spec, evidence marks included; a `? verify:` never gets silently dropped, and promotion is the cheapest moment to check what's checkable now.
-If a because clause repeats a rationale now present in three ledger decisions, promote it to a `P-` principle.
+Promote recurring rationales to `P-` principles per the ledger's bar.
 Cross-boundary invariants from phase 4 promote to `docs/contracts.md` under the same test, phrased for the relying side.
 Update the familiarity line of each area the phase 1 quiz covered.
 
@@ -138,12 +138,12 @@ Audit the run itself. Four checks, each reported as a typed line - silence reads
 - **Catalog gaps** - `none | gap`. What did the reviewer or blind-spot pass find that phase 2 should have caught? A missed *category* is a proposed edit to the phase 2 list - propose it to the user, never apply it silently.
 - **Familiarity** - `matched | adjusted`. Did the decision talk match what the quiz predicted? If not, amend the phase 8 familiarity line and say so.
 
-Then recommend the user run `implement` on the spec; never launch it yourself.
+Then recommend the user run `build` on the spec; never launch it yourself.
 
 ## Jira sync
 
-Read `.dev/config.json`; when `jira.enabled` is true, read [../../references/jira.md](../../references/jira.md) before the first `acli` call and follow its persistence-and-timing rules: the Initiative is chosen during the interview, and the Epic and per-change-set Tasks are created only once the change plan is final (after phase 5, before phase 7).
-Any Jira failure stops and asks. With an absent or disabled config, no Jira behavior or mention.
+Read `.dev/config.json`; when `jira.enabled` is true, follow [../../references/jira.md](../../references/jira.md) from before the first `acli` call - it owns the command shapes, the Initiative/Epic/Task timing, and the failure protocol.
+With an absent or disabled config, no Jira behavior or mention.
 
 ## Starting from review findings
 
