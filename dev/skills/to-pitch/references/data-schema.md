@@ -1,7 +1,7 @@
 # PITCH_DATA Schema
 
 The shape to populate in `templates/pitch.html` between the `PITCH_DATA_START` / `PITCH_DATA_END` markers.
-Replace the whole object; the rendering engine below the markers is generic and reads only this shape.
+Replace the whole object per the shared etiquette in [../../../references/reporting.md](../../../references/reporting.md).
 
 ```js
 const PITCH_DATA = {

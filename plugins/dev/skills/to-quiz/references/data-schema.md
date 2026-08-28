@@ -1,7 +1,7 @@
 # QUIZ_DATA Schema
 
 The shape to populate in `templates/quiz.html` between the `QUIZ_DATA_START` / `QUIZ_DATA_END` markers.
-Replace the whole object; the grading logic below the markers is generic and reads only this shape.
+Replace the whole object per the shared etiquette in [../../../references/reporting.md](../../../references/reporting.md); the grading logic lives below the markers.
 
 ```js
 const QUIZ_DATA = {

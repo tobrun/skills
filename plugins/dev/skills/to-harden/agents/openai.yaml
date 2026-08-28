@@ -1,6 +1,0 @@
-interface:
-  display_name: "To Harden"
-  short_description: "Run a deterministic quality gauntlet"
-  default_prompt: "Use $dev:to-harden to run dependency, complexity, and mutation checks over this change."
-policy:
-  allow_implicit_invocation: false

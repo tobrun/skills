@@ -1,7 +1,6 @@
 # Step 4: Documentation Sync and Ledger Capture
 
 Goal: detect whether code changes have drifted from related documentation, update docs inline, and capture durable decisions and contracts while the why is fresh.
-Skip the whole step if the only changes are formatting, comments, or whitespace with no behavioral impact.
 
 ## 4a: Spec sync
 
@@ -41,17 +40,17 @@ Format references: [../../../references/decision-ledger.md](../../../references/
 For each commit just created:
 
 1. **Decisions.**
-   If the body's `Why:`/`Considered:` content records a choice that passes the promotion test - *would a future spec or audit in this area need to know this was decided?* - write a `D-` entry to the matching area section of `docs/decisions.md`, in ledger notation: the chosen alternative `✓` with its because clause from `Why:`, rejected alternatives `✗` from `Considered:`, known downsides after `⚠`, dated and sourced to the commit hash.
+   If the body's `Why:`/`Considered:` content records a choice that passes the ledger's promotion test, write a `D-` entry to the matching area section of `docs/decisions.md`, in ledger notation: the chosen alternative `✓` with its because clause from `Why:`, rejected alternatives `✗` from `Considered:`, known downsides after `⚠`, dated and sourced to the commit hash.
    Grep for an existing slug first - a commit revisiting a recorded decision updates that entry, never duplicates it.
    The bar is high: most commits don't qualify.
    A choice qualifies when someone could plausibly argue it differently later (`Considered:` exists, or the `Why:` defends a tradeoff); routine implementation choices don't.
-   Evidence marks (ledger Notation): an observed fact the `Why:` states - something seen, measured, or reported - is a dated claim sourced to the hash; an asserted fact nothing demonstrated gets `? verify: <what would confirm it>`; judgment clauses take no mark.
+   Apply evidence marks per the ledger's Notation, sourcing observed facts to the commit hash.
 2. **Risk lines.**
    If this batch's commits carry `Severity:`/`Risk:` trailers: union the `Risk:` domains into each touched area's `risk:` header line, and overwrite the level with the batch's max `Severity:` (levels observe recent changes, they don't ratchet), dated, sourced to the commits.
    Trailer-less commits leave risk lines untouched.
 3. **Contracts.**
    If the project keeps `docs/contracts.md`, two checks against the diff:
-   - *Capture* - a commit that establishes a boundary guarantee another module will rely on (retry ownership, a value domain, delivery semantics, which side validates) gets a `C-` entry: the guarantee, `guaranteed by:` the enforcing function, `relied on by:` the known dependents, dated and sourced to the hash. Same high bar as decisions: most commits don't qualify.
+   - *Capture* - a commit that establishes a boundary guarantee another module will rely on (what qualifies is defined in contracts.md) gets a `C-` entry: the guarantee, `guaranteed by:` the enforcing function, `relied on by:` the known dependents, dated and sourced to the hash. Same high bar as decisions: most commits don't qualify.
    - *Maintenance* - check whether any changed file contains a cited guarantee site. Each hit gets a typed verdict: `holds` (the guaranteed behavior is untouched - refresh the citation date), `broken` (the guarantee no longer holds - the commit must restore it or update the contract, and the `relied on by:` sites surface as follow-up work; a broken contract with live reliers is a finding, not a doc edit; a contract whose source is a `D-` slug means the commit is reversing a recorded decision - the ledger entry needs the same update, or the commit is wrong), or `needs-verify` (can't tell from the diff - downgrade the citation to `? verify:` so nothing downstream treats it as checked).
 
 If the ledger or contract registry changed, commit each as its own commit: `docs(decisions): capture <slug(s)> from <scope>` / `docs(contracts): <capture|maintain> <slug(s)> from <scope>`.

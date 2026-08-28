@@ -1,7 +1,7 @@
 {
   "name": "dev",
-  "version": "2.1.0",
-  "description": "Development workflow skills: spec changes with argued decisions, implement across unit/integration/e2e with every scenario proven by tests, harden with deterministic quality gauntlets, run verified reviews, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
+  "version": "3.0.0",
+  "description": "Development workflow skills: scope changes with argued decisions, build across unit/integration/e2e with every scenario proven by tests, ship with a deterministic quality gauntlet and an adversarially verified review, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
   "author": {
     "name": "Tobrun"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Dev Workflow",
-    "shortDescription": "Plan, implement, and review tested changes.",
-    "longDescription": "Development workflow skills: spec changes with argued decisions, implement across unit/integration/e2e with every scenario proven by tests, harden with deterministic quality gauntlets, run verified reviews, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
+    "shortDescription": "Scope, build, and ship tested changes.",
+    "longDescription": "Development workflow skills: scope changes with argued decisions, build across unit/integration/e2e with every scenario proven by tests, ship with a deterministic quality gauntlet and an adversarially verified review, create structured commits that feed a decision ledger, and render pitches or comprehension quizzes.",
     "developerName": "Tobrun",
     "category": "Developer Tools",
     "capabilities": [
@@ -18,9 +18,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Spec this change with argued decisions.",
-      "Implement the current spec test-first.",
-      "Review the current branch with verification."
+      "Scope this change with argued decisions.",
+      "Build the current spec test-first.",
+      "Ship this change with the gauntlet and a verified review."
     ]
   }
 }

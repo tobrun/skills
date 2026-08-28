@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Group pending changes into granular commits with structured what/why bodies and metadata trailers, sync drifted docs, and capture durable decisions and contracts into the project ledger. Use when the user asks to commit, or signals implementation work is ready to be committed.
+description: Group pending changes into granular commits with structured what/why bodies and metadata trailers, sync drifted docs, capture durable decisions and contracts into the project ledger, and push by default (say "commit only" to skip the push). Use when the user asks to commit, or signals implementation work is ready to be committed.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,6 @@ Analyze all changes, intelligently group them into logical commits, and create t
 ## Core principles
 
 - **Understand before committing**: read the actual diff, not just file names.
-- **One concern per commit**: exactly one logical change each. Split aggressively - even within a single file - so that every change is discoverable in `git log`; buried changes are lost changes.
 - **Autonomous grouping**: decide the grouping yourself - never ask the user.
 - **Meaningful messages**: commit messages must explain both "what" changed and "why" - without motivation, the commit history becomes useless for understanding decisions.
 - **Safety first**: never commit secrets, never amend without asking, never force anything.
@@ -32,16 +31,16 @@ Scan for files that should NOT be committed (`.env`, secrets, large binaries). W
 
 ## Step 2: Classify and plan
 
-Group changes into logical commits. **Each commit = one reviewable idea.**
+Group changes into logical commits. **Each commit = one reviewable idea.** Split aggressively - even within a single file - so every change is discoverable in `git log`; buried changes are lost changes.
 If someone reading `git log --oneline` can't tell what changed from the subject line, the commit is too broad.
 
 Splitting rules (most granular first):
 
 1. **Split within a file** when it contains multiple logical changes - e.g. a new function AND a renamed variable. Use partial staging (Step 3) to commit each change separately.
 2. **Split across files** when files serve different concerns - e.g. a config change vs. a code change, or two unrelated modules edited in the same session.
-3. **Group together** only when changes are inseparable - e.g. a rename touching the definition and all call sites, or a new feature with its test.
+3. **Group together** only when changes are inseparable.
 
-Grouping heuristics: a bug fix groups with its test; a rename/refactor groups across all affected files; a new export groups with the file that imports it; config, cleanup, formatting, and documentation are always separate commits.
+Grouping heuristics: a bug fix or new feature groups with its test; a rename/refactor groups across all affected files (definition and call sites); a new export groups with the file that imports it; config, cleanup, formatting, and documentation are always separate commits.
 
 Ordering: infrastructure/config first -> core changes -> dependent changes -> cleanup last.
 
