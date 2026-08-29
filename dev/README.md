@@ -13,6 +13,7 @@ Every skill is explicit-invocation only: Claude Code and Pi use `disable-model-i
 
 Specs a change by interviewing for the real problem behind the request, cataloging every design decision (with a subagent blind-spot pass on full-size changes), and arguing each one against alternatives in a `✓`/`✗`/`?`/`⚠`/`⊘` notation with evidence marks.
 Writes a self-contained spec at `.dev/{plan-name}/spec.md` - research decisions, scope with invariants and a Validation block of the repo's real commands, and a change plan of numbered change sets each ending in a layer-tagged `tests:` line - designed as a fresh-context handoff to `build`.
+A checker (`scripts/lint-spec.py`) enforces the spec's mechanics - unique slugs, argued alternatives, echoes that match their decision, tagged test scenarios - so the prose stays about judgment.
 Promotes durable decisions to `docs/decisions.md` and cross-boundary invariants to `docs/contracts.md`, renders an expandable-card spec view, and has a reverse mode that audits the implicit decisions already embedded in existing code.
 
 ### build

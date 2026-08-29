@@ -9,7 +9,6 @@ const SPEC_DATA = {
   planName: "string - the .dev/{plan-name} slug",
   date: "string - YYYY-MM-DD, the spec header date",
   summary: "string - one or two sentences: the problem and the chosen direction",
-  size: "small | full",
 
   // One entry per decision, in the research section's impact order.
   decisions: [
@@ -60,6 +59,6 @@ const SPEC_DATA = {
 
 - **This object mirrors `spec.md`, section for section** - decisions, scope, and change sets come straight from the file you just wrote. A section left empty here reads as a gap in the spec.
 - **Marks are the content** - the because clauses, ⚠ downsides, and ⊘ reopen conditions are why the artifact is worth opening; never flatten them into bare labels.
-- **flags should be empty** in a spec whose interview ran to completion - a ⚑ still open means the change plan is not final. Surface it loudly rather than hiding it.
+- **flags belong to open decisions only** - a decision the change plan links never carries one. Surface any that remain loudly rather than hiding them.
 - **Don't invent a decision that wasn't argued** - a decision with one alternative and no because clause is a statement, not a decision; leave it out or argue it first.
 - **tests entries are the acceptance criteria** - keep layer tags accurate; `build` and `ship` treat them as the enforceable spec.
