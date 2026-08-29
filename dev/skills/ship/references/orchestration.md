@@ -116,8 +116,10 @@ Never retry a failed lens more than once.
 
 ## Batch 2: verifiers
 
-Collect every BLOCK and CONCERN from all lenses (NITs skip verification),
-dedupe, and number the findings (`f1`, `f2`, ...) so verdicts map back.
+`scripts/aggregate-findings.py plan` collects every BLOCK and CONCERN from the
+lens results and numbers them (`f1`, `f2`, ...) so verdicts map back. NITs skip
+verification. Duplicates are not merged yet: two lenses that flagged the same
+line get refuted independently, and the merge happens after their verdicts.
 Launch one verifier per finding, again all in a single message.
 If that would exceed 10 verifiers, group the findings by file into at most 10
 shards and give each verifier its shard; each finding is still verified
@@ -143,4 +145,4 @@ REFUTED = wrong, unreachable, or already handled; say exactly why.
 Delivery follows the transport: on native, the verifier writes the array to
 its result file; on Pi, it replies with the array as one fenced JSON block.
 
-Aggregation of the verified results is plain reasoning per the skill's Aggregate step; do it yourself, not with another agent.
+Aggregating the verified results is `aggregate-findings.py aggregate` per the skill's Aggregate step - never another agent.

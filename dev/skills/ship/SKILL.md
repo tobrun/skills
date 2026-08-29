@@ -9,7 +9,7 @@ disable-model-invocation: true
 Ship a change in two phases: a deterministic gauntlet that fixes mechanics, then a review panel that judges meaning.
 Prompted quality rules soften into guidelines as a context grows; a checker's exit code does not, and judgment belongs to a verified panel, not to one context.
 You are the orchestrator for both phases: run tools, dispatch agents, aggregate, report.
-Do not review the code yourself, and never weaken a check to make it pass.
+Never weaken a check to make it pass, and never stand in for the panel - your own reading of the code is not a lens.
 
 Invoking this skill is the task - detect the diff yourself and start immediately; do not ask what to ship.
 
@@ -23,9 +23,9 @@ The phases differ in contract: phase 1 mutates the repo (fix agents edit code, t
 
 Both phases share one scope.
 
-- PR number given -> target that PR; else check `gh pr view` for an open PR; else the local branch against the default branch.
+- PR number given -> target that PR; else the host's PR tooling, when it has any, for an open PR; else the local branch against the default branch.
 - Gather the diff per the diff-scope rules in [../../references/plan-layout.md](../../references/plan-layout.md): local git only, standard exclusions.
-- Locate the spec directory the diff implements (branch name, commit messages, or ask if ambiguous) and read `.dev/{plan-name}/spec.md`; degrade gracefully without one.
+- Locate the plan directory by the same reference's convention and read its `spec.md`; degrade gracefully without one.
 - Full-repo runs only when the user asks - they are expensive, and the loops are the same.
 - No reviewable files: say so and stop. Diff is tiny (1-2 files) or huge (>25k lines): confirm with the user before spending on agents.
 
@@ -70,63 +70,30 @@ Tell the user which lenses you selected and why before launching.
 
 Run the two batches - all lens agents first, then all verifiers - on the transport selected by [references/orchestration.md](references/orchestration.md), which owns transport choice, result-file delivery, and the prompt contracts.
 If no transport is available, stop and explain that this panel-based phase cannot preserve its verification contract.
-Every BLOCK or CONCERN is adversarially verified - the verifier's only job is to refute it against the actual repo.
+Between the batches, number the findings the verifiers get:
+
+```bash
+python3 {ship-skill-root}/scripts/aggregate-findings.py plan {batch-1 results}
+```
+
+Every BLOCK and CONCERN it lists is adversarially verified - the verifier's only job is to refute it against the actual repo.
 
 ### 5. Aggregate
 
-- Drop REFUTED findings entirely.
-- BLOCK stays BLOCK only when CONFIRMED; PLAUSIBLE demotes to CONCERN.
-- Dedupe by file:line across lenses; keep the most detailed wording, tag all lenses that found it.
-- Verdict: any BLOCK -> BLOCK; else any CONCERN -> CONCERNS; else PASS.
-- A failed lens doesn't abort the review; note it so the verdict is honestly partial.
-- Only now, with findings verified, read the target repo's `docs/decisions.md` if it keeps one, and classify each colliding finding per the recommender contract in [../../references/decision-ledger.md](../../references/decision-ledger.md). Read-only - this phase never edits the ledger; classifications land in the report's Decision reconciliation section, and ledger writes belong to the follow-up `scope` run.
+The same script applies the verdicts, so these rules live in one place instead of softening across a long context:
+
+```bash
+python3 {ship-skill-root}/scripts/aggregate-findings.py aggregate {batch-1 results} {batch-2 results} --expected {lenses you selected}
+```
+
+It drops REFUTED findings, keeps a BLOCK only when CONFIRMED and carries every other surviving finding as a CONCERN, merges duplicates by file:line while crediting each lens that found them, names the lenses that failed or returned nothing parseable, and sets the verdict.
+A failed lens doesn't abort the review - the report names it, so the verdict is honestly partial.
+
+Then, with findings verified, read the target repo's `docs/decisions.md` if it keeps one, and classify each colliding finding per the recommender contract in [../../references/decision-ledger.md](../../references/decision-ledger.md). Read-only - this phase never edits the ledger; classifications land in the report's Decision reconciliation section, and ledger writes belong to the follow-up `scope` run.
 
 ### 6. Write the report
 
-Write `.dev/{plan-name}/review_N.md` (next free index, starting at 1):
-
-```markdown
-# Review {N}: {title}
-
-Verdict: {PASS | CONCERNS | BLOCK}
-Panel: {lenses run}, {failed lenses if any}
-Base: {branch or PR}, {date}
-
-{1-2 sentence summary}
-
-## Spec conformance
-
-Tests: scenarios met/not met, invariants held, seams tested/untested. Omit if no spec.
-
-## Decision reconciliation
-
-{only when the repo keeps docs/decisions.md} Each colliding finding: still-holds (with the checked reopen condition), reopened, or diverged.
-
-## Previous findings
-
-{re-review only} Each finding from review_{N-1}: fixed or still open.
-
-## Blockers
-
-[{lenses}] {file:line} - {title}
-{The scenario that triggers it, confirmed by verification.}
-
-## Concerns
-
-Same shape as blockers.
-
-## Nits
-
-| File | Lens | Issue |
-
-## What's good
-
-One line per lens; omit empty ones.
-
-## Next step
-
-What to fix first and why.
-```
+Write `.dev/{plan-name}/review_N.md` in the shape of [references/report-format.md](references/report-format.md), at the next free index.
 
 ### 7. Publish the report
 

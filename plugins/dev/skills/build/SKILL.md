@@ -18,8 +18,9 @@ Read [references/layers.md](references/layers.md), [references/tests.md](referen
 2. Build waves by consecutive-disjoint batching per [references/parallel.md](references/parallel.md): sequential in spec order by default, batched only when file lists are disjoint and nothing a wave-mate introduces is consumed. Every change set in the plan is in scope, not just the first.
 3. For each wave, run its change sets in parallel per the same reference, then commit each finished change set on the current branch and append its entry to `implementation-notes.md`.
 4. Move straight to the next wave. Never stop after one change set or wave to ask about review.
-5. When every change set is committed, run the full e2e pass per "The e2e layer" below over the whole spec, and loop on failures until it is green.
-6. After the e2e report, follow the "Jira sync and pull request" rules below.
+5. When every change set is committed, loop `python3 {build-skill-root}/scripts/check-tests.py .dev/{plan-name}` until it exits clean: it proves every specced scenario has a test that really exists, rather than one that was reported.
+6. Then run the full e2e pass per "The e2e layer" below over the whole spec, and loop on failures until it is green.
+7. After the e2e report, follow the "Jira sync and pull request" rules below.
    Only then suggest the follow-up, never launching it yourself: `ship` for
    the quality pass over the full body of work, pointed at
    `implementation-notes.md` and the `{plan-name}-e2e-report.html`.
@@ -27,15 +28,15 @@ Read [references/layers.md](references/layers.md), [references/tests.md](referen
 ## Jira sync and pull request
 
 Read `.dev/config.json`; when `jira.enabled` is true, follow
-`../../references/jira.md` from before the first `acli` call - it owns the
+[../../references/jira.md](../../references/jira.md) from before the first `acli` call - it owns the
 command shapes, the transition timing, and the failure protocol. The
 orchestrator alone invokes `acli`; subagent prompts and the `parallel.md`
 contract do not change.
 
-On every run, ask exactly: "push and open the PR?" and act only on a yes: if
+On every run, ask whether to push and open the PR, and act only on a yes: if
 on the default branch, create a work branch first, with branch and PR naming
 per jira.md when Jira is enabled. With an absent or disabled config, perform
-no Jira behavior or mention, but still ask the PR question.
+no Jira behavior or mention, but still ask before pushing anything.
 
 ## The change-set loop
 
@@ -73,6 +74,7 @@ It is the shared state across waves - parallel change-set agents can't see each 
 ## Change set {n}: {title}
 - What was done: ...
 - Seams tested: ...
+- Tests added: {path::test name}, ...   # or "none - {reason}"; the checker reads this line
 - Deviations from spec: {edge case found} -> conservative choice made: {what/why}   # only when a deviation occurred
 ```
 

@@ -51,7 +51,7 @@ Output contract (the agent's final message must be exactly one fenced JSON block
 
 1. Verify rather than trust the reports: run the spec's Validation block yourself, once per wave - the shared tree already holds the whole wave's changes, so one run covers every change set in it.
 2. Commit each change set's work on the current branch, in number order, one commit per change set.
-3. Append each change set's entry to `implementation-notes.md` from `whatWasDone`, `seamsTested`, and `deviations`.
+3. Append each change set's entry to `implementation-notes.md` from `whatWasDone`, `seamsTested`, `testsAdded`, and `deviations`. `testsAdded` becomes the entry's `Tests added:` line, which the scenario checker reads.
 
 A `status: blocked` change set, a failing validation, or a reported conflict is yours to finish in the main thread before the next wave starts - do not carry a red change set forward and do not relaunch the same agent on the same failure more than once.
 If two change sets in a wave edited the same file anyway, reconcile it yourself and log it under Deviations.

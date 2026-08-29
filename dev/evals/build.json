@@ -23,7 +23,9 @@
         "The user is not asked about running ship after change set 1 finishes - no review prompt appears until both are done",
         "Each change set gets its own commit on the current branch (at least 2 commits)",
         ".dev/{plan-name}/implementation-notes.md is created and has one entry per change set",
-        "After both change sets are done, the user is asked to run ship rather than a review panel or gauntlet being launched automatically"
+        "After both change sets are done, the user is asked to run ship rather than a review panel or gauntlet being launched automatically",
+        "Each implementation-notes.md entry carries a Tests added: line naming real path::test name references",
+        "scripts/check-tests.py is run against the plan directory and looped on until it exits clean, before the e2e pass"
       ]
     },
     {
@@ -37,7 +39,8 @@
         "The subagents do not write to implementation-notes.md themselves; the orchestrator appends each entry",
         "The subagents are told not to launch the app or run e2e scenarios",
         "The spec's Validation block commands are re-run by the orchestrator rather than the subagent's claim being taken at face value",
-        "Three commits exist, one per change set, in spec order"
+        "Three commits exist, one per change set, in spec order",
+        "The orchestrator carries each subagent's testsAdded into that change set's Tests added: line rather than discarding it"
       ]
     },
     {
@@ -74,7 +77,7 @@
       "fixture": "a git repo with a keyed .dev/{plan-name}/spec.md, no .dev/config.json, and no acli executable on PATH",
       "assertions": [
         "The transcript contains no Jira, acli, Initiative, Epic, or issue-tracker mention",
-        "After the e2e report the user is asked exactly push and open the PR?, and no push or PR command occurs before a yes"
+        "After the e2e report the user is asked whether to push and open the PR, and no push or PR command occurs before a yes"
       ]
     },
     {
