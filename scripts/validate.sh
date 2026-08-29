@@ -20,6 +20,38 @@ fail() {
 }
 
 # ---------------------------------------------------------------------------
+# Read one top-level field out of YAML frontmatter.
+#
+# Two incompatible programs ship as "yq": mikefarah's Go version takes
+# `yq eval <expr> -`, kislyuk's Python wrapper takes `yq -r <expr>`. Detect
+# which one is installed once, and fail loudly when neither works - swallowing
+# the parser error would report every field as missing.
+# ---------------------------------------------------------------------------
+YQ_FLAVOR=""
+
+detect_yq() {
+  [ -n "$YQ_FLAVOR" ] && return
+  if printf 'a: 1\n' | yq eval '.a' - >/dev/null 2>&1; then
+    YQ_FLAVOR="go"
+  elif printf 'a: 1\n' | yq -r '.a' >/dev/null 2>&1; then
+    YQ_FLAVOR="python"
+  else
+    echo "validate.sh: no working yq found; install mikefarah/yq or python-yq" >&2
+    exit 2
+  fi
+}
+
+yaml_field() {
+  local yaml="$1" key="$2"
+  detect_yq
+  if [ "$YQ_FLAVOR" = "go" ]; then
+    printf '%s\n' "$yaml" | yq eval ".\"$key\" // \"\"" -
+  else
+    printf '%s\n' "$yaml" | yq -r ".\"$key\" // \"\""
+  fi
+}
+
+# ---------------------------------------------------------------------------
 # Get list of plugin directories from marketplace
 # ---------------------------------------------------------------------------
 marketplace_source_dirs() {
@@ -273,10 +305,9 @@ check_10() {
         continue
       fi
 
-      # Parse with yq
       local n d
-      n=$(echo "$yaml" | yq eval '.name // ""' - 2>/dev/null || echo "")
-      d=$(echo "$yaml" | yq eval '.description // ""' - 2>/dev/null || echo "")
+      n=$(yaml_field "$yaml" "name")
+      d=$(yaml_field "$yaml" "description")
       [ -z "$n" ] && fail "R10" "$sf" "Frontmatter 'name' is empty or missing"
       [ -z "$d" ] && fail "R10" "$sf" "Frontmatter 'description' is empty or missing"
     done
@@ -306,7 +337,7 @@ check_11() {
       [ -z "$yaml" ] && continue
 
       local fm_name
-      fm_name=$(echo "$yaml" | yq eval '.name // ""' - 2>/dev/null || echo "")
+      fm_name=$(yaml_field "$yaml" "name")
       if [ -n "$fm_name" ] && [ "$fm_name" != "$sname" ]; then
         fail "R11" "$sf" \
           "Frontmatter name '$fm_name' != directory name '$sname'"
@@ -336,7 +367,7 @@ check_14() {
       [ -z "$yaml" ] && continue
 
       local dmi
-      dmi=$(echo "$yaml" | yq eval '.disable-model-invocation // ""' - 2>/dev/null || echo "")
+      dmi=$(yaml_field "$yaml" "disable-model-invocation")
       if [ "$dmi" != "true" ]; then
         fail "R14" "$sf" \
           "Frontmatter must set 'disable-model-invocation: true' (all skills are human-triggered)"
