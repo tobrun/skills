@@ -130,7 +130,7 @@ Audit the run itself. Four checks, each reported as a typed line - silence reads
 - **Catalog gaps** - `none | gap`. What did the reviewer or blind-spot pass find that phase 2 should have caught? A missed *category* is a proposed edit to the phase 2 list - propose it to the user, never apply it silently.
 - **Familiarity** - `matched | adjusted`. Did the decision talk match what the quiz predicted? If not, amend the phase 8 familiarity line and say so.
 
-Then recommend the user run `build` on the spec; never launch it yourself.
+Then recommend next steps, never launching them: `scope-review` first when the change is large or risky or build will run in a different session - it reviews the spec with a fresh-context panel and refines it in place before any code exists - and `build` to implement.
 
 ## Jira sync
 
@@ -139,7 +139,7 @@ With an absent or disabled config, no Jira behavior or mention.
 
 ## Starting from review findings
 
-When the plan directory ([../../references/plan-layout.md](../../references/plan-layout.md)) holds `review_N.md` files, the highest-numbered review's accepted Blockers and Concerns are the interview's opening agenda: each becomes an open decision, and rejected or deferred findings land as `⊘` lines so they are visibly not dropped.
+When the plan directory ([../../references/plan-layout.md](../../references/plan-layout.md)) holds `review_N.md` or `spec-review_N.md` files, the highest-numbered review's accepted Blockers and Concerns are the interview's opening agenda: each becomes an open decision, and rejected or deferred findings land as `⊘` lines so they are visibly not dropped.
 Append new change sets to the existing `spec.md` with continued numbering - never renumber - and apply the review's Decision reconciliation section to `docs/decisions.md`.
 A defect change set includes the review's triggering scenario as its reproduction.
 

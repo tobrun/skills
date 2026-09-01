@@ -5,7 +5,9 @@ without changing the panel:
 
 Both transports use the same scratch root, such as `/tmp/ship-{session-id}/`,
 with a `results/` directory per batch. Result files in that directory are the
-only channel for agent output. Never retrieve results by messaging an agent,
+only channel for agent output. A batch in flight means the run is not over:
+never end your turn while launched agents are still outstanding - wait for the
+host's completion signal, read the results, and continue. Never retrieve results by messaging an agent,
 waiting for relayed replies, or re-spawning an agent that already finished;
 a fresh spawn has none of the original context and its output must not be used.
 

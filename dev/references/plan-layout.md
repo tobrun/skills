@@ -7,7 +7,8 @@ This reference owns the layout, the locating convention, and the diff scope; ski
 
 | File | Written by | Read by |
 | ---- | ---------- | ------- |
-| `spec.md` | `scope` | everyone downstream |
+| `spec.md` | `scope`; `scope-review` (verified refinements only) | everyone downstream |
+| `spec-review_N.md` | `scope-review` (next free index) | `scope` (remediation), re-reviews |
 | `implementation-notes.md` | `build` (append-only) | `ship`, `to-pitch`, `to-quiz` |
 | `review_N.md` | `ship` (next free index) | `scope` (remediation), re-reviews |
 | `.dev/config.json` | the user | any skill with Jira behavior |

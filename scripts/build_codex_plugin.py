@@ -30,6 +30,11 @@ SKILL_UI = {
         "Spec a change by arguing its decisions",
         "Use $dev:scope to spec this change with argued decisions and a change plan.",
     ),
+    "scope-review": (
+        "Scope Review",
+        "Review and auto-refine a settled spec",
+        "Use $dev:scope-review to review the settled spec with a verified agent panel and refine it in place before building.",
+    ),
     "ship": (
         "Ship",
         "Harden then review a change with verification",

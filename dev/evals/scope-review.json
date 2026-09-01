@@ -1,0 +1,27 @@
+{
+  "skill": "scope-review",
+  "mode": "comprehension",
+  "note": "A full run depends on a settled spec and a live repo to judge it against, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly, and specifically encodes the write boundary (spec.md only, findings only via verification), the escalation line, the authority order, and the two-round cap so a future edit can't silently let the loop edit code, apply unverified findings, or churn forever.",
+  "evals": [
+    {
+      "id": "scope-review-contract",
+      "prompt": "Answer briefly, from the skill text only: (1) What may scope-review edit, and what must it never touch? (2) Can a finding reach the spec without being verified, and can the orchestrator apply its own opinion as a refinement? (3) What happens when lint-spec.py reports problems before the loop starts? (4) A verified finding shows a change set implements the S3 alternative that its linked decision rejected in favor of local disk - is that refinable, and if so what does the refine agent write?",
+      "assertions": [
+        "Answer 1: it edits spec.md and nothing else - never code, never docs/decisions.md, never docs/contracts.md",
+        "Answer 2: no - findings reach the spec only through verification (REFUTED findings drop, a BLOCK survives only when CONFIRMED), and the orchestrator's own reading is not a lens",
+        "Answer 3: stop and recommend finishing the scope run - refinement presumes a mechanically settled spec, and repairing an unfinished draft is scope's job",
+        "Answer 4: refinable - a settled chosen decision outranks the spec's prose in the authority order, so the change set is rewritten to match the decision (local disk), not the other way around"
+      ]
+    },
+    {
+      "id": "scope-review-loop-limits",
+      "prompt": "Answer briefly, from the skill text only: (1) How many panel rounds may the loop run, and what happens when the cap is hit with findings still surviving? (2) Name three kinds of findings that must be escalated to the user instead of auto-applied. (3) What is the authority order refine agents resolve conflicts by? (4) What are the two possible exit verdicts, and what does each one recommend next?",
+      "assertions": [
+        "Answer 1: up to two rounds - a third panel means churn, so the run stops and remaining findings become escalations; a finding surviving two rounds of refinement is itself an escalation",
+        "Answer 2: any three of: flipping a chosen decision to a rejected alternative, changing user-visible scope or behavior, adding or dropping a dependency, contradicting the user's recorded intent",
+        "Answer 3: recorded user intent, then the repo's reality, then settled chosen decisions, then the spec's prose - each level beats everything below it",
+        "Answer 4: APPROVED recommends build directly; APPROVED WITH ESCALATIONS asks the user to answer the escalations first (via scope's remediation mode or a direct edit) and then re-run scope-review"
+      ]
+    }
+  ]
+}
