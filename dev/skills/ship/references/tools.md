@@ -1,6 +1,6 @@
 # Acquiring the Tools
 
-The gauntlet needs three deterministic tools.
+The gauntlet needs eight deterministic tools.
 The acquisition ladder, per tool, is: the repo's existing tooling, else the ecosystem's established tool, else a small repo-fitted script an agent writes.
 Never hand-roll what the ecosystem already maintains, and never download a generic harness wholesale - fit the tool to this repo, commit it, and reuse it on every later run.
 
@@ -10,12 +10,40 @@ Repo-fitted scripts and configs go under `tools/harden/` in the consuming reposi
 The first run pays the acquisition cost; every later run - and any other agent - reuses them.
 Check `tools/harden/` before acquiring anything.
 
-## 1. Dependency checker
+## 1. Project static analysis
+
+Run everything the repo already configures, not a subset you pick: linters, type checkers, format checkers, and any other analyzer wired into the project.
+Discover the full set from where the repo declares it - package scripts, Makefile or task-runner targets, CI workflow steps, pre-commit hooks, and tool config files at the root (`.eslintrc*`, `pyproject.toml` tool sections, `clippy.toml`, and the like).
+A configured tool that CI runs and the gauntlet skips is a check silently weakened; when unsure whether something counts, run it.
+Prefer each tool's changed-files or per-path mode to scope to the diff; pre-existing findings elsewhere are noted, not fixed, unless the run is full-repo.
+If the repo configures nothing, wire up the ecosystem's standard linter and type checker with their default configs as part of this step, committed like any other acquired tool.
+
+## 2. Security scan
+
+Three sub-scans, each zero-threshold:
+
+- **Secrets**: gitleaks or the ecosystem equivalent over the in-scope files. A found secret is never fix-agent work - stop the gauntlet and escalate immediately, because it needs rotation and possibly history rewriting, both human calls.
+- **Dependency vulnerabilities**: the ecosystem's audit tool (osv-scanner, npm audit, pip-audit, cargo audit) over every manifest the diff touched.
+- **Static security rules**: the repo's own SAST config if one exists, else semgrep with the ecosystem's default ruleset, scoped to in-scope files.
+
+## 3. Dead code detector
+
+The ecosystem's detector - knip or ts-prune (JS/TS), vulture (Python), staticcheck's unused checks (Go) - else a repo-fitted script that greps each added or touched export for references.
+Scope: symbols the diff added that nothing references, plus symbols the diff orphaned by removing their last caller.
+Declare entry points and deliberate public API surface as exclusions in committed config; a public export is not dead merely because the repo itself never calls it.
+
+## 4. Duplication detector
+
+jscpd or PMD CPD, comparing the in-scope files against the whole repo and reporting only clones that a diff-touched file participates in.
+The threshold is token-based (default 50) so trivial similarity does not fire; where the line sits is a recorded decision like any other threshold.
+Pre-existing clones between untouched files are noted, not fixed, unless the run is full-repo.
+
+## 5. Dependency checker
 
 Almost always a repo-fitted script: parse the `rules` block of `docs/dependencies.md` (format in [../../../references/dependency-rules.md](../../../references/dependency-rules.md)), glob-match the in-scope files to modules, extract static imports with the language's own tooling (a compiler API, an AST module, or a disciplined grep for import statements), and print each forbidden edge as `file -> file (module -> module)`.
 Ecosystem tools exist for some stacks (dependency-cruiser for JS/TS, import-linter for Python, ArchUnit for JVM); prefer one when the repo already uses it or adoption is one config file that mirrors `docs/dependencies.md` - but `docs/dependencies.md` stays the single source of truth, so generate the tool's config from it rather than maintaining two rule sets.
 
-## 2. Coverage-weighted complexity
+## 6. Coverage-weighted complexity
 
 The score per function combines cyclomatic complexity with test coverage so that only *uncovered* complexity fails: complexity squared, scaled down by the fraction of the function's paths the tests execute. A fully covered function scores its complexity; an uncovered one scores its complexity squared.
 
@@ -25,7 +53,13 @@ The score per function combines cyclomatic complexity with test coverage so that
 
 Scope the report to functions the diff touched; pre-existing offenders elsewhere are noted, not fixed, unless the run is full-repo.
 
-## 3. Mutation testing
+## 7. Flakiness detector
+
+Almost always a repo-fitted script: run the tests the diff added or touched N times (default 5), shuffling order where the runner supports it (vitest `sequence.shuffle`, pytest-randomly, `go test -shuffle`, JUnit's method orderer).
+Any run disagreeing with any other marks that test flaky - a violation like a failure, because a test that passes inconsistently proves nothing.
+Keep it affordable: only diff-touched tests, reuse build caches between repeats, and run repeats inside one runner invocation where the framework allows.
+
+## 8. Mutation testing
 
 Prefer the ecosystem's mutation framework - Stryker (JS/TS), mutmut or cosmic-ray (Python), PIT (JVM), cargo-mutants (Rust), go-mutesting (Go).
 These handle mutant generation, test selection, and reporting far better than a hand-rolled loop; write only the thin config that scopes them.

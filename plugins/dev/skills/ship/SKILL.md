@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Run the quality pass that ships a change in two phases - phase 1 is a deterministic harden gauntlet (dependency rules, coverage-weighted complexity, mutation testing) that loops fresh-context fix agents until every check passes, phase 2 is a read-only adversarially verified review panel over the post-fix diff, writing .dev/{plan-name}/review_N.md. Use after build to finish a change before a PR, or on request for a single phase such as gauntlet only or review only.
+description: Run the quality pass that ships a change in two phases - phase 1 is a deterministic harden gauntlet (the repo's own static analysis, security scan, dead code, duplication, dependency rules, coverage-weighted complexity, test flakiness, mutation testing) that loops fresh-context fix agents until every check passes, phase 2 is a read-only adversarially verified review panel over the post-fix diff, writing .dev/{plan-name}/review_N.md. Use after build to finish a change before a PR, or on request for a single phase such as gauntlet only or review only.
 ---
 
 # Ship
@@ -30,14 +30,20 @@ Both phases share one scope.
 
 ## Phase 1: the gauntlet
 
-Three checks, run cheapest first; [references/tools.md](references/tools.md) owns their definitions and the acquisition ladder.
+Eight checks, run cheapest first; [references/tools.md](references/tools.md) owns their definitions and the acquisition ladder.
 Never weaken or skip a check because acquiring its tool is work.
 
-1. **Dependency rules** against `docs/dependencies.md` ([../../references/dependency-rules.md](../../references/dependency-rules.md) owns the checker semantics; absent file: skip with a clear note, never invent rules).
-2. **Coverage-weighted complexity** per in-scope function.
-3. **Mutation testing** over the in-scope source.
+1. **Project static analysis** - every linter, type checker, and format checker the repo already configures, run over the in-scope files.
+2. **Security scan** - secrets, vulnerable dependencies, and static security rules; a found secret escalates immediately, it is never quiet fix-agent work.
+3. **Dead code** - symbols the diff added that nothing references, and symbols it orphaned by removing their last caller.
+4. **Duplication** - token-level clones the diff introduced against the rest of the repo.
+5. **Dependency rules** against `docs/dependencies.md` ([../../references/dependency-rules.md](../../references/dependency-rules.md) owns the checker semantics; absent file: skip with a clear note, never invent rules).
+6. **Coverage-weighted complexity** per in-scope function.
+7. **Flakiness** - the tests the diff added or touched, repeated and shuffled until trusted.
+8. **Mutation testing** over the in-scope source.
 
 Run each check to completion per the loop in [references/gauntlet.md](references/gauntlet.md).
+When any check dispatched fixes, end the phase with the e2e refresh in the same reference: re-run the spec's `[e2e]` scenarios and overwrite the report, so phase 2 judges the post-fix code instead of stale evidence.
 
 ## Phase 2: the review panel
 
@@ -61,7 +67,7 @@ The review checks the diff against what was specced, not just general quality.
 ### 3. Select the panel
 
 Read [references/lenses.md](references/lenses.md); select only lenses with surface in this diff (a docs-only change skips performance).
-Include `spec-conformance` whenever a spec was found.
+Include `spec-conformance` whenever a spec was found, and always include `simplify` - every diff has simplification surface.
 At most one diff-specific custom lens (migrations, concurrency, i18n) when clearly warranted, defined in the same shape as the built-ins.
 Tell the user which lenses you selected and why before launching.
 
