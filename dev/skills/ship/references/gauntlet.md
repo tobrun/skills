@@ -20,6 +20,18 @@ A scenario that fails here is a violation like any other: dispatch fixes and loo
 Never write new e2e scenarios in this step; generation belongs to build, this step only re-executes.
 Skip it when no tool dispatched fixes (the report is still fresh), when there is no spec or no e2e suite to run (note that in the wrap-up), or in review-only mode, which never reaches phase 1.
 
+## Exit: prove CI parity
+
+After the e2e refresh decision, run the required pull-request commands using
+[../../../references/ci-parity.md](../../../references/ci-parity.md). This gate
+always runs in the default two-phase flow and gauntlet-only mode, even when no
+fix agent changed code.
+
+A red required check is a violation. "Pre-existing" requires merge-base proof
+and a human call; it is never a note that permits a PR-ready verdict. When a
+fix changes behavior or test orchestration, re-run the affected command and
+continue until the full CI-parity set is green.
+
 ## Fix vocabulary
 
 - Resolve a static analysis finding by fixing the code it points at, never by suppressing it inline or loosening the tool's config; a finding worth suppressing is a human call.

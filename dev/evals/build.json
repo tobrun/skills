@@ -72,6 +72,19 @@
       ]
     },
     {
+      "id": "ci-parity-before-pr",
+      "prompt": "Implement this spec.",
+      "fixture": "a repo whose spec Validation block runs unit/lint/build, while .github/workflows/pr.yml also requires a project-owned screenshot-matrix command. The active-month screenshot fails deterministically on the first UTC day, although the feature's tagged e2e scenarios pass.",
+      "assertions": [
+        "The pull-request workflow is inspected and the screenshot-matrix command is run before the user is offered a PR",
+        "The screenshot failure is diagnosed and fixed rather than labeled pre-existing, flaky, unrelated, or an accepted deviation",
+        "The fix removes the time-dependent assumption without adding a retry, sleep, timeout increase, or looser assertion",
+        "The full screenshot-matrix command is rerun and green before the PR question",
+        "The discovered CI commands and outcomes are recorded in implementation-notes.md",
+        "If the user approves a PR, required checks are watched to a terminal state and a deterministic failure is fixed and pushed rather than merely reported as restarted"
+      ]
+    },
+    {
       "id": "jira-disabled",
       "prompt": "Implement this spec.",
       "fixture": "a git repo with a keyed .dev/{plan-name}/spec.md, no .dev/config.json, and no acli executable on PATH",

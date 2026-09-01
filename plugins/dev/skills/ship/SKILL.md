@@ -44,6 +44,10 @@ Never weaken or skip a check because acquiring its tool is work.
 
 Run each check to completion per the loop in [references/gauntlet.md](references/gauntlet.md).
 When any check dispatched fixes, end the phase with the e2e refresh in the same reference: re-run the spec's `[e2e]` scenarios and overwrite the report, so phase 2 judges the post-fix code instead of stale evidence.
+Before phase 2, always run the required pull-request commands per
+[../../references/ci-parity.md](../../references/ci-parity.md), even when no
+fix agent fired. Feature E2E is not a substitute for a repository screenshot,
+packaging, or report job that CI requires.
 
 ## Phase 2: the review panel
 
