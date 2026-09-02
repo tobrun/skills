@@ -19,6 +19,10 @@ Climb up before interviewing about the change itself - what led to this, what th
 Once the problem holds up, brainstorm alternatives at the problem level, including other layers entirely (rate limit at the ALB instead of in the app); the user's original ask becomes one alternative among them, and the whole question lands in the research section as the first decision.
 If the premise doesn't survive, that resolves as a `⊘` not-doing line, not as a failed interview.
 
+The interview is latency-bound by the user, so hide machine work inside it: once the change's rough area is clear, launch background read-only subagents on phase 2's prior-art hunt - existing idioms, helpers, earlier attempts, the areas the change touches - so their results are waiting when the interview closes.
+These explorers never read `docs/decisions.md`: the ledger must stay out of context until the phase 5 reconcile, and phase 9 treats an early leak as contamination.
+The same prefetch arms the quiz below with real code to ask about.
+
 Then size the change: **small** - a handful of decisions, an area the user knows, limited blast radius - or **full**, everything else.
 Tell the user which you picked and why; they can override. Small changes run the lighter variants where marked below - the spec file, its argued decisions, scope, and change plan always happen.
 
@@ -30,7 +34,7 @@ Afterwards tell them what they understand well, what they don't, and their unkno
 
 ## 2. Catalog the decisions
 
-Look at the code. Hunt for prior art first - existing idioms, helpers, and earlier attempts - so decisions get argued against what the codebase already does, not from scratch. Identify all the design decisions involved:
+Look at the code, starting from the phase 1 explorers' results - prior art first: existing idioms, helpers, and earlier attempts - so decisions get argued against what the codebase already does, not from scratch. Identify all the design decisions involved:
 
 - **Big** - overall approach.
 - **Medium** - things that seem simple but can cause big shifts in how much work is done (store a file on S3 or locally, retry strategy). The trickiest tier - make sure you catch all of them.
@@ -39,9 +43,11 @@ Look at the code. Hunt for prior art first - existing idioms, helpers, and earli
 Pay special attention to edge cases and error handling. How the change gets verified is a decision too: what level to test at, what needs a real dependency versus a fake, what can't be tested and why.
 
 **Blind spot pass** (full-size only): don't grade your own catalog - you'll reread it the way you wrote it. Get a second one from something that hasn't seen your reasoning, reliably a subagent handed only the user's original request and the relevant code - not the conversation, not your catalog.
+Both of its inputs are settled when the interview ends, so launch it before you start cataloging; it hunts while you do, and the fold-in is the sync point.
 Fold the diff in: what it found and you didn't are blind spots, what you found and it didn't deserves a second look.
 Then tell the user what their framing didn't account for: constraints already in the code, behavior the change would break, second-order work, and what a mature solution handles in this domain that they wouldn't know to ask about.
 
+Between the catalog and the talk, gather each big and medium decision's evidence - call sites, existing constraints, what the code already does - in one parallel subagent batch, one agent per decision area, so each discussion starts armed instead of pausing to grep.
 Talk through the big and medium decisions with the user, highest-impact first; when a decision's criteria are taste-driven, sketch the alternatives concretely instead of describing them in prose.
 
 ## 3. Research section
@@ -83,7 +89,7 @@ Writing style for the spec: ELI12, no similes or metaphors.
 
 ## 5. Review and research
 
-1. Spawn a subagent reviewer with the spec file only - not the conversation, not your reasoning. Give it a hunting job, not a checklist: find the decisions this spec makes without realizing it, the alternatives rejected without a stated reason, and the chosen options whose downsides the spec doesn't admit. It succeeds by finding problems; "looks complete" is a failed review. For small changes, run this hunt yourself against the spec file.
+1. Spawn a subagent reviewer with the spec file only - not the conversation, not your reasoning - before starting any of the work below, so it hunts while you research. Give it a hunting job, not a checklist: find the decisions this spec makes without realizing it, the alternatives rejected without a stated reason, and the chosen options whose downsides the spec doesn't admit. It succeeds by finding problems; "looks complete" is a failed review. For small changes, run this hunt yourself against the spec file.
 2. While it runs, research how to implement everything: exact call sites, APIs, the idioms from the phase 2 prior-art hunt. Ask the user when you hit weird stuff.
 3. Also while it runs, reconcile the drafted decisions against the project's `docs/decisions.md`, if it keeps one, per the recommender contract in [../../references/decision-ledger.md](../../references/decision-ledger.md). The decisions were argued fresh, so this diff means something; a `diverged` classification is raised with the user and marked `⚑` until resolved.
 4. When the reviewer returns, ask remaining questions and update the doc. Anything still unanswerable stays a `⚑` line.
@@ -112,6 +118,7 @@ It owns the mechanics above; the spec is not final while it reports anything.
 ## 7. Visualize
 
 Full-size changes only. Map the settled spec onto `SPEC_DATA` per [references/data-schema.md](references/data-schema.md) and render [templates/spec.html](templates/spec.html) to `/tmp/{project-slug}/reports/{plan-name}-spec.html`, opening and publishing per [../../references/reporting.md](../../references/reporting.md).
+Once the spec is settled, this phase, the phase 8 promotion, and the Jira sync have no ordering between them - overlap them rather than running a march.
 
 ## 8. Promote to the ledger
 
