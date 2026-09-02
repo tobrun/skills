@@ -1,13 +1,14 @@
 ---
 name: scope-review
-description: Review and auto-refine a settled spec before build starts - a fresh-context agent panel checks the plan against the actual repo for infeasible change sets, missing failure paths, semantic contradictions, and untestable scenarios, then verified findings are applied to spec.md by refine agents and the panel re-runs, looping without a human until the spec is clean or a finding needs a call only the user can make. Use after scope settles a spec and before build implements it.
+description: Review and auto-refine a settled spec before build starts - a fresh-context agent panel checks the plan against the actual repo for infeasible change sets, missing failure paths, semantic contradictions, and untestable scenarios, then verified findings are applied to spec.md by refine agents and the panel re-runs; findings only the user can decide are asked as questions at the end and their answers applied, so a finished run hands build a spec ready to implement. Use after scope settles a spec and before build implements it.
 disable-model-invocation: true
 ---
 
 # Scope Review
 
 Review the spec with agents that did not write it, then refine it in place - before any implementation exists, and without a human in the loop.
-A defect caught here costs a spec edit; the same defect after build costs a re-implementation, so this loop runs to completion on its own and presents the finished spec, not a findings list to triage.
+A defect caught here costs a spec edit; the same defect after build costs a re-implementation, so this loop runs to completion on its own and ends with a spec build can start on - not a findings list to triage, and not a handoff back to `scope`.
+The few findings only the user can decide are asked as questions at the end of the run, and the answers are applied before it finishes.
 The panel judges the plan against the actual repo, not against the conversation that produced it.
 You are the orchestrator: run tools, dispatch agents, apply the loop, report - your own reading of the spec is not a lens, and findings reach the spec only through verification.
 This skill edits `spec.md` and nothing else: never code, never `docs/decisions.md`, never `docs/contracts.md`.
@@ -36,7 +37,8 @@ A third panel means the refinements are churning, not converging - stop and esca
 4. **Refine.** No refinable findings: exit the loop. Otherwise dispatch fresh-context refine agents - one per independent group of findings, launched in a single message - each given only its findings, the spec path, and the refinement rules below. They edit `spec.md` only.
 5. **Re-gate.** Loop `lint-spec.py` until clean, fixing mechanical fallout with the same refine agents; then start the next round so fresh eyes judge the refined spec.
 
-Exit with verdict APPROVED when a panel raises nothing refinable and nothing escalated; APPROVED WITH ESCALATIONS when only escalations remain; two rounds of the same finding surviving refinement is itself an escalation.
+Exit the loop when a panel raises nothing refinable; two rounds of the same finding surviving refinement is itself an escalation.
+Escalations collected across the rounds go to the interview below, not to a handoff.
 
 ## 3. Authority and refinement rules
 
@@ -48,11 +50,25 @@ Refine agents resolve conflicts by this order - each level beats everything belo
 4. The spec's prose.
 
 Refinable: false premises about the repo (rewrite the entry against the real code, including the extra work that reveals), change sets contradicting their linked decisions, missing test scenarios for stated invariants and failure paths, untestable scenarios (replace with one provable at that layer), and gaps whose resolution is forced once the repo is consulted.
-Escalations - never auto-applied, carried to the report and wrap-up instead: anything that would flip a `✓` decision to a rejected alternative, change the user-visible scope or behavior, add or drop a dependency, or contradict the user's recorded intent.
+Escalations - never auto-applied, queued for the interview instead: anything that would flip a `✓` decision to a rejected alternative, change the user-visible scope or behavior, add or drop a dependency, or contradict the user's recorded intent.
 A refine agent that cannot fix its finding without crossing that line marks it escalated and leaves the spec alone.
 Refinements follow `scope`'s notation: decision entries keep their slugs and marks, change sets keep their numbering, new scenarios carry layer tags.
 
-## 4. Panel mechanics
+## 4. Resolve escalations with the user
+
+After the loop, ask the user each escalation as a decision, one consequential question at a time, using the host's structured user-input tool when available - the same interview discipline `scope` uses.
+Each question carries what the panel found, the alternatives with their tradeoffs in the ledger's notation, and a recommendation when one is defensible; the user is deciding, not triaging raw findings.
+Apply each answer immediately with a refine pass: update the decision entry's marks and because clauses, rewrite the affected change sets and `tests:` lines, keep `scope`'s notation, and loop `lint-spec.py` until clean.
+An answer that resolves cleanly in place ends that escalation; verify the applied refinement yourself against the repo rather than re-running a panel for it.
+
+Two outcomes defer instead of resolving:
+
+- An answer that invalidates the change's premise or opens a genuinely new effort - a new sub-effort with its own decision tree - exceeds a Q&A; record it as deferred and name `scope` for that piece.
+- No interactive channel, or the user declines to answer: record the escalation as deferred with the question it still needs.
+
+Verdict: APPROVED when nothing is deferred - every finding was refined or answered; APPROVED WITH DEFERRALS otherwise.
+
+## 5. Panel mechanics
 
 Lenses live in [references/lenses.md](references/lenses.md): `feasibility`, `completeness`, `consistency`, `testability` - all four, every round.
 Run the batches on the transport selected by [../ship/references/orchestration.md](../ship/references/orchestration.md), which owns transport choice, result-file delivery, and the batch mechanics, with these substitutions:
@@ -70,23 +86,27 @@ python3 {ship-skill-root}/scripts/aggregate-findings.py plan {batch-1 results}
 python3 {ship-skill-root}/scripts/aggregate-findings.py aggregate {batch-1 results} {batch-2 results} --expected {lenses}
 ```
 
-## 5. Write the report
+## 6. Write the report
 
 Write `.dev/{plan-name}/spec-review_N.md` at the next free index, one per run, covering all rounds:
 
 ```markdown
 # Spec review N - {plan-name} - {date}
 
-Verdict: APPROVED | APPROVED WITH ESCALATIONS
+Verdict: APPROVED | APPROVED WITH DEFERRALS
 Rounds: {R} - {finding counts per round}
 
 ## Refinements applied
 ### R1 - {lens} - {one-line title}
 {spec.md:line} - {what was wrong} -> {what the spec says now}
 
-## Escalations
+## Escalations resolved
 ### E1 - {lens} - {one-line title}
-{why this needs the user: which decision, scope line, or dependency it would change}
+Asked: {the question} - Answered: {the user's decision} -> {what the spec says now}
+
+## Deferred
+### D1 - {lens} - {one-line title}
+{the question still open, and why it exceeded this run: premise invalidated, new effort, or unanswered}
 
 ## Strengths
 {the good notes worth keeping, deduplicated}
@@ -94,8 +114,8 @@ Rounds: {R} - {finding counts per round}
 
 ## Wrap up
 
-Summarize in one chat message: the verdict, what was refined (so the user can audit the loop's edits after the fact), the escalations with the question each one needs answered, and a link to the report.
+Summarize in one chat message: the verdict, what was refined and what the user's answers changed (so the loop's edits stay auditable after the fact), anything deferred with its open question, and a link to the report.
 Recommend next steps, never invoking them:
 
-- `build` when the verdict is APPROVED - the spec was refined in place and is ready.
-- Answer the escalations first when there are any: each is a decision, so route it through `scope` (its remediation mode reads this report) or a direct spec edit by the user, then re-run `scope-review`.
+- `build` when the verdict is APPROVED - the spec was refined, the questions are answered, and implementation can start directly.
+- With deferrals: `scope` for the deferred pieces (its remediation mode reads this report); the rest of the spec is still build-ready when the deferred work is separable.

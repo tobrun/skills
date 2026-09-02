@@ -1,7 +1,7 @@
 {
   "skill": "scope-review",
   "mode": "comprehension",
-  "note": "A full run depends on a settled spec and a live repo to judge it against, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly, and specifically encodes the write boundary (spec.md only, findings only via verification), the escalation line, the authority order, and the two-round cap so a future edit can't silently let the loop edit code, apply unverified findings, or churn forever.",
+  "note": "A full run depends on a settled spec and a live repo to judge it against, which is expensive to stage per iteration - this eval checks policy comprehension of the skill text directly, and specifically encodes the write boundary (spec.md only, findings only via verification), the escalation interview, the authority order, and the two-round cap so a future edit can't silently let the loop edit code, apply unverified findings, skip asking the user, or churn forever.",
   "evals": [
     {
       "id": "scope-review-contract",
@@ -15,12 +15,12 @@
     },
     {
       "id": "scope-review-loop-limits",
-      "prompt": "Answer briefly, from the skill text only: (1) How many panel rounds may the loop run, and what happens when the cap is hit with findings still surviving? (2) Name three kinds of findings that must be escalated to the user instead of auto-applied. (3) What is the authority order refine agents resolve conflicts by? (4) What are the two possible exit verdicts, and what does each one recommend next?",
+      "prompt": "Answer briefly, from the skill text only: (1) How many panel rounds may the loop run, and where do findings still surviving at the cap go? (2) Name three kinds of findings that must never be auto-applied, and what happens to them instead. (3) What is the authority order refine agents resolve conflicts by? (4) What are the two possible exit verdicts, when does each apply, and what makes an escalation defer rather than resolve?",
       "assertions": [
-        "Answer 1: up to two rounds - a third panel means churn, so the run stops and remaining findings become escalations; a finding surviving two rounds of refinement is itself an escalation",
-        "Answer 2: any three of: flipping a chosen decision to a rejected alternative, changing user-visible scope or behavior, adding or dropping a dependency, contradicting the user's recorded intent",
+        "Answer 1: up to two rounds - a third panel means churn; findings surviving the cap (including one surviving two rounds of refinement) become escalations for the end-of-run interview",
+        "Answer 2: any three of: flipping a chosen decision to a rejected alternative, changing user-visible scope or behavior, adding or dropping a dependency, contradicting the user's recorded intent - each is asked to the user as a decision (one at a time, alternatives with tradeoffs) and the answer is applied to the spec before the run finishes",
         "Answer 3: recorded user intent, then the repo's reality, then settled chosen decisions, then the spec's prose - each level beats everything below it",
-        "Answer 4: APPROVED recommends build directly; APPROVED WITH ESCALATIONS asks the user to answer the escalations first (via scope's remediation mode or a direct edit) and then re-run scope-review"
+        "Answer 4: APPROVED when every finding was refined or answered (build can start directly); APPROVED WITH DEFERRALS when something remains - an escalation defers only when the answer invalidates the premise or opens a genuinely new effort, when there is no interactive channel, or when the user declines to answer"
       ]
     }
   ]
